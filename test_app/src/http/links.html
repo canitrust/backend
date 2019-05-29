@@ -1,0 +1,225 @@
+<html>
+
+<head>
+  <title>Who can I trust?</title>
+</head>
+
+<body>
+  <h1>All links</h1>
+  <div>
+    <table border="1px solid black" border-collapse="collapse">
+      <tbody aria-live="polite" aria-relevant="all">
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">1</td>
+          <td class="confluenceTd">HSTS</td>
+          <td class="confluenceTd">How is the "includeSubdomains" flag interpreted?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com" rel="nofollow">https://ssl.test-canitrust.com</a></li>
+              <li>then check if browser chooses https when connecting to
+                <ol>
+                  <li><a class="external-link" href="http://sub.ssl.test-canitrust.com" rel="nofollow">http://sub.ssl.test-canitrust.com</a></li>
+                  <li><a class="external-link" href="http://plain.test-canitrust.com" rel="nofollow">http://plain.test-canitrust.com</a></li>
+                  <li><a class="external-link" href="http://test-canitrust.com" rel="nofollow">http://test-canitrust.com</a></li>
+                </ol>
+              </li>
+              <li>if the browser connects to <a class="external-link" href="http://plain.test-canitrust.com" rel="nofollow">http://plain.test-canitrust.com</a> via https, you need to clear the HSTS-Cache for the following experiments</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">2</td>
+          <td class="confluenceTd">HSTS</td>
+          <td class="confluenceTd">
+            <p>Is the header processed if received via plain http?</p>
+          </td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="http://ssl2.test-canitrust.com" rel="nofollow">http://ssl2.test-canitrust.com</a></li>
+              <li>check if browser chooses https next time</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">3</td>
+          <td colspan="1" class="confluenceTd">HSTS</td>
+          <td colspan="1" class="confluenceTd">Is the header processed if received via https with invalid certificate? Will the invalid certificate be accepted by the next connection?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>turn off proxy</li>
+              <li>visit <a class="external-link" href="https://invalidcert.test-canitrust.com" rel="nofollow">https://invalidcert.test-canitrust.com</a></li>
+              <li>check if browser chooses https next time</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">4</td>
+          <td class="confluenceTd">HSTS</td>
+          <td class="confluenceTd">Is there a maximum value for the max-age parameter? What happens if higher values are given?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com" rel="nofollow">https://ssl.test-canitrust.com</a> ,the max-age parameter is set to 10^12-1</li>
+              <li>check if value is accepted by the browser</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">5</td>
+          <td class="confluenceTd">HPKP</td>
+          <td class="confluenceTd">What happens if the connection to a web site is secured with a valid certificate but at the same time the web site pins different public key via the header?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="https://hpkp.test-canitrust.com" rel="nofollow">https://hpkp.test-canitrust.com</a></li>
+              <li>what happens then and after reconnect?</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">6</td>
+          <td class="confluenceTd">Cookies</td>
+          <td class="confluenceTd">Which cookie prevails in case of contradictory declarations? Always the last?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com" rel="nofollow">https://ssl.test-canitrust.com</a></li>
+              <li>reload</li>
+              <li>check cookie0</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">7</td>
+          <td colspan="1" class="confluenceTd">Cookies</td>
+          <td colspan="1" class="confluenceTd">In which sequence will different values for the same cookies with different configuration be sent?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com" rel="nofollow">https://ssl.test-canitrust.com</a></li>
+              <li>visit <a class="external-link" href="https://ssl.test-canitrust.com/app/test/" rel="nofollow">https://ssl.test-canitrust.com/app/test/</a></li>
+              <li>check cookie1</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">8</td>
+          <td class="confluenceTd">Cookies</td>
+          <td class="confluenceTd">What happens if cookies have a foreign domain set in the domain attribute? Cookie ignored? Attribute ignored?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com" rel="nofollow">https://ssl.test-canitrust.com</a></li>
+              <li>visit&nbsp;<a class="external-link" href="https://noexample.mgm" rel="nofollow">https://noexample.mgm</a></li>
+              <li>check cookie2</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">9</td>
+          <td class="confluenceTd">Cookies</td>
+          <td class="confluenceTd">Can JS set and read back cookies with httponly flag? Will the flag be ignored? Will the whole cookie be ignored?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com/setHttpCookie.html" rel="nofollow">https://ssl.test-canitrust.com/setHttpCookie.html</a></li>
+              <li>check cookie3</li>
+              <li>if JS can access the cookie, an alert with the cookie will pop up</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">10</td>
+          <td colspan="1" class="confluenceTd">Cookies</td>
+          <td colspan="1" class="confluenceTd">Can plain http sources set secure cookiesc via http header? Will the flag be ignored?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit<a class="external-link" href="http://plain.test-canitrust.com/" rel="nofollow">http://plain.test-canitrust.com/</a></li>
+              <li>reload</li>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com/" rel="nofollow">https://ssl.test-canitrust.com/</a></li>
+              <li>check cookie4, which is set via header<br><br></li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">11</td>
+          <td colspan="1" class="confluenceTd">Cookies</td>
+          <td colspan="1" class="confluenceTd">Can plain http sources set secure cookies via JS? Will the flag be ignored?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li><a class="external-link" href="http://plain.test-canitrust.com/setSecureCookie.html" rel="nofollow">http://plain.test-canitrust.com/setSecureCookie.html</a></li>
+              <li>reload</li>
+              <li>visit&nbsp;<a class="external-link" href="https://ssl.test-canitrust.com/" rel="nofollow">https://ssl.test-canitrust.com/</a></li>
+              <li>check cookie5, which is set via JS</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">12</td>
+          <td colspan="1" class="confluenceTd">Cookies</td>
+          <td colspan="1" class="confluenceTd">Are cookies deleted from all browsers upon quit? In which cases do browsers keep session cookies?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>nothing to explain</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">13</td>
+          <td colspan="1" class="confluenceTd">CSP / X-Frame-Options</td>
+          <td colspan="1" class="confluenceTd">
+            <p>Which policy is enforced if both a CSP and the X-Frame-Options header govern the embedding into other pages?</p>
+          </td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="https://ssl.test-canitrust.com/iframe.html" rel="nofollow">https://ssl.test-canitrust.com/iframe.html</a></li>
+              <li>is the first iframe loaded?</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">14</td>
+          <td colspan="1" class="confluenceTd">CSP</td>
+          <td colspan="1" class="confluenceTd">Which policy is enforced if there are two contradicting CSP declarations? The first? The last? The intersection?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="https://csp2.test-canitrust.com/scriptsrc.html" rel="nofollow">https://csp2.test-canitrust.com/scriptsrc.html</a></li>
+              <li>what does the text say?</li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">15</td>
+          <td colspan="1" class="confluenceTd">CSP</td>
+          <td colspan="1" class="confluenceTd">Which directive is enforced if there are two contradicting child-src and frame-src directives? The first? The last? Always child-src? Always frame-src? The intersection?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="https://csp3.test-canitrust.com/iframe2.html" rel="nofollow">https://csp3.test-canitrust.com/iframe2.html</a></li>
+              <li>which iframe is loaded?
+                <ol>
+                  <li>the first: frame-src is accepted</li>
+                  <li>the second: child-src is accepted</li>
+                </ol>
+              </li>
+            </ol>
+          </td>
+        </tr>
+        <tr role="row">
+          <td colspan="1" class="confluenceTd">16</td>
+          <td colspan="1" class="confluenceTd">X-Frame-Options</td>
+          <td colspan="1" class="confluenceTd">Which Policy is enforced, when X-Frame-Options is set to contrary values? Always the most restrictive? Alway the first value?</td>
+          <td colspan="1" class="confluenceTd">
+            <ol>
+              <li>visit <a class="external-link" href="https://ssl.test-canitrust.com/iframe3.html" rel="nofollow">https://ssl.test-canitrust.com/iframe3.html</a></li>
+              <li>which iframe is loaded?
+                <ol>
+                  <li>only the first: always the first value</li>
+                  <li>only the second: always the last value</li>
+                  <li>both: Allow-From dominant</li>
+                  <li>none: Always the most restrictive</li>
+                </ol>
+              </li>
+            </ol>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+
+</html>
