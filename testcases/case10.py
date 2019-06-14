@@ -23,7 +23,6 @@ class Case10(TestCase):
         webDriver.get("https://ssl.test-canitrust.com")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         cookies = webDriver.get_cookies()
-        #print (cookies)
         self.data = {'set_cookies' : cookies}
         webDriver.close()
         return 1
