@@ -1,11 +1,11 @@
 {
     "1": {
         "modulename": "case1",
-        "filename":"case1.py"
+        "filename": "case1.py"
     },
     "2": {
         "modulename": "case2",
-        "filename":"case2.py"
+        "filename": "case2.py"
     },
     "3": {
         "modulename": "case3",
@@ -50,5 +50,9 @@
     "21": {
         "modulename": "case21",
         "filename": "case21.py"
+    },
+    "66": {
+        "modulename": "case66",
+        "filename": "case66.py"
     }
 }
