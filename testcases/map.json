@@ -11,6 +11,10 @@
         "modulename": "case3",
         "filename": "case3.py"
     },
+    "4": {
+        "modulename": "case4",
+        "filename": "case4.py"
+    },
     "6": {
         "modulename": "case6",
         "filename": "case6.py"
@@ -38,6 +42,10 @@
     "14": {
         "modulename": "case14",
         "filename": "case14.py"
+    },
+    "15": {
+        "modulename": "case15",
+        "filename": "case15.py"
     },
     "16": {
         "modulename": "case16",
