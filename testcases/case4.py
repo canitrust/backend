@@ -12,7 +12,7 @@ class Case4(TestCase):
 
     def __init__(self):
         TestCase.__init__(self)
-        self.testCaseNum = 2
+        self.testCaseNum = 4
 
     def executeTest(self, webDriver):
         """ Definition of a testcase

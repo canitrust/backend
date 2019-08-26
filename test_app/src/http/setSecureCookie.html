@@ -4,7 +4,9 @@
 </head>
 <body>
 <h1>Setting cookies</h1>
-<script>document.cookie = "cookie5=value1; path=/; Domain=test-canitrust.com; secure"; alert(document.cookie);</script>
+<script>document.cookie = "standardCookie=true; path=/; Domain=test-canitrust.com";</script>
+<script>document.cookie = "secureCookie=true; path=/; Domain=test-canitrust.com; secure";</script>
+<script>document.getElementById("h1").innerHTML = "Cookie set";</script>
 </body>
 </html>
  
