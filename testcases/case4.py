@@ -18,7 +18,7 @@ class Case4(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        httpsTargets = ["https://ssl.test-canitrust.com",
+        httpsTargets = ["https://sslsub1.test-canitrust.com",
             "https://sslsub2.test-canitrust.com",
             "https://sslsub3.test-canitrust.com",
             "https://sslsub4.test-canitrust.com",
@@ -26,7 +26,6 @@ class Case4(TestCase):
             "https://sslsub6.test-canitrust.com",
             "https://sslsub7.test-canitrust.com",
             "https://sslsub8.test-canitrust.com"]
-        print(httpsTargets)
         self.data = {}
         counter = 1
         for target in httpsTargets:
@@ -38,15 +37,7 @@ class Case4(TestCase):
             data = {'case'+str(counter): ('https' in currentURL)}
             counter = counter + 1
             self.data.update(data)
-            if ('https' in currentURL):
-                print('HSTS header applied')
-            else:
-                print('HSTS not header applied')
-            #webDriver.close()
-            #webDriver = TestCase.spawnWebDriver()
-            #webDriver = TestCase.testSpawnBS(self.platform, self.os_version, self.browser, self.version, self.key, self.user)
         webDriver.close()
-        print(self.data)
         return 1
         
 
@@ -55,16 +46,9 @@ class Case4(TestCase):
         result = 0
         for index in range(len(self.data)):
             if self.data['case'+str(index+1)] == True:
-                print('case'+str(index+1) + ' yes')
-                result = index+1
+                result = index+1+1 # start at 2, to avoid color code 1 (green)
+            else:
+                break
         self.result = result
         
-        # if ('https' in self.data['subcase1_current_url']):
-        #   self.result = 1
-        # else:
-        #   self.result = 0
-        # if ('https' in self.data['subcase2_current_url']):
-        #   print('case 2 yes')
-        # else:
-        #   print('case 2 no')
         

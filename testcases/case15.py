@@ -31,21 +31,21 @@ class Case15(TestCase):
                 self.data.update(data)    
                 break
             webDriver.switch_to.frame(iframe)
-            element=webDriver.find_elements_by_tag_name('h1')
-            if element:
-                var = 'text' + str(index)
-                data = {var: element[0].text}
-                self.data.update(data)
-                print ('output: ', self.data)
-            else:
+            try:
+                element=webDriver.find_elements_by_tag_name('h1')
+                if element:
+                    var = 'text' + str(index)
+                    data = {var: element[0].text}
+                    self.data.update(data)
+                else:
+                    var = 'text' + str(index)
+                    data = {var: 'iframe not loaded'}
+                    self.data.update(data)
+                webDriver.switch_to.default_content()
+            except:
                 var = 'text' + str(index)
                 data = {var: 'iframe not loaded'}
-                self.data.update(data)
-                print ('output: ', self.data)
-            webDriver.switch_to.default_content()
-        elementImg=webDriver.find_elements_by_tag_name('img')[0]
-        print(elementImg.location)
-        print(elementImg.size)
+                self.data.update(data)    
         webDriver.close()
         return 1
 
@@ -58,8 +58,8 @@ class Case15(TestCase):
             self.result = 1
         if ('Hello World!' in self.data['text1']):
             frame2 = True
-            self.result = 2
+            self.result = 7
         if frame1 and frame2:
-            self.result = 3
+            self.result = 6
         if not frame1 and not frame2:
-            self.result = 0
+            self.result = 9
