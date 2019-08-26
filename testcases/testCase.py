@@ -150,6 +150,7 @@ class TestCase:
     def spawnWebDriver():
         capabilities = DesiredCapabilities.FIREFOX
         capabilities['marionette'] = True
+        #capabilities['loggingPrefs'] = { 'browser':'ALL' }
         options = Options()
         options.add_argument("--headless")
         profile = webdriver.FirefoxProfile("/testcases/profile")
@@ -158,6 +159,7 @@ class TestCase:
         profile.set_preference("browser.cache.memory.enable", False)
         profile.set_preference("browser.cache.offline.enable", False)
         profile.set_preference("network.http.use-cache", False)
+        profile.set_preference("security.csp.enable", True);
         webDriver = webdriver.Firefox(firefox_profile=profile, capabilities=capabilities,firefox_options=options)
         return webDriver
 
@@ -177,10 +179,21 @@ class TestCase:
             #"acceptSslCerts": 'true',   #firefox
             #"acceptInsecureCerts": 'true' #Edge
         }
-        driver = webdriver.Remote(
-            command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
-            desired_capabilities=desired_cap)
-        
+        if browser == 'firefox':
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference("browser.cache.disk.enable", False)
+            profile.set_preference("browser.cache.memory.enable", False)
+            profile.set_preference("browser.cache.offline.enable", False)
+            profile.set_preference("network.http.use-cache", False)
+            profile.set_preference("security.csp.enable", True);
+            profile.update_preferences()
+            driver = webdriver.Remote(
+                command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
+                desired_capabilities=desired_cap, browser_profile=profile)
+        else:
+            driver = webdriver.Remote(
+                command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
+                desired_capabilities=desired_cap, browser_profile=profile)
         return driver
     
     def evaluate(self):
