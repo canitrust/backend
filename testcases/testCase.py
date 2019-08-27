@@ -160,7 +160,6 @@ class TestCase:
         profile.set_preference("browser.cache.offline.enable", False)
         profile.set_preference("network.http.use-cache", False)
         profile.set_preference("security.csp.enable", True);
-        profile.set_preference("security.csp.enable", True);
         webDriver = webdriver.Firefox(firefox_profile=profile, capabilities=capabilities,firefox_options=options)
         return webDriver
 
