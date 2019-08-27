@@ -52,10 +52,10 @@ class Case11(TestCase):
             print('standard cookie not set')
         if (sslCookieSet == True):
             print('secure cookie set')
-            self.result = 1
+            self.result = 0 # not expected behavior, secure cookie set from JS loaded via HTTP
         else:
             print('secure cookie not set')
-            self.result = 0
+            self.result = 1 # expected behavior, secure cookie not set from JS loaded via HTTP
         print(self.result)
         
 
