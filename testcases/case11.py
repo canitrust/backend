@@ -22,41 +22,24 @@ class Case11(TestCase):
         webDriver.get("http://plain.test-canitrust.com/setSecureCookie.html")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         time.sleep(1)
-        #alert_box = webDriver.switch_to_alert()
-        #alert_box.dismiss()
-        cookies1 = webDriver.get_cookies()
-        
-        webDriver.get("https://ssl.test-canitrust.com")
-        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        time.sleep(1)
-        cookies2 = webDriver.get_cookies()
-
-        self.data = {'step1Cookies': cookies1,'step2Cookies': cookies2}
+        cookies = webDriver.get_cookies()
+        self.data = {'Cookies': cookies}
         return 1
 
     def evaluate(self):
-        self.result = 0
-        #print(type(self.result)) 
-        cookies = self.data['step2Cookies']
+        self.result = 0 
+        cookies = self.data['Cookies']
         standardCookieSet = False
         sslCookieSet = False
         for cookie in cookies:
-            print(cookie)
             if ('standardCookie' in cookie['name']):
                 standardCookieSet = True
             if ('secureCookie' in cookie['name']):
                 sslCookieSet = True
-        if (standardCookieSet == True):
-            print('standard cookie set')
-        else:
-            print('standard cookie not set')
+        if (standardCookieSet == False):
+            self.result = 0 # red, cookie definition failed
+            return 0
         if (sslCookieSet == True):
-            print('secure cookie set')
-            self.result = 0 # not expected behavior, secure cookie set from JS loaded via HTTP
+            self.result = 7 # orange, not expected behavior, secure cookie set from JS loaded via HTTP
         else:
-            print('secure cookie not set')
-            self.result = 1 # expected behavior, secure cookie not set from JS loaded via HTTP
-        print(self.result)
-        
-
-        
+            self.result = 1 # green, expected behavior, secure cookie not set from JS loaded via HTTP
