@@ -55,6 +55,10 @@
         "modulename": "case16",
         "filename": "case16.py"
     },
+    "17": {
+        "modulename": "case17",
+        "filename": "case17.py"
+    },
     "20": {
         "modulename": "case20",
         "filename": "case20.py"
@@ -62,6 +66,14 @@
     "21": {
         "modulename": "case21",
         "filename": "case21.py"
+    },
+    "27": {
+        "modulename": "case27",
+        "filename": "case27.py"
+    },
+    "28": {
+        "modulename": "case28",
+        "filename": "case28.py"
     },
     "66": {
         "modulename": "case66",
