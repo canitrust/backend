@@ -27,7 +27,7 @@ class Case14(TestCase):
     def evaluate(self):
         # if the script was not loaded, the second CSP took precedance
         if 'not loaded' in self.data:
-            result = 0
+            result = 2
         else:
-            result = 1
+            result = 3
         self.result = result
