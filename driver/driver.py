@@ -58,7 +58,7 @@ def start_infra():
         logger.debug('Dns_server and test_app containers already up...')
     except Exception as e:
         logger.error(e)
-        # BS_INSTANCE.stop()
+        BS_INSTANCE.stop()
 
 def check_connect(address, port):
     s = socket.socket()
