@@ -249,7 +249,7 @@ def autoupdate_main():
             if result < 1:
                 # Ignore if in the list
                 if DB.ignore_list.count_documents(object_dict):
-                    bs_tests_ignored.append({"info_browser": info_browser, "test_case": case})
+                    bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
                     continue
                 logger.debug('New test detected {}'.format(object_dict))
                 new_tests.append({"info_browser": info_browser, "test_case": key})
