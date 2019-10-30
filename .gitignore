@@ -25,3 +25,4 @@
 **/__pycache__/
 test_app/src/certs/
 **/*.pyc
+**/*.log
