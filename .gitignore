@@ -1,4 +1,4 @@
-.env
+**/.env
 .idea/
 **/geckodriver.log
 .vscode/
@@ -22,6 +22,6 @@
 /testcases/jsondata/
 /testcase/backupdata/
 **/.DS_Store
+**/__pycache__/
 test_app/src/certs/
-testcases/browsersupport.json
 **/*.pyc

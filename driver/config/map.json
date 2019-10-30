@@ -1,0 +1,34 @@
+{
+    "1": {
+        "modulename": "case1",
+        "filename":"case1.py"
+    },
+    "6": {
+        "modulename": "case6",
+        "filename": "case6.py"
+    },
+    "8": {
+        "modulename": "case8",
+        "filename": "case8.py"
+    },
+    "9": {
+        "modulename": "case9",
+        "filename": "case9.py"
+    },
+    "13": {
+        "modulename": "case13",
+        "filename": "case13.py"
+    },
+    "14": {
+        "modulename": "case14",
+        "filename": "case14.py"
+    },
+    "16": {
+        "modulename": "case16",
+        "filename": "case16.py"
+    },
+    "20": {
+        "modulename": "case20",
+        "filename": "case20.py"
+    }
+}

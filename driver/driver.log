@@ -1,0 +1,8 @@
+2019-10-30 09:10:29,054 - testcases.testCase - DEBUG - Running testcase - with configs:Windows 10 chrome 37.0
+2019-10-30 09:10:36,596 - testcases.testCase - DEBUG - Running testcase - spawn - done
+2019-10-30 09:10:46,353 - testcases.testCase - DEBUG - Running testcase - execute - done
+2019-10-30 09:10:46,392 - testcases.testCase - DEBUG - Running testcase - evaluate - done
+2019-10-30 09:10:46,394 - testcases.testCase - DEBUG - Result to be saved:{'platform': 'Windows', 'date': datetime.datetime(2019, 10, 30, 9, 10, 29, 54618), 'isBeta': False, 'data': {'cookies_in_noexamplemgm': []}, 'elapsedTime': 9.796310663223267, 'os_version': '10', 'version': '37.0', 'browser': 'chrome', 'result': 1, 'testCaseNum': 8}
+2019-10-30 09:10:46,400 - testcases.testCase - DEBUG - Running testcase - save - done
+2019-10-30 09:10:47,677 - testcases.testCase - DEBUG - Running testcase - with configs:Windows 10 chrome 38.0
+2019-10-30 09:10:58,287 - testcases.testCase - DEBUG - Running testcase - spawn - done
