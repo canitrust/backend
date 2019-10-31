@@ -124,6 +124,60 @@ class TestCase:
             return False
         finally:
             webDriver.quit()
+    
+    # Run the testcase against a specific browser version
+    def runnotsave(self, platform, osversion, browser, version, key, user):
+        """ Run the testcase against a specific browser version
+            (String) platform: operation system, eg. 'OS X'
+            (String) osversion: OS version, eg. 'Mojave'
+            (String) browser: browser name, eg. 'firefox'
+            (String) version: version, eg. '56.0'
+            (String) key: Browserstack API key
+            (String) user: Browserstack username
+        """
+        logger.debug('Running testcase - with configs:{} {} {} {}'.format(platform, osversion, browser, version))
+        self.platform = platform
+        self.os_version = osversion
+        self.browser = browser
+        self.version = version
+        self.key = key
+        self.user = user
+        try:
+            webDriver = TestCase.testSpawnBS(platform, osversion, browser, version, key, user)
+
+            # start time - will be used to calculate elapsed time
+            start_time = time.time()
+            logger.debug('Running testcase - spawn - done')
+            # Run the actual test definition
+            self.executeTest(webDriver)
+            logger.debug('Running testcase - execute - done')
+            # Elapsed time
+            self.elapsedTime = time.time() - start_time
+
+            # Evaluate the raw data. An evaluate function must be defined in each testcase script
+            self.evaluate()
+            logger.debug('Running testcase - evaluate - done')
+            # Debug message:
+            #get dict to insert from class
+            data = {"date": self.date,
+                    "testCaseNum": self.testCaseNum,
+                    "result" : self.result,
+                    "platform": self.platform,
+                    "browser": self.browser,
+                    "version": self.version,
+                    "os_version":self.os_version,
+                    "elapsedTime": self.elapsedTime,
+                    "data" : self.data,
+                    "isBeta": self.isBeta
+            }
+            logger.debug('Result:{}'.format(data))
+            return True
+        except Exception as e:
+            logger.error('Running testcase - Failed')
+            logger.error(e)
+            return False
+        finally:
+            webDriver.quit()
 
     def runLocal(self):
         """ Run the testcase against a local Firefox(geckodriver) 
@@ -142,17 +196,29 @@ class TestCase:
 
             # start time - will be used to calculate elapsed time
             start_time = time.time()
-
+            logger.debug('Running testcase - spawn - done')
             # Run the actual test definition
             self.executeTest(webDriver)
-
+            logger.debug('Running testcase - execute - done')
             # Elapsed time
             self.elapsedTime = time.time() - start_time
 
             # Evaluate the raw data. An evaluate function must be defined in each testcase script
             self.evaluate()
-
-            logger.debug('Running testcase - Succeeded')
+            logger.debug('Running testcase - evaluate - done')
+            #get dict to insert from class
+            data = {"date": self.date,
+                    "testCaseNum": self.testCaseNum,
+                    "result" : self.result,
+                    "platform": self.platform,
+                    "browser": self.browser,
+                    "version": self.version,
+                    "os_version":self.os_version,
+                    "elapsedTime": self.elapsedTime,
+                    "data" : self.data,
+                    "isBeta": self.isBeta
+            }
+            logger.debug('Result:{}'.format(data))
             return True
         except Exception as e:
             logger.debug('Running testcase - Failed')
