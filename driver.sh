@@ -35,6 +35,6 @@ while true; do
   fi
 done
 unlock_containers &
-docker exec -it $driver python /driver/driver.py "$@"
+docker exec -i $driver python /driver/driver.py "$@"
 echo "Driver DONE"
 kill_docker
