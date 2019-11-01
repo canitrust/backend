@@ -1,0 +1,103 @@
+node('Dev') {
+    cleanWs()
+    def repo = 'backend'
+    def browserstackCredentials = 'bs_user_key'
+    def devMongoUrl = 'cit-dev-mongo-url'
+    def running_output
+    def cit_new_tests = 0
+    def cit_new_tests_ok = 'Unknown'
+    def cit_new_tests_fail = 'Unknown'
+
+    try {
+        stage('Prepare') {
+            def gitBranch = 'master'
+            def gitLabUrl = 'https://github.com/canitrust/backend.git'
+            def credentials = 'e7acb748-22b5-47e2-b5c8-f740048baac1'
+            dir('backend') {
+                try {
+                    deleteDir()
+                } catch (err) {
+                    echo "Caught: ${err}"
+                }
+                git branch: gitBranch, url: gitLabUrl
+                echo "Checking out $repo form $gitLabUrl, branch $gitBranch"
+            }
+            def gitLabCertUrl = "${env.CIT_GITLAB_CERT_URL}"
+            dir('test-certs') {
+                git credentialsId: credentials, url: gitLabCertUrl
+                echo "Checking out Certs form $gitLabCertUrl"
+                sh "mkdir ../backend/test_app/src/certs"
+                sh "cp -r test-canitrust.com ../backend/test_app/src/certs/"
+            }
+        
+        }
+        echo 'Preparation was successful'
+        stage('Run') {
+            dir('backend') {
+                withCredentials([
+                    usernamePassword(credentialsId: browserstackCredentials, usernameVariable: 'BS_USER', passwordVariable: 'BS_PASS'),
+                    string(credentialsId: devMongoUrl, variable: 'MONGO_URL')
+                ]) {
+                    def cfg = """
+                    DB_URL=$MONGO_URL
+                    DB_DATABASE=Backend
+                    DB_COLL=test_Lab
+                    DB_IGNORE_LIST=ignore_list
+                    API_KEY=$BS_PASS
+                    USER_BS=$BS_USER
+                    """
+                    writeFile file: './driver/config/.env', text: "${cfg}"
+                }
+                running_output = sh ( 
+                    script: "./driver.sh autoupdate",
+                    returnStdout: true
+                ).trim()
+                cit_new_tests = sh (
+                        script: """echo '$running_output' | grep -o 'AMOUNT_BS_TESTS.*'| awk -F ':' '{print \$2}'""",
+                        returnStdout: true
+                    ).toInteger()
+                if (cit_new_tests > 0) {
+                    cit_new_tests_ok = sh (
+                        script: """echo '$running_output' | grep -o 'BS tests running OK.*'| awk -F ':' '{print \$2}'""",
+                        returnStdout: true
+                    )
+                    cit_new_tests_fail = sh (
+                        script: """echo '$running_output' | grep -o 'BS tests running Fail.*'| awk -F ':' '{print \$2}'""",
+                        returnStdout: true
+                    )
+                }
+                    
+            }
+        }
+    } catch (e) {
+        echo 'FAILED'
+        mail to: "${env.CIT_EMAIL_RECIPIENTS}",
+             subject: "Failed pipeline ${currentBuild.fullDisplayName}",
+             body: "Something is wrong with ${env.BUILD_URL}"
+        throw e
+    } finally {
+        def currentResult = currentBuild.result ?: 'SUCCESS'
+        if (currentResult == 'SUCCESS') {
+            echo "SUCCESS"
+            echo "cit new tests: $cit_new_tests"
+            echo "cit new tests ok: $cit_new_tests_ok"
+            echo "cit new tests fail: $cit_new_tests_fail"
+            if (cit_new_tests > 0) {
+                mail to: "${env.CIT_EMAIL_RECIPIENTS}",
+                    subject: "$cit_new_tests new tests found ${currentBuild.fullDisplayName}",
+                    body: """$cit_new_tests new tests found in pipeline ${env.BUILD_URL}
+- new tests ok: $cit_new_tests_ok
+- new tests fail: $cit_new_tests_fail
+                    """
+            }
+           
+        }
+        echo 'Clean up'
+        try {
+            cleanWs()
+        } catch (err) {
+            echo "Caught: ${err}"
+        }
+        
+    }
+}

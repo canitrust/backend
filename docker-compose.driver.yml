@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+  driver:
+    container_name: driver
+    build: 
+      context: driver
+      dockerfile: Dockerfile
+    volumes:
+      - ./driver:/driver/
+    command: >
+      bash -c "python /driver/driver.py docker && tail -f /driver/driver.log"
