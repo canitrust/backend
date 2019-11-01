@@ -15,7 +15,13 @@ import logging
 import pymongo
 from config import constant
 from browserstack.local import Local
+from prettytable import PrettyTable
 
+def pretty_output(results):
+    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Result", "Data"])
+    for result in results:
+        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
+    return pretty_output.get_string(sortby="Case #")
 
 def get_browser_support(bs_user, bs_key):
     logger = Logger(__name__).logger
