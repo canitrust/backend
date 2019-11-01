@@ -13,7 +13,7 @@ import socket
 import importlib
 import logging
 import time
-from helper import get_browser_support, BS, Logger, Mongo
+from helper import get_browser_support, BS, Logger, Mongo, pretty_output
 from config import constant
 
 logger = Logger(__name__).logger
@@ -108,14 +108,17 @@ def run_local_main():
         start_infra()
         local_tests_ok = []
         local_tests_fail = []
+        results = []
         for local_test in local_tests:
-            if run_test_local(local_test):
+            result = run_test_local(local_test)
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 local_tests_ok.append(local_test)
             else:
                 local_tests_fail.append(local_test)
+            results.append(result)
         logger.info('Local tests running OK: {}'.format(local_tests_ok))
         logger.info('Local tests running Fail: {}'.format(local_tests_fail))
-
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
     elif len(local_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
 
@@ -125,9 +128,11 @@ def run_bs_list(bs_tests):
         start_infra()
         bs_tests_ok = []
         bs_tests_fail = []
+        results = []
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
-            if run_test_bs(bs_test['info_browser'], bs_test['test_case']):
+            result = run_test_bs(bs_test['info_browser'], bs_test['test_case'])
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
                 # Remove from ignore list if sucess
                 if DB.ignore_list.count_documents(object_dict): DB.ignore_list.remove(object_dict)
@@ -135,9 +140,10 @@ def run_bs_list(bs_tests):
                 bs_tests_fail.append(bs_test)
                 # Add to ignore list for next run if not already
                 if not DB.ignore_list.count_documents(object_dict): DB.ignore_list.insert(object_dict) 
-
+            results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
         BS_INSTANCE.stop()
     elif len(bs_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
@@ -214,7 +220,7 @@ def run_bs_main():
                 if result < 1 and not FORCE_RERUN:
                     # Ignore if in the list
                     if DB.ignore_list.count_documents(object_dict):
-                        bs_tests_ignored.append({"info_browser": info_browser, "test_case": case})
+                        bs_tests_ignored.append({"info_browser": obj['info_browser'], "test_case": case})
                         continue
                     logger.debug('New test detected {}'.format(object_dict))
                     bs_tests.append(obj)
@@ -270,15 +276,18 @@ def runbs_bs_list(bs_tests):
         start_infra()
         bs_tests_ok = []
         bs_tests_fail = []
+        results = []
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
-            rr = run_test_bs(bs_test['info_browser'], bs_test['test_case']) if SAVE_DB else run_test_bs_notsave(bs_test['info_browser'], bs_test['test_case']) 
-            if rr:
+            result = run_test_bs(bs_test['info_browser'], bs_test['test_case']) if SAVE_DB else run_test_bs_notsave(bs_test['info_browser'], bs_test['test_case']) 
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
             else:
                 bs_tests_fail.append(bs_test)
+            results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
         BS_INSTANCE.stop()
     elif len(bs_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
