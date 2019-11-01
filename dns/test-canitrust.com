@@ -8,3 +8,5 @@ $TTL	604800
 ;
 @	IN	NS	localhost.
 ; name servers - A records
+test-canitrust.com.          IN      CNAME test_app.
+*.test-canitrust.com.          IN      CNAME test_app.

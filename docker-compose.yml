@@ -5,34 +5,8 @@ services:
     build: dns/.
     depends_on:
       - test_app
-    volumes:
-      - ./wait-for-it.sh:/wait-for-it.sh
-    command: ["./wait-for-it.sh", "test_app:80", "-t","180", "--", "./setup-and-run.sh"]
   test_app:
     container_name: test_app
-    build: 
+    build:
       context: test_app/.
       dockerfile: Dockerfile
-  driver:
-    container_name: driver
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - test_app
-      - dns_server
-    dns:
-      - dns_server
-    environment:
-      - RUN_ENV=bs
-    volumes:
-      - ./testcases:/testcases/
-      - ./.env:/.env
-      - ./wait-for-it.sh:/wait-for-it.sh
-    command: ["./wait-for-it.sh", "dns_server:53", "-t","180", "--","bash","./startup.sh","${API_KEY}", "-t", "${TESTCASES}"]
-
-
-    
-    
-
-
