@@ -3,11 +3,14 @@
 #  Licensed under the AGPLv3 License. See LICENSE.md in the project root for license information.
 #-------------------------------------------------------------------------------------------------
 
-from testCase import TestCase
+from testcases.testCase import TestCase
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-import time
+from helper import Logger
+logger = Logger(__name__).logger
+
+#import time
 
 class Case27(TestCase):
 

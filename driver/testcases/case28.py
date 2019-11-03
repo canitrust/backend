@@ -3,11 +3,12 @@
 #  Licensed under the AGPLv3 License. See LICENSE.md in the project root for license information.
 #-------------------------------------------------------------------------------------------------
 
-from testCase import TestCase
+from testcases.testCase import TestCase
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-import time
+from helper import Logger
+logger = Logger(__name__).logger
 
 class Case28(TestCase):
 
@@ -46,3 +47,4 @@ class Case28(TestCase):
         if ('page blocked' in self.data['XSS']):
             # entire page blocked
             result = 6 # yellow
+        self.result = result
