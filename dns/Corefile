@@ -1,0 +1,14 @@
+noexample.mgm {
+    file noexample.mgm
+    log
+}
+
+test-canitrust.com {
+    file test-canitrust.com
+    log
+}
+
+. {
+    forward . /etc/resolv.conf
+    log
+}
