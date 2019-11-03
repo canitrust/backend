@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title>Cookies test</title>
+		<style type="text/css">div { margin-bottom: 18px; } p { max-width: 890px; }</style>
+		<!-- taken from here: https://mrcoles.com/blog/cookies-max-age-vs-expires/ -->
+		<script type="text/javascript">
+		var Cookie = function() {
+
+			this.write = function(key, max_age_secs, expires_secs) {
+				var c = this._getWrite(key, max_age_secs, expires_secs);
+				this._doWrite(c);
+				return c;
+			}
+			this._getWrite = function(key, max_age_secs, expires_secs) {
+				var c = key + '=1;path=/;', d = new Date();
+				if (expires_secs !== null)  {
+					d.setTime(d.getTime()+(1000*expires_secs));
+					c += 'expires=' + d.toGMTString() + ';';
+				}
+				if (max_age_secs !== null)
+					c += 'max-age=' + max_age_secs + ';';
+				return c;
+			}
+			this._doWrite = function(c) {
+				document.cookie = c;
+			}
+
+			this.read = function(key) {
+				var c = document.cookie;
+				if (c.length != 0) {
+					var val = c.match('(^|;)[\\s]*' + key + '=([^;]*)');
+					return val === null ? '' : decodeURIComponent(val[2]);
+				}
+				return '';
+			}
+
+			this.test = function(key, max_age_secs, expires_secs) {
+				var r = document.createElement('DIV');
+				r.id = key;
+				document.body.appendChild(r);
+
+				var self = this;
+				var cookie_str = this._getWrite(key, max_age_secs, expires_secs);
+
+				var msg = '<h3>Starting test for "' + key + '" (';
+				if (max_age_secs !== null) {
+					msg += 'max_age_secs: ' + max_age_secs;
+					if (expires_secs) msg += ', '
+				}
+				if (expires_secs) {
+					msg += 'expires_secs: ' + expires_secs;
+				}
+				msg += ')</h3> &nbsp; <small>"document.cookie=' + cookie_str + '"</small><br />';
+				r.innerHTML = msg;
+
+				this._doWrite(cookie_str);
+				var interval = window.setInterval(function() {
+					var c = self.read(key);
+					r.innerHTML += 'ping: ' + (c || 'none!') + '<br />'
+					if (!c)	window.clearInterval(interval);
+				}, 1000);
+			}
+		}
+
+		window.onload = function() {
+			var cookie = new Cookie(), k1 = 'test1', k2 = 'test2', k3 = 'test3', k4 = 'test4', k5 = 'test5';
+			cookie.test(k1, 5, 5);
+			cookie.test(k2, 2, 5);
+			cookie.test(k3, 5, 2);
+			cookie.test(k4, 5, null);
+			cookie.test(k5, null, 5);
+		}
+		</script>
+	</head>
+	<body>
+		<a style="float:right;" href="/">Home</a>
+		<h3>Cookie Test Demo: max-age vs expires</h3>
+		<p>Each test below sets a cookie with some combination of the &quot;max-age&quot; or &quot;expires&quot; parameters. It turns out that Internet Explorer 6 (ie6), Internet Explorer 7 (ie7), and Internet Explorer 8 (ie8) do not support the &quot;max-age&quot; parameter (they just ignore it), but all browsers support the &quot;expires&quot; parameter as long as the date is formated in GMT time, e.g. &quot;(new Date).toGMTString()&quot;.</p>
+		<noscript><p>Javascript must be enabled to view this demo.</p></noscript>
+	</body>
+</html>
