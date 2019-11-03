@@ -84,11 +84,13 @@
     },
     "27": {
         "modulename": "case27",
-        "filename": "case27.py"
+        "filename": "case27.py",
+        "isLive": false
     },
     "28": {
         "modulename": "case28",
-        "filename": "case28.py"
+        "filename": "case28.py",
+        "isLive": false
     },
     "66": {
         "modulename": "case66",
