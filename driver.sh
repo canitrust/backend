@@ -1,6 +1,7 @@
 #!/bin/bash
 
 unlock_containers() {
+  echo true > ./driver/config/container.lock
   while true; do
       lock=$(grep false ./driver/config/container.lock)
       if [ "$lock" == "false" ]; then
