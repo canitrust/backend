@@ -1,0 +1,378 @@
+{
+  "1": {
+    "testNumber": 1,
+    "title": "includeSubdomains Attribute in HSTS Headers",
+    "description": "How is the 'includeSubdomains' attribute interpreted in the browser? If a page 'https://foo.bar.com' sets an HSTS header with the 'includeSubdomains' attribute, what happens if the browser subsequently visits pages in the same domain using only HTTP, like 'http://sub.foo.bar.com' (a subdomain), 'http://baz.bar.com' (a different host in the same domain), 'http://bar.com' (the base domain without any hosts)? Are those pages called via HTTP or HTTPS?",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      4,
+      8
+    ],
+    "path": "includeSubdomains-in-HSTS",
+    "question": "Which page was called via HTTPS and was therefore included in the 'includeSubdomains' attribute?",
+    "possibleAnswers": [
+      {
+        "ans_id": 0,
+        "ans_desc": "'includeSubdomains' or HSTS is not supported at all."
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "Only sub.foo.bar.com called via HTTPS"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "sub.foo.bar.com and baz.bar.com called via HTTPS, the browser includes neighbour hosts when 'inculdeSubdomains' is set."
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "sub.foo.bar.com and bar.com called via HTTPS, the browser includes the base domain when 'inculdeSubdomains' is set."
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "sub.foo.bar.com, baz.bar.com and bar.com called via HTTPS, the browser includes neighbour hosts and the base domain when 'inculdeSubdomains' is set."
+      }
+    ]
+  },
+  "3": {
+    "testNumber": 3,
+    "title": "Is the header processed if received via https with invalid certificate? Will the invalid certificate be accepted by the next connection?",
+    "description": "Approach: Turn off proxy. Visit https://invalidcert.example.mgm  Check if browser chooses https next time. Example: Header ignored, header accepted and enforced upon next session, i.e. after closing tab and browser and accessing the site again.",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      4
+    ],
+    "path": "HSTS-with-invalid-certificates",
+    "question": "",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Processed via https with invalid certificate"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "A plus certificate accepted by the next connection"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Header not processed"
+      }
+    ]
+  },
+  "6": {
+    "testNumber": 6,
+    "title": "Contradicting Cookie Headers",
+    "description": "Which cookie prevails in case of contradicting cookie headers? The first or the second? Or does the browser even completely ignore the cookie?",
+    "detailedDescription": "# Introduction\nCookies are key-value pairs which the server can set in the calling browser, like so:\n``` \nSet-Cookie: foo=bar; Max-Age=2592000; HttpOnly\n```\nIf a request is made to a server, the browser will automatically send all cookies stored for this [origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin). This is particularly usefull for [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies) where cookies will be used to store session identifiers (session IDs). This behaviour makes such session cookies highly security relevant.\n\n# Problem\nNow imagine that a server sends two ``Set-Cookie`` headers to the browser which contain two different values for the same cookie, e.g.:\n```\nGET /index.html HTTP/1.1\nHost: www.canitrust.in\n[...]\nSet-Cookie: foo=value1;\nSet-Cookie: foo=value2;\n[...]\n```\nThis can happen if two infrastructure components (e.g. application server and web server) both try to control the cookie and pick different values which leads to unpredictable behaviour.\n\n# How does the browser react?\nWhen receiving two contradicting values for the same cookie in separate ``Set-Cookie`` headers, the browser now  has three options:\n\n1. Accept the header which is listed first in the HTTP request and ignore the second.\n2. Accept the second header and ignore the first.\n3. Ignore the cookie altogether.\n\nThis testcase tests which browser chooses which of these options.",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      2,
+      7
+    ],
+    "path": "contradicting-cookie-headers",
+    "question": "Which cookie wins?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "The first"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "The second"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Neither"
+      }
+    ]
+  },
+  "8": {
+    "testNumber": 8,
+    "title": "Foreign Domain Attribute in Cookie Declaration",
+    "description": "What happens if a server sets a cookie that has a foreign domain set in the domain attribute? Is the cookie ignored by the browser?",
+    "detailedDescription": "# Introduction\n[Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) are key-value pairs which the server can set in the calling browser, like so:\n``` \nSet-Cookie: foo=bar; Domain=example.com\n```\nIn the above example, the server sets the cookie ``foo`` with the value ``bar`` and sets the domain for which this cookie should be sent. If the domain attribute is set, it will be valid for all subdomains as well. If the domain attribute is not set, the browser will default to the current host, not including subdomains.\n\nIf a request is made to a server, the browser will automatically send all cookies stored for this [origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) or stored for the domain if the domain attribute is set.\n\n# Problem\nNow imagine that a server sends a ``Set-Cookie`` header to the browser which contains a domain attribute that points to a foreign domain (a domain that is not a parent domain of the current host), e.g.:\n```\nGET /index.html HTTP/1.1\nHost: www.canitrust.in\n[...]\nSet-Cookie: foo=bar; Domain=example.com\n[...]\n```\nIn this example, the current web site is hosted on ``www.canitrust.in`` but the server tries to set a cookie for the foreign domain ``example.com``. This should not be possible as it would allow a rouge website to set cookies on other websites on foreign domains. This could cause functionality disruptions keading to denial-of-service.\n\n# How does the browser react?\nWhen receiving such foreign values for the domain attribute in ``Set-Cookie`` headers, the browser now has two options:\n\n1. Ignore a cookie definition with a foreign domain value. This is the correct and secure implementation.\n2. Accept the cookie anyways and serve it to the foreign domain when it is called the next time.\n\nThis testcase tests which browser chooses which of these options.",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      2,
+      13
+    ],
+    "path": "foreign-domains-in-cookies",
+    "question": "Is the cookie with the foreign domain attribute ignored?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "Yes"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "No"
+      }
+    ]
+  },
+  "9": {
+    "testNumber": 9,
+    "title": "HttpOnly Handling in JavaScript",
+    "description": "What happens if a JS script tries to set a cookie with the httpOnly flag? Does the browser allow this? Does it allow the cookie to be read afterwards?",
+    "detailedDescription": "# Introduction\n[Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) are key-value pairs which the server can set in the calling browser, like so:\n``` \nSet-Cookie: foo=bar; HttpOnly\n```\nIn the above example, the server sets the cookie ``foo`` with the value ``bar`` and sets the HttpOnly flag. This flag prevents all access to this cookie from JavaScript functions like the ``Document.cookie`` object or through XHR calls. This is an important function to prevent [Cross-site Scripting (XSS) attacks](https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)).\n\nIf a request is made to a server, the browser will automatically send all cookies stored for this [origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin). This is particularly usefull for [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies) where cookies will be used to store session identifiers (session IDs). This behaviour makes such session cookies highly security relevant.\n\n# Problem\nNow imagine the following HTML code:\n```\n<html>\n  <head>[...]</head>\n  <body>\n    <script>\n      document.cookie = \"foo=bar; HttpOnly\";\n    </script>\n    <script>\n      alert(document.cookie);\n    </script>\n  </body>\n</html>\n```\nIn this example, the web site tries to set the cookie ``foo`` with the value ``bar`` and with the ``HttpOnly`` flag set. In the second script block it then tries to read the cookie from the ``Document.cookie`` object.\n\nIf any of these actions would be possible, the browser would have a serious security vulnerability as many web sites rely on the HttpOnly flag to prevent XSS attacks.\n\n# How does the browser react?\nWhen the browser receives JavaScript code that tries to set and read HttpOnly cookies, the following results are possible:\n\n1. The browser does neither allow the setting nor the reading of HttpOnly cookies through JavaScript. This is the correct and safe implementation.\n2. The browser allows both setting and reading HttpOnly cookies. This option would be a serious security vulnerability.\n3. The browser allows setting cookies with the HttpOnly flag, but then does not allow reading them afterwards.\n\nThis testcase tests which browser chooses which of these options.",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      2,
+      6
+    ],
+    "path": "js-setting-httponly-cookies",
+    "question": "Can JavaScript set and read httpOnly cookies?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 10,
+        "ans_desc": "Set but not read"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      }
+    ]
+  },
+  "10": {
+    "testNumber": 10,
+    "title": "Secure Cookie set by HTTP Web Site",
+    "description": "What happens if a web site accessed via HTTP tries to set a cookie with the secure flag set? Will the browser simply ignore this cookie or will it actually accept the cookie?",
+    "date_created": "06/14/2019",
+    "tagNums": [
+      2,
+      10
+    ],
+    "path": "HTTP-sites-setting-secure-cookies",
+    "question": "Can an HTTP web site set secure cookies?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "Yes"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 10,
+        "ans_desc": "Cookie was set without the secure flag"
+      }
+    ]
+  },
+  "13": {
+    "testNumber": 13,
+    "title": "Contradicting CSP and X-Frame-Options Headers",
+    "description": "Which policy is enforced if both a Content Security Policy and the X-Frame-Options header govern the embedding into other pages? The spec says, CSP should take precedence (https://w3c.github.io/webappsec/specs/content-security-policy/#frame-ancestors-and-frame-options).",
+    "date_created": "05/20/2019",
+    "tagNums": [
+      3,
+      1,
+      7
+    ],
+    "path": "CSP-and-X-Frame-Options-working-together",
+    "question": "Which header takes precedence?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "CSP"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "X-Frame-Options"
+      }
+    ]
+  },
+  "14": {
+    "testNumber": 14,
+    "title": "Contradicting CSP Declarations",
+    "description": "Which Content Security Policy is enforced if there are two contradicting declarations? The first? The second?",
+    "detailedDescription": "# Introduction\nThe [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) or CSP allows a web application to give detailed instructions to the browser about how to handle its content. This usually happens with an HTTP header like:\n``` \nContent-Security-Policy: default-src 'none'; script-src canitrust.in\n```\nThe above example tells the browser to not load any ressources by default (no images, scripts, etc.) and allows scripts to be only loaded from ``canitrust.in``.\n\n# Problem\nNow imagine that a server sends ambiguous or even contradicting CSP headers to the browser, e.g.:\n```\nGET /index.html HTTP/1.1\nHost: www.canitrust.in\n[...]\nContent-Security-Policy: default-src 'none'; script-src foo.canitrust.in\nContent-Security-Policy: default-src 'self'\n[...]\n```\nAs we are on the host ``www.canitrust.in``, the first CSP header in the above example allows scripts to be loaded only from ``foo.canitrust.in``. Contradicting this, the second CSP header allows scripts to be only loaded from ``self`` which results in ``www.canitrust.in`` in this case.\n\nIf the requested page now tries to load a script from, e.g. ``foo.canitrust.in`` like this\n```\n<html>\n  <head>\n    <script src=\"http://foo.canitrust.in/script.js\" />\n  </head>\n  <body>[...]</body>\n</html>\n```\nIf the browser follows the first CSP header the script in this example should be loaded. If the browser accepts the second CSP though, no script should be loaded as the host is not allowed.\n\n# How does the browser react?\nWhen receiving contradicting CSP headers, the browser now basically has two options:\n1. Accept the header which is listed first in the HTTP request and ignore the second.\n2. Accept the second header and ignore the first.\n\nThis testcase tests which browser chooses which of the two options.",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      1,
+      7
+    ],
+    "path": "contradicting-CSP-declarations",
+    "question": "Which of the two CSP declarations is enforced?",
+    "possibleAnswers": [
+      {
+        "ans_id": 3,
+        "ans_desc": "The first"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "The second"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error in test execution of the Safari browser, most probably a bug in one of the test components."
+      }
+    ]
+  },
+  "15": {
+    "testNumber": 15,
+    "title": "Frame-src vs. child-src in CSP",
+    "description": "When a CSP header contains a frame-src directive, this defines from which sources iframes can be loaded. As fallback, child-src should be used. How does the browsers behave when both frame-src and child-src are defined? Does it follow the frame-src? Or both definitions? Does it block the CSP declaration due to conflicts?",
+    "detailedDescription": "# Introduction\nThe [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) or CSP allows a web application to give detailed instructions to the browser about how to handle its content. This usually happens with an HTTP header like:\n``` \nContent-Security-Policy: default-src 'none'; frame-src canitrust.in\n```\nThe above example tells the browser to not load any ressources by default (no images, scripts, etc.) and allows frames and iframes to be only loaded from ``canitrust.in`` through the [frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src) directive.\n\nAdditionally, the standard defines the broader [child-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src) directive, which is checked to decide whether frames and iframes but also web workers can be loaded from a certain source. For frames and iframes the ``child-src`` directive should only be evaluated if the ``frame-src`` directive is absent.\n\n# Problem\nA server can now send a CSP header which contains both the ``frame-src`` and the ``child-src`` directive, e.g.:\n```\nGET /index.html HTTP/1.1\nHost: www.canitrust.in\n[...]\nContent-Security-Policy: default-src 'none'; frame-src foo.canitrust.in; child-src bar.canitrust.in\n[...]\n```\nThe ``frame-src`` in the CSP header in the above example allows iframes to be loaded only from ``foo.canitrust.in``. Contradicting this, the ``child-src`` in the same header allows iframes to be sourced from ``bar.canitrust.in``.\n\nNow imagine the requested page tries to load an iframe from ``foo.canitrust.in`` or ``bar.canitrust.in`` like this\n```\n<html>\n  <head>[...]</head>\n  <body>\n      <iframe src=\"http://foo.canitrust.in\"></iframe>\n      <iframe src=\"http://bar.canitrust.in\"></iframe>\n  </body>\n</html>\n```\nIf the browser accepted the ``frame-src`` directive in the CSP header the first iframe in this example should be loaded. If the browser accepts the ``child-src`` directive though, the second iframe should be loaded.\n\n# How does the browser react?\nWhen receiving such contradicting CSP directives, the browser now basically has these options:\n\n1. Accept the ``frame-src`` directive and ignore the ``child-src`` value. This is the correct behaviour as described in the standard.\n2. Accept both the ``frame-src`` and the ``child-src`` and load iframes from both values.\n3. Accept the ``child-src`` directive and ignore the ``frame-src`` value.\n4. Igonre both the ``frame-src`` and the ``child-src`` values and not load iframes from any of these sources.\n\nThis testcase tests which browser chooses which of the these options.",
+    "date_created": "08/28/2019",
+    "tagNums": [
+      1,
+      7,
+      11,
+      12
+    ],
+    "path": "frame-src-and-child-src-in-CSP",
+    "question": "Which of the two CSP declarations is enforced for iframe sources?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "frame-src is enforced, child-src is ignored"
+      },
+      {
+        "ans_id": 6,
+        "ans_desc": "Both frame-src and child-src can be used"
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "Only child-src is enforced, frame-src is ignored"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Both frame-src and child-src are ignored"
+      }
+    ]
+  },
+  "16": {
+    "testNumber": 16,
+    "title": "Contradicting X-Frame-Options Headers",
+    "description": "Which Policy is enforced, if the server sends two contradicting X-Frame-Options headers? Alway the first or the last header set? Or does the most restrictive header have precedence?",
+    "date_created": "10/12/2018",
+    "tagNums": [
+      3,
+      7
+    ],
+    "path": "contradicting-x-frame-options",
+    "question": "Which X-Frame-Options header is used?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "The last header"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "The first header"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Allow-From headers have precedence"
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "The most restrictive header"
+      }
+    ]
+  },
+  "20": {
+    "testNumber": 20,
+    "title": "no-store in Cache-Control Declaration",
+    "description": "What effect does the header Cache-Control: no-store have? How does the browser behave if a page which sets this header is visited twice? Is the page requested a second time or is the cached version used?",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      5
+    ],
+    "path": "no-store-in-cache-control",
+    "question": "How does the browser behave?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Page is requested a second time"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "Page is not requested a second time"
+      }
+    ]
+  },
+  "26": {
+    "testNumber": 26,
+    "title": "must-revalidate in Cache-Control Declarations?",
+    "description": "What effect does Cache-Control: must-revalidate have?",
+    "date_created": "1/17/2019",
+    "tagNums": [
+      5
+    ],
+    "path": "cache-control-must-revalidate",
+    "question": "What can be observed?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Page not stored at all / browser sends second request without conditional"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "Browser does not send second request"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Browser sends request with conditional (e.g If-None-Match or If-Modified-Since)"
+      }
+    ]
+  },
+  "66": {
+    "testNumber": 66,
+    "title": "JavaScript in SVG loaded in IMG tag",
+    "description": "SVG images can contain JavaScript code which would be executed in the user's browser if this SVG is loaded in a web site. This becomes dangerous if the JavaScript code can access and change the DOM of the web site loading it. This test case uses a web site which loads an SVG in an IMG tag where the SVG is hosted on the same host. This SVG contains JS code that attempts to change the loading web site.",
+    "date_created": "06/26/2019",
+    "tagNums": [
+      9
+    ],
+    "path": "JS-in-SVG",
+    "question": "Can the JavaScript code inside the SVG change the web site?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error during the execution"
+      }
+    ]
+  },
+  "72": {
+    "testNumber": 72,
+    "title": "Contradicting HSTS Headers",
+    "description": "Which Policy is enforced, if the server sends two contradicting Strict-Transport-Security (HSTS) headers? Alway the first or the last header set by the server? Or does the most restrictive header have precedence?",
+    "date_created": "07/03/2019",
+    "tagNums": [
+      4,
+      7
+    ],
+    "path": "contradicting-HSTS-headers",
+    "question": "Which HSTS header is used?",
+    "possibleAnswers": [
+      {
+        "ans_id": 3,
+        "ans_desc": "The last header"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "The first header"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "The header with the longest max-age value (the most restrictive)"
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "The header with the shortest max-age value (the least restrictive)"
+      }
+    ]
+  }
+}
