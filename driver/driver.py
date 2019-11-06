@@ -270,11 +270,20 @@ def runlocal_main():
 def runlocal_main_wrapper(args):
     logger.info('Run Test Cases')
     global TESTCASES, TESTENV, DRY_RUN
-    TESTCASES = args.testcases
     TESTENV = 'local'
     DRY_RUN = args.dry_run if args.dry_run else False
     logger.setLevel(logging.DEBUG)
     get_config()
+    if args.testcases: TESTCASES = args.testcases
+    elif args.all:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            TESTCASES.append(key)        
+    elif args.all_live:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            if dataJson[key]['isLive']:
+                TESTCASES.append(key)    
     runlocal_main()
 
 def runbs_bs_list(bs_tests):
@@ -413,6 +422,8 @@ def parser_init():
     parser_run.set_defaults(func=run_main_wrapper)
     parser_runlocal = subparsers.add_parser('runlocal')
     parser_runlocal.add_argument('-t', '--testcases', type=lambda s: [str(item) for item in s.split(',')], help='run test cases, separate by comma')
+    parser_runlocal.add_argument('--all', action='store_true', help="Run all test cases")
+    parser_runlocal.add_argument('--all_live', action='store_true', help="Run all (live) test cases")
     parser_runlocal.add_argument('-d', '--dry_run', action='store_true', help="Dry run")
     parser_runlocal.set_defaults(func=runlocal_main_wrapper)
     parser_runbs = subparsers.add_parser('runbs')

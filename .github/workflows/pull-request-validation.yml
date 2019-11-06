@@ -1,0 +1,14 @@
+name: PR Validation 
+# This workflow is triggered on pull requests to the repository.
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: run all live test cases locally
+        run: ./driver.sh runlocal --all_live
