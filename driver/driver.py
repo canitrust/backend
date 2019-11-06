@@ -51,8 +51,8 @@ def start_infra():
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
             time.sleep(3)
-            if (time.time() - start_containers_time) > 60:
-                raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
+            if (time.time() - start_containers_time) > 180:
+                raise Exception('Waiting for dns_server and test_app containers up timeout > 180 secs')
         # Update DNS server
         os.system('echo "nameserver {}" > /etc/resolv.conf'.format(socket.gethostbyname('dns_server')))
         logger.debug('Dns_server and test_app containers already up...')
