@@ -6,8 +6,7 @@ unlock_containers() {
       lock=$(grep false ./driver/config/container.lock)
       if [ "$lock" == "false" ]; then
         docker-compose down  >> /dev/null 2>&1
-        docker-compose up -d --build >> /dev/null 2>&1
-        echo $(ls -la)
+        docker-compose up --build
         break
       fi
   done
