@@ -7,7 +7,7 @@ unlock_containers() {
       if [ "$lock" == "false" ]; then
         docker-compose down  >> /dev/null 2>&1
         docker-compose up -d --build >> /dev/null 2>&1
-        echo "ls -la"
+        echo $(ls -la)
         break
       fi
   done
