@@ -96,6 +96,7 @@ def run_test_local(test_case):
 
 def run_local_main():
     logger.info('Environment: Local')
+    logger.info('Test Pull request')
     local_tests = []
     if TESTCASES:
         logger.info('List test cases:{}'.format(TESTCASES))
