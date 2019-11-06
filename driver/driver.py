@@ -45,8 +45,11 @@ def start_infra():
                     raise Exception('Waiting for BrowserStack timeout > 30 secs')
             logger.debug('Browserstack-local instance is running...')
         # Unlock dns_server and test_app containers
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
-            lock.write('false')
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('browserstack')
+        elif TESTENV == 'local':
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('local')
         logger.debug('Wait for dns_server and test_app containers up...')
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
