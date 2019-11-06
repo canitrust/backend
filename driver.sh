@@ -1,13 +1,13 @@
 #!/bin/bash
 
 unlock_containers() {
-  echo "$(pwd)"
   echo true > ./driver/config/container.lock
   while true; do
       lock=$(grep false ./driver/config/container.lock)
       if [ "$lock" == "false" ]; then
         docker-compose down  >> /dev/null 2>&1
         docker-compose up -d --build >> /dev/null 2>&1
+        docker-compose logs
         break
       fi
   done
