@@ -161,6 +161,32 @@
       }
     ]
   },
+  "11": {
+    "testNumber": 11,
+    "title": "Can plain HTTP sources set secure cookies via JavaScript",
+    "description": "What happens if JavaScript loaded from a HTTP source tries to set a cookie with the attribute \"secure\"?",
+    "date_created": "06/11/2019",
+    "tagNums": [
+      2,
+      10
+    ],
+    "path": "secure-cookie-set-via-JS-from-HTTP-source",
+    "question": "Can plain HTTP sources set secure cookies via JavaScript",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No, secure cookie not set."
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "Yes, secure cookie set."
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Error in test execution."
+      }
+    ]
+  },
   "13": {
     "testNumber": 13,
     "title": "Contradicting CSP and X-Frame-Options Headers",
