@@ -50,5 +50,9 @@
   "13": {
     "tagNumber": 13,
     "tagText": "Cookie-domain"
+  },
+  "14": {
+    "tagNumber": 14,
+    "tagText": "XSS-Protection"
   }
 }

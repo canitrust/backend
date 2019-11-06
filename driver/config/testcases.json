@@ -320,6 +320,56 @@
       }
     ]
   },
+  "27": {
+    "testNumber": 27,
+    "title": "Browsers behavior for X-XSS-Protection mode block.",
+    "description": "How does the browser behave when the server sets the X-XSS-Protection header with the value \"1; mode=block\" and simple reflected XSS? Is the browser able to detect the XSS and will the rendering of the entire page get blocked or only the reflected component?",
+    "date_created": "06/11/2019",
+    "tagNums": [
+      14
+    ],
+    "path": "x-xss-protection-mode-block",
+    "question": "What can be observed?",
+    "possibleAnswers": [
+      {
+        "ans_id": 5,
+        "ans_desc": "XSS is prevented and page rendered."
+      },
+      {
+        "ans_id": 6,
+        "ans_desc": "XSS is prevented by blocking the entire page."
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "XSS exploited."
+      }
+    ]
+  },
+  "28": {
+    "testNumber": 28,
+    "title": "Browsers default behavior for the XSS protection.",
+    "description": "If the server does not set the X-XSS-Protection header, the browser uses a default. Does the browser detect reflected XSS with the default XSS protection and how does he react?",
+    "date_created": "06/11/2019",
+    "tagNums": [
+      14
+    ],
+    "path": "browsers-default-xss-protection",
+    "question": "What can be observed?",
+    "possibleAnswers": [
+      {
+        "ans_id": 5,
+        "ans_desc": "XSS is prevented and page rendered."
+      },
+      {
+        "ans_id": 6,
+        "ans_desc": "XSS is prevented by blocking the entire page."
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "XSS exploited."
+      }
+    ]
+  },
   "66": {
     "testNumber": 66,
     "title": "JavaScript in SVG loaded in IMG tag",
