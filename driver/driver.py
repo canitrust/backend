@@ -47,6 +47,8 @@ def start_infra():
         # Unlock dns_server and test_app containers
         with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
             lock.write('false')
+        os.sytem('pwd')
+        os.system('cat ./config/container.lock')
         logger.debug('Wait for dns_server and test_app containers up...')
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
