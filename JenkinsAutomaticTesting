@@ -5,8 +5,7 @@ node('Dev') {
     def devMongoUrl = 'cit-dev-mongo-url'
     def running_output
     def cit_new_tests = 0
-    def cit_new_tests_ok = 'Unknown'
-    def cit_new_tests_fail = 'Unknown'
+    def cit_new_tests_summary = 'Unknown'
 
     try {
         stage('Prepare') {
@@ -42,7 +41,7 @@ node('Dev') {
                     DB_URL=$MONGO_URL
                     DB_DATABASE=Backend
                     DB_COLL=test_Lab
-                    DB_IGNORE_LIST=ignore_list
+                    DB_FAILED_TESTS=failed_tests
                     API_KEY=$BS_PASS
                     USER_BS=$BS_USER
                     """
@@ -57,12 +56,8 @@ node('Dev') {
                         returnStdout: true
                     ).toInteger()
                 if (cit_new_tests > 0) {
-                    cit_new_tests_ok = sh (
-                        script: """echo '$running_output' | grep -o 'BS tests running OK.*'| awk -F ':' '{print \$2}'""",
-                        returnStdout: true
-                    )
-                    cit_new_tests_fail = sh (
-                        script: """echo '$running_output' | grep -o 'BS tests running Fail.*'| awk -F ':' '{print \$2}'""",
+                    cit_new_tests_summary = sh (
+                        script: """echo '$running_output' | sed -n '/TEST SUMMARY/,\$p'""",
                         returnStdout: true
                     )
                 }
@@ -80,14 +75,12 @@ node('Dev') {
         if (currentResult == 'SUCCESS') {
             echo "SUCCESS"
             echo "cit new tests: $cit_new_tests"
-            echo "cit new tests ok: $cit_new_tests_ok"
-            echo "cit new tests fail: $cit_new_tests_fail"
+            echo "$cit_new_tests_summary"
             if (cit_new_tests > 0) {
                 mail to: "${env.CIT_EMAIL_RECIPIENTS}",
                     subject: "$cit_new_tests new tests found ${currentBuild.fullDisplayName}",
                     body: """$cit_new_tests new tests found in pipeline ${env.BUILD_URL}
-- new tests ok: $cit_new_tests_ok
-- new tests fail: $cit_new_tests_fail
+$cit_new_tests_summary
                     """
             }
            

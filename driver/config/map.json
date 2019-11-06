@@ -70,7 +70,8 @@
     },
     "17": {
         "modulename": "case17",
-        "filename": "case17.py"
+        "filename": "case17.py",
+        "isLive": true
     },
     "20": {
         "modulename": "case20",

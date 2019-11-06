@@ -134,12 +134,17 @@ def run_bs_list(bs_tests):
             result = run_test_bs(bs_test['info_browser'], bs_test['test_case'])
             if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
-                # Remove from ignore list if sucess
-                if DB.ignore_list.count_documents(object_dict): DB.ignore_list.remove(object_dict)
+                # Remove from the list of failed tests if sucess
+                if DB.failed_tests.count_documents(object_dict): DB.failed_tests.remove(object_dict)
             else:
                 bs_tests_fail.append(bs_test)
-                # Add to ignore list for next run if not already
-                if not DB.ignore_list.count_documents(object_dict): DB.ignore_list.insert(object_dict) 
+                # Add to the list of failed tests for next run if not exist
+                if not DB.failed_tests.count_documents(object_dict): 
+                    object_dict.update({'retry_count': 0})
+                    DB.failed_tests.insert(object_dict) 
+                # Increment retry_count if already 
+                else:
+                    DB.failed_tests.find_one_and_update(object_dict, {'$inc': {'retry_count': 1}})
             results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
@@ -194,8 +199,9 @@ def run_bs_main():
                     object_dict = format_mongo_object(info_browser, case)
                     result = DB.coll.count_documents(object_dict)
                     if result < 1 and not FORCE_RERUN:
-                        # Ignore if in the list
-                        if DB.ignore_list.count_documents(object_dict):
+                        # Ignore if retry count greater than maximum
+                        object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                        if DB.failed_tests.count_documents(object_dict):
                             bs_tests_ignored.append({"info_browser": info_browser, "test_case": case})
                             continue
                         logger.debug('New test detected {}'.format(object_dict))
@@ -219,7 +225,8 @@ def run_bs_main():
                 result = DB.coll.count_documents(object_dict)
                 if result < 1 and not FORCE_RERUN:
                     # Ignore if in the list
-                    if DB.ignore_list.count_documents(object_dict):
+                    object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                    if DB.failed_tests.count_documents(object_dict):
                         bs_tests_ignored.append({"info_browser": obj['info_browser'], "test_case": case})
                         continue
                     logger.debug('New test detected {}'.format(object_dict))
@@ -362,7 +369,8 @@ def autoupdate_main():
             result = DB.coll.count_documents(object_dict)
             if result < 1 and val['isLive']:
                 # Ignore if in the list
-                if DB.ignore_list.count_documents(object_dict) and not FORCE_RERUN:
+                object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                if DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
                     bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
                     continue
                 logger.debug('New test detected {}'.format(object_dict))
