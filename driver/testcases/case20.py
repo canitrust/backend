@@ -20,11 +20,11 @@ class Case20(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        webDriver.get("https://cache3.test-canitrust.com")
+        webDriver.get("https://cache3.test-canitrust.com/cache3.cgi")
         WebDriverWait(webDriver, 15).until(EC.presence_of_element_located((By.TAG_NAME, 'span')))
         html1 = webDriver.find_element_by_tag_name('span')
         randomString1 = html1.text
-        webDriver.get("https://cache3.test-canitrust.com")
+        webDriver.get("https://cache3.test-canitrust.com/cache3.cgi")
         WebDriverWait(webDriver, 15).until(EC.presence_of_element_located((By.TAG_NAME, 'span')))
         html2 = webDriver.find_element_by_tag_name('span')
         randomString2 = html2.text     
