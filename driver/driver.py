@@ -45,16 +45,14 @@ def start_infra():
                     raise Exception('Waiting for BrowserStack timeout > 30 secs')
             logger.debug('Browserstack-local instance is running...')
         # Unlock dns_server and test_app containers
-        os.system('cat /driver/config/container.lock')
         with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
             lock.write('false')
-        os.system('cat /driver/config/container.lock')
         logger.debug('Wait for dns_server and test_app containers up...')
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
             time.sleep(3)
-            if (time.time() - start_containers_time) > 180:
-                raise Exception('Waiting for dns_server and test_app containers up timeout > 180 secs')
+            if (time.time() - start_containers_time) > 60:
+                raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
         # Update DNS server
         os.system('echo "nameserver {}" > /etc/resolv.conf'.format(socket.gethostbyname('dns_server')))
         logger.debug('Dns_server and test_app containers already up...')
