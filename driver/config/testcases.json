@@ -274,6 +274,32 @@
       }
     ]
   },
+  "17": {
+    "testNumber": 17,
+    "title": "Cookie life time: max-age vs. expires",
+    "description": "The life time of a cookie can be set via the \"max-age\" or the \"expires\" attribute. What if both methods are used? Which definition is considered by the browser?",
+    "date_created": "01/11/2019",
+    "tagNums": [
+      2,
+      7
+    ],
+    "path": "max-age-vs-expires",
+    "question": "What if a cookie is set with max-age and expires?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "Max-age"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "Expires"
+      }
+      {
+        "ans_id": 0,
+        "ans_desc": "Error in test execution"
+      }
+    ]
+  },
   "20": {
     "testNumber": 20,
     "title": "no-store in Cache-Control Declaration",
