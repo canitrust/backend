@@ -1,7 +1,5 @@
 pymongo==3.8.0
 python-dotenv==0.10.2
 selenium==3.14.0
-beautifulsoup4==4.4.0
 requests==2.22.0
-browserstack-local==1.2.2
 PTable==0.9.2
