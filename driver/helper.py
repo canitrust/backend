@@ -94,7 +94,7 @@ class Mongo:
         self.client = pymongo.MongoClient(constant.DB_URL)
         self.db = self.client[constant.DB_DATABASE]
         self.coll = self.db[constant.DB_COLL]
-        self.ignore_list = self.db[constant.DB_IGNORE_LIST]
+        self.failed_tests = self.db[constant.DB_FAILED_TESTS]
 
     def close(self):
         self.client.close()

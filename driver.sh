@@ -1,6 +1,7 @@
 #!/bin/bash
 
 unlock_containers() {
+  echo true > ./driver/config/container.lock
   while true; do
       lock=$(grep false ./driver/config/container.lock)
       if [ "$lock" == "false" ]; then
@@ -36,5 +37,12 @@ while true; do
 done
 unlock_containers &
 docker exec -i $driver python /driver/driver.py "$@"
-echo "Driver DONE"
+exit_status=$?
+if [ $exit_status -ne 0 ]; then
+    echo "Something wrong with Driver"
+else
+  echo "Driver DONE"
+fi
 kill_docker
+exit $exit_status
+

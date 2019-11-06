@@ -26,3 +26,4 @@
 test_app/src/certs/
 **/*.pyc
 **/*.log
+driver/config/container.lock
