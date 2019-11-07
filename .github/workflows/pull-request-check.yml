@@ -1,6 +1,9 @@
 name: Pull Request Check 
 # This workflow is triggered on pull requests to the repository.
-on: [pull_request]
+on:
+  pull_request:
+    branches:    
+      - master
 
 jobs:
   run-tests:
