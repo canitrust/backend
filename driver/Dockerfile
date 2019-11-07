@@ -1,15 +1,16 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-# install testdriver
+# Customize sources for apt-get
+RUN  echo "deb http://archive.ubuntu.com/ubuntu bionic main universe\n" > /etc/apt/sources.list \
+  && echo "deb http://archive.ubuntu.com/ubuntu bionic-updates main universe\n" >> /etc/apt/sources.list \
+  && echo "deb http://security.ubuntu.com/ubuntu bionic-security main universe\n" >> /etc/apt/sources.list
+
 RUN apt-get -y update \
-  && apt-get -y install flex bison gcc make automake firefox python3-pip python3-dev
+  && apt-get install -y --no-install-recommends firefox firefox-geckodriver python3-pip python3-minimal python3-setuptools \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/* 
 
-RUN apt-get install firefox-geckodriver
-#setup python3
-RUN cd /usr/local/bin \
-  && ln -s /usr/bin/python3 python \
-  && pip3 install --upgrade pip
-
-# install requirements
 ADD requirements.txt ./
+
+RUN ln -s /usr/bin/python3 /usr/local/bin/python && pip3 install --upgrade pip
+
 RUN pip3 install -r ./requirements.txt

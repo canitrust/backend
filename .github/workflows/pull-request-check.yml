@@ -1,0 +1,18 @@
+name: Pull Request Check 
+# This workflow is triggered on pull requests to the repository.
+on:
+  pull_request:
+    branches:    
+      - master
+
+jobs:
+  run-tests:
+    name: Run Live Tests
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: run all live tests locally
+        run: ./driver.sh runlocal --all_live --catch_fail

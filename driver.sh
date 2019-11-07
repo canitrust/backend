@@ -3,10 +3,14 @@
 unlock_containers() {
   echo true > ./driver/config/container.lock
   while true; do
-      lock=$(grep false ./driver/config/container.lock)
-      if [ "$lock" == "false" ]; then
+      lock=$(grep -E "browserstack|local" ./driver/config/container.lock)
+      if [ "$lock" == "browserstack" ]; then
         docker-compose down  >> /dev/null 2>&1
         docker-compose up -d --build >> /dev/null 2>&1
+        break
+      elif [ "$lock" == "local" ]; then
+        docker-compose -f docker-compose.local.yml down  >> /dev/null 2>&1
+        docker-compose -f docker-compose.local.yml up -d --build >> /dev/null 2>&1
         break
       fi
   done
