@@ -23,12 +23,11 @@ kill_docker() {
 
 
 docker-compose -f docker-compose.driver.yml down > /dev/null 2>&1
-SECONDS=0
 docker-compose -f docker-compose.driver.yml up -d --build
-
+SECONDS=0
 while true; do
-  if [ "$SECONDS" -gt "180" ]; then
-    echo "Starting driver FAILED (waited for 3 minutes)"
+  if [ "$SECONDS" -gt "60" ]; then
+    echo "Starting driver FAILED (waited for 1 minute)"
     exit 1
   fi
   sleep 2
