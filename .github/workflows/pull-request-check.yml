@@ -1,4 +1,4 @@
-name: PR Validation 
+name: Pull Request Check 
 # This workflow is triggered on pull requests to the repository.
 on: [pull_request]
 
