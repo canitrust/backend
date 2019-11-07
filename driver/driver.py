@@ -119,9 +119,10 @@ def run_local_main():
                 local_tests_ok.append(local_test)
             else:
                 local_tests_fail.append(local_test)
-                # Send output to Github actions
-                # https://help.github.com/en/github/automating-your-workflow-with-github-actions/development-tools-for-github-actions#loggin-commands
-                if GITHUB_ACTIONS: os.system('echo "::error::Test case {} failed"'.format(local_test))
+                # Exit on failure
+                if CATCH_FAIL:
+                    logger.error("Driver stops - Fix testcase {} and try again".format(local_test))
+                    exit(1)
             results.append(result)
         logger.info('Local tests running OK: {}'.format(local_tests_ok))
         logger.info('Local tests running Fail: {}'.format(local_tests_fail))
@@ -276,10 +277,10 @@ def runlocal_main():
 
 def runlocal_main_wrapper(args):
     logger.info('Run Test Cases')
-    global TESTCASES, TESTENV, DRY_RUN, GITHUB_ACTIONS
+    global TESTCASES, TESTENV, DRY_RUN, CATCH_FAIL
     TESTENV = 'local'
     DRY_RUN = args.dry_run if args.dry_run else False
-    GITHUB_ACTIONS = args.github_actions if args.github_actions else False
+    CATCH_FAIL = args.catch_fail if args.catch_fail else False
     logger.setLevel(logging.DEBUG)
     get_config()
     if args.testcases: TESTCASES = args.testcases
@@ -432,7 +433,7 @@ def parser_init():
     parser_runlocal.add_argument('-t', '--testcases', type=lambda s: [str(item) for item in s.split(',')], help='run test cases, separate by comma')
     parser_runlocal.add_argument('--all', action='store_true', help="Run all test cases")
     parser_runlocal.add_argument('--all_live', action='store_true', help="Run all (live) test cases")
-    parser_runlocal.add_argument('--github_actions', action='store_true', help="For running on github actions")
+    parser_runlocal.add_argument('--catch_fail', action='store_true', help="Exit on failure")
     parser_runlocal.add_argument('-d', '--dry_run', action='store_true', help="Dry run")
     parser_runlocal.set_defaults(func=runlocal_main_wrapper)
     parser_runbs = subparsers.add_parser('runbs')
