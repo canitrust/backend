@@ -14,7 +14,7 @@ import sys
 import logging
 import pymongo
 from config import constant
-from browserstack.local import Local
+import subprocess
 from prettytable import PrettyTable
 
 def pretty_output(results):
@@ -73,20 +73,31 @@ class Logger:
 
 class BS:
     def __init__(self):
-        # creates an instance of Local
-        bs_local = Local()
-        bs_local_args = {"key": constant.API_KEY, "forcelocal": "true", "binarypath": os.path.abspath(os.path.dirname(__file__)) + '/BrowserStackLocal'}
-
-        # starts the Local instance with the required arguments
-        bs_local.start(**bs_local_args)
-        self.bs_local = bs_local
+        # creates an instance of browserstack Local
+        self.key = constant.API_KEY
+        self.binary_path = os.path.abspath(os.path.dirname(__file__)) + '/BrowserStackLocal'
+        self.logfile = os.path.abspath(os.path.dirname(__file__)) + '/bs-local.log'
+        self.proc = subprocess.Popen([self.binary_path, '-d', 'start', '-logFile', self.logfile, self.key, '-forcelocal'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (out, err) = self.proc.communicate()
+        os.system('echo "" > "'+ self.logfile +'"')
+          
+    def stop(self):
+        try:
+            proc = subprocess.Popen([self.binary_path, '-d', 'stop'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (out, err) = proc.communicate()
+        except Exception as e:
+            return
 
     def running(self):
-        return self.bs_local.isRunning()
-
-    # stop the Local instance
-    def stop(self):
-        self.bs_local.stop()
+        with open(self.logfile, 'r') as logfile:
+            line = logfile.readline()
+            while line:  
+                if 'Error:' in line.strip():
+                    raise Exception(line)
+                elif line.strip() == 'Press Ctrl-C to exit':
+                    return True
+                line = logfile.readline()
+        return False
 
 
 class Mongo:

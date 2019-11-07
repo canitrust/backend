@@ -184,7 +184,7 @@ class TestCase:
         self.browser = "Firefox/Gecko"
         self.version = "latest"
         self.platform = "Ubuntu(Linux)"
-        self.os_version = "16.04"
+        self.os_version = "18.04"
         try:
             # spawn a local gecko driver
             webDriver = TestCase.spawnWebDriver()
@@ -212,9 +212,17 @@ class TestCase:
             logger.debug('Result:{}'.format(data))
             return data
 
+
+    def respawn(self):
+        if self.browser == "Firefox/Gecko":
+            return TestCase.spawnWebDriver()
+        else:
+            return TestCase.testSpawnBS(self.platform, self.os_version, self.browser, self.version, self.key, self.user)
+
+
     #spawn web driver
     def spawnWebDriver():
-        capabilities = DesiredCapabilities.FIREFOX
+        capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities['marionette'] = True
         #capabilities['loggingPrefs'] = { 'browser':'ALL' }
         options = Options()

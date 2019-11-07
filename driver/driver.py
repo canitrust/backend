@@ -45,8 +45,11 @@ def start_infra():
                     raise Exception('Waiting for BrowserStack timeout > 30 secs')
             logger.debug('Browserstack-local instance is running...')
         # Unlock dns_server and test_app containers
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
-            lock.write('false')
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('browserstack')
+        elif TESTENV == 'local':
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('local')
         logger.debug('Wait for dns_server and test_app containers up...')
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
@@ -115,6 +118,10 @@ def run_local_main():
                 local_tests_ok.append(local_test)
             else:
                 local_tests_fail.append(local_test)
+                # Exit on failure
+                if CATCH_FAIL:
+                    logger.error("Driver stops - Fix testcase {} and try again".format(local_test))
+                    exit(1)
             results.append(result)
         logger.info('Local tests running OK: {}'.format(local_tests_ok))
         logger.info('Local tests running Fail: {}'.format(local_tests_fail))
@@ -269,12 +276,22 @@ def runlocal_main():
 
 def runlocal_main_wrapper(args):
     logger.info('Run Test Cases')
-    global TESTCASES, TESTENV, DRY_RUN
-    TESTCASES = args.testcases
+    global TESTCASES, TESTENV, DRY_RUN, CATCH_FAIL
     TESTENV = 'local'
     DRY_RUN = args.dry_run if args.dry_run else False
+    CATCH_FAIL = args.catch_fail if args.catch_fail else False
     logger.setLevel(logging.DEBUG)
     get_config()
+    if args.testcases: TESTCASES = args.testcases
+    elif args.all:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            TESTCASES.append(key)        
+    elif args.all_live:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            if dataJson[key]['isLive']:
+                TESTCASES.append(key)
     runlocal_main()
 
 def runbs_bs_list(bs_tests):
@@ -413,6 +430,9 @@ def parser_init():
     parser_run.set_defaults(func=run_main_wrapper)
     parser_runlocal = subparsers.add_parser('runlocal')
     parser_runlocal.add_argument('-t', '--testcases', type=lambda s: [str(item) for item in s.split(',')], help='run test cases, separate by comma')
+    parser_runlocal.add_argument('--all', action='store_true', help="Run all test cases")
+    parser_runlocal.add_argument('--all_live', action='store_true', help="Run all (live) test cases")
+    parser_runlocal.add_argument('--catch_fail', action='store_true', help="Exit on failure")
     parser_runlocal.add_argument('-d', '--dry_run', action='store_true', help="Dry run")
     parser_runlocal.set_defaults(func=runlocal_main_wrapper)
     parser_runbs = subparsers.add_parser('runbs')
