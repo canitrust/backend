@@ -41,7 +41,8 @@
     },
     "11": {
         "modulename": "case11",
-        "filename": "case11.py"
+        "filename": "case11.py",
+        "isLive": true
     },
     "12": {
         "modulename": "case12",

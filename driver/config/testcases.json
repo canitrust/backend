@@ -161,6 +161,33 @@
       }
     ]
   },
+  "11": {
+    "testNumber": 11,
+    "title": "Secure cookies set via JavaScript by plain HTTP sources",
+    "description": "What happens if JavaScript loaded from an HTTP source tries to set a cookie with the attribute \"secure\"?",
+    "detailedDescription": "# Introduction\n[Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) are key-value pairs which the server can set in the calling browser, like so:\n``` \nSet-Cookie: foo=bar; secure\n```\nIn the above example, the server sets the cookie ``foo`` with the value ``bar`` and sets the secure flag. This flag prevents the browser from sending this cookie to web sites which are not being called via HTTPS and therefore prevents the cookie from being sent unencrypted. This is an important security function to prevent [man-in-the-middle attacks](https://www.owasp.org/index.php/Man-in-the-middle_attack).\n\nIf a request is made to a server, the browser will automatically send all cookies stored for this [origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin). This is particularly usefull for [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies) where cookies will be used to store session identifiers (session IDs). This behaviour makes such session cookies highly security relevant.\n\n# Problem\nSince the secure flag prevents browsers from sending the respective cookie to non-HTTPS sites it should also not possible for such sites to set secure cookies. Imagine the following HTML code being sent by a non-HTTPS server, e.g. ``http://www.canitrust.in``:\n```\n<html>\n  <head>[...]</head>\n  <body>\n    <script>\n      document.cookie = \"foo=bar; secure\";\n    </script>\n  </body>\n</html>\n```\nIn this example, the web site tries to set the cookie ``foo`` with the value ``bar`` and with the ``secure`` flag set. The browser should not accept this cookie as the site was loaded from a non-HTTPS server (``http://www.canitrust.in``).\n\n# How does the browser react?\nWhen the browser receives JavaScript code from a non-HTTPS site that tries to set secure cookies, the following results are possible:\n\n1. The browser does not allow the setting secure cookies through JavaScript loaded from a non-HTTPS site. The cookie declaration is ignored. This is the correct and safe implementation.\n2. The browser allows setting secure cookies through JavaScript loaded from a non-HTTPS site. This could lead to security vulnerabilities and should be avoided.\n\nThis testcase tests which browser chooses which of these options.",
+    "date_created": "06/11/2019",
+    "tagNums": [
+      2,
+      10
+    ],
+    "path": "secure-cookies-set-via-JS-from-HTTP-source",
+    "question": "Can plain HTTP sources set secure cookies via JavaScript?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No, secure cookie is not set."
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "Yes, secure cookie is set."
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Error in test execution."
+      }
+    ]
+  },
   "13": {
     "testNumber": 13,
     "title": "Contradicting CSP and X-Frame-Options Headers",
