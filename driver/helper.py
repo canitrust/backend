@@ -77,7 +77,7 @@ class BS:
         self.key = constant.API_KEY
         self.binary_path = os.path.abspath(os.path.dirname(__file__)) + '/BrowserStackLocal'
         self.logfile = os.path.abspath(os.path.dirname(__file__)) + '/bs-local.log'
-        self.proc = subprocess.Popen([self.binary_path, '-d', 'start', '-logFile', self.logfile, self.key, '-forcelocal'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.proc = subprocess.Popen([self.binary_path, '-d', 'start', '-logFile', self.logfile, self.key, '-forcelocal', '--verbose','3'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (out, err) = self.proc.communicate()
         os.system('echo "" > "'+ self.logfile +'"')
           
