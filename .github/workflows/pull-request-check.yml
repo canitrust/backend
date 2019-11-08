@@ -6,6 +6,7 @@ on:
       - master
 
 jobs:
+
   run-tests:
     name: Run Live Tests
     runs-on: ubuntu-18.04
@@ -14,5 +15,7 @@ jobs:
         uses: actions/checkout@v1
         with:
           fetch-depth: 1
+      - name: basic checks
+        run: python3 ./driver/driver_test.py -v
       - name: run all live tests locally
         run: ./driver.sh runlocal --all_live --catch_fail
