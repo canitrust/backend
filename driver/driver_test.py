@@ -1,7 +1,6 @@
 import unittest
 import os
 import json
-import importlib
 
 class DriverTest(unittest.TestCase):
  
@@ -15,7 +14,7 @@ class DriverTest(unittest.TestCase):
 
         with open(os.path.abspath(os.path.dirname(__file__)) + '/config/testcases.json', "r") as read_it:
             testcases = json.load(read_it)
-            
+
         with open(os.path.abspath(os.path.dirname(__file__)) + '/config/tags.json', "r") as read_it:
             tags = json.load(read_it)
         
