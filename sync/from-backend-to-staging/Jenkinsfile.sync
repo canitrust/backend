@@ -20,7 +20,7 @@ node('Dev') {
     ]) {
       def DATABASE_NAME = 'cit-stg'
       def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${DATABASE_NAME}"
-      dir('sync') {
+      dir('sync/from-backend-to-staging') {
         stage('Connect to Staging DB - get latest update timestamp') {
           sh returnStdout: true, script: "mongoexport --uri ${MONGO_STAGING_URI} --collection testresults --sort '{date_lasttest:-1}' --fields date_lasttest --limit 1 --out ./latest_testresult.json"
           try {
