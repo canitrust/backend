@@ -1,4 +1,5 @@
 import json
+import sys
 
 BASE_PATH = '../../driver/config/'
 MAP_FILE = '%smap.json'%BASE_PATH
@@ -18,7 +19,8 @@ with open(MAP_FILE) as jsonMapFile, open(TAGS_FILE) as jsonTagsFile, open(TESTCA
         print('Extract testcase number %s' % testNumber)
         testcases.append(jsonTestcases[testNumber])
       else:
-        print('There is no description for testcase number %s' % testNumber)
+        print('Error: No description for testcase number %s' % testNumber)
+        sys.exit(1)
 
   # Write tags to json array file
   with open('testcases.db.json', 'w') as testcasesOutFile:

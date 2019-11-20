@@ -1,0 +1,101 @@
+node('Dev') {
+
+  def DATABASE_NAME = 'cit-stg'
+  def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${DATABASE_NAME}"
+  def MONGO_BACKEND_URI = 'mongodb://localhost:27017/Backend'
+  
+  stage('Keep Backend repository up to date') {
+    dir('backend') {
+      def repo = 'backend'
+      def gitBranch = 'master'
+      def gitUrl = 'https://github.com/canitrust/backend.git'
+      try {
+        deleteDir()
+      } catch (err) {
+        echo "Caught: ${err}"
+      }
+      git branch: gitBranch, url: gitUrl
+    }
+  }
+
+  stage('Extract to json array data') {
+    dir('backend/sync') {
+      // For each test case in map.json that is set to "isLive": true, the corresponding test case content from testcases.json is synced to the staging database
+      // All tags in tags.json are synced to the staging database
+      sh returnStdout: true, script: "python scripts/extractDataScript.py"
+    }
+  }
+    
+  stage('Extract latest test results from Backend') {
+    withCredentials([
+      usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
+      string(credentialsId: devMongoUrl, variable: 'MONGO_URL')
+    ]) {
+      def lastUpdate = ''
+      def dateQuery = ''
+      def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
+
+      dir('backend/sync') {
+        echo "Connect to Staging DB and get latest update timestamp"
+        sh returnStdout: true, script: "mongoexport --uri ${MONGO_STAGING_URI} --collection testresults --sort '{date_lasttest:-1}' --fields date_lasttest --limit 1 --out ./latest_testresult.json"
+        
+        try {
+          sh returnStdout: true, script: "cat ./latest_testresult.json | grep -E '[0-9T:.-]+Z' -o > ./latest_update_timestamp.txt"
+        } catch(err) {
+          echo "Caught: ${err}"
+        }
+
+        script {
+          echo "Try to read latest update timestamp"
+          lastUpdate = readFile('./latest_update_timestamp.txt')
+          if (lastUpdate) {
+            echo "Latest update timestamp: ${lastUpdate}"
+            lastUpdate = lastUpdate.trim()
+            dateQuery = "--query '{date: {\$gt: new Date(\"${lastUpdate}\")}}'"
+          } else {
+            echo "Staging DB does not have any testresult"
+          }
+        }
+
+        echo "Find all entries since latest timestamp"
+        sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{date:1}' --out ./dataLine.json"
+
+        echo "Convert entries to Frontend DB format" 
+        sh returnStdout: true, script: "python3 scripts/translate.py dataLine.json"
+      }
+    }
+  }
+
+  stage('Test: Basic data completeness') {
+    dir('backend/sync') {
+      echo "Running basic completeness tests for test results"
+    }
+  }
+
+  stage('Update staging DB with new data') {
+    dir('backend/sync') {
+      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testcases --drop --jsonArray testcases.db.json"
+      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection tags --drop --jsonArray tags.db.json"
+
+      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --mode 'upsert' --upsertFields 'testNumber','browser','browserVer'"
+    }
+  }
+
+  stage('Test: Data completeness on Staging') {
+    dir('backend/sync') {
+      echo "Running data completeness tests for test results on staging DB"
+    }
+  }
+
+  stage('Test: UI tests on Staging') {
+    dir('backend/sync') {
+      echo "Running UI tests on staging"
+    }
+  }
+
+  try {
+    cleanWs()
+  } catch (err) {
+    echo "Caught: ${err}"
+  }
+}
