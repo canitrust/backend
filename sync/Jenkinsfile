@@ -67,8 +67,12 @@ node('Dev') {
   }
 
   stage('Test: Basic data completeness') {
-    dir('backend/sync') {
+    dir('backend/test') {
       echo "Running basic completeness tests for test results"
+      sh returnStdout: true, script: "python3 testresult_data_match_test.py"
+
+      echo "Running data completeness tests" 
+      sh returnStdout: true, script: "python3 data_completeness_test.py"
     }
   }
 

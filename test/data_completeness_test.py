@@ -6,15 +6,16 @@ class DriverTest(unittest.TestCase):
  
     def test_completeness_testcases(self):
         cases = []
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/map.json', "r") as read_it:
+        config_path = os.path.abspath(os.path.dirname(__file__)) + '/../driver/config/'
+        with open(config_path + 'map.json', "r") as read_it:
             dataJson = json.load(read_it)
         for key, value in dataJson.items():
             if dataJson[key]['isLive']: cases.append(key)
 
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/testcases.json', "r") as read_it:
+        with open(config_path + 'testcases.json', "r") as read_it:
             testcases = json.load(read_it)
 
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/tags.json', "r") as read_it:
+        with open(config_path + 'tags.json', "r") as read_it:
             tags = json.load(read_it)
         required_keys = ["testNumber", "title", "description", "detailedDescription", "date_created", "path", "question", "tagNums", "possibleAnswers"]
         for case in cases:

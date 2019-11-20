@@ -1,10 +1,11 @@
 import json
+import os
 import sys
 
-BASE_PATH = '../../driver/config/'
-MAP_FILE = '%smap.json'%BASE_PATH
-TAGS_FILE = '%stags.json'%BASE_PATH
-TESTCASES_FILE = '%stestcases.json'%BASE_PATH
+BASE_PATH = os.path.abspath(os.path.dirname(__file__) + '/../../driver/config/')
+MAP_FILE = '%s/map.json'%BASE_PATH
+TAGS_FILE = '%s/tags.json'%BASE_PATH
+TESTCASES_FILE = '%s/testcases.json'%BASE_PATH
 
 with open(MAP_FILE) as jsonMapFile, open(TAGS_FILE) as jsonTagsFile, open(TESTCASES_FILE) as jsonTestcasesFile:
   jsonMap = json.load(jsonMapFile)

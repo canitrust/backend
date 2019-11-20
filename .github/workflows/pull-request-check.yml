@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: basic tests
-        run: python3 ./driver/driver_test.py -v
+        run: python3 ./test/data_completeness_test.py -v
 
   run-tests:
     name: Run Live Tests
