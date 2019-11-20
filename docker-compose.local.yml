@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+  dns_server:
+    container_name: dns_server
+    build: dns/.
+    depends_on:
+      - test_app
+  test_app:
+    container_name: test_app
+    build:
+      context: test_app/.
+      dockerfile: local.Dockerfile

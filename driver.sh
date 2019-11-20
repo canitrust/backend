@@ -3,10 +3,14 @@
 unlock_containers() {
   echo true > ./driver/config/container.lock
   while true; do
-      lock=$(grep false ./driver/config/container.lock)
-      if [ "$lock" == "false" ]; then
+      lock=$(grep -E "browserstack|local" ./driver/config/container.lock)
+      if [ "$lock" == "browserstack" ]; then
         docker-compose down  >> /dev/null 2>&1
         docker-compose up -d --build >> /dev/null 2>&1
+        break
+      elif [ "$lock" == "local" ]; then
+        docker-compose -f docker-compose.local.yml down  >> /dev/null 2>&1
+        docker-compose -f docker-compose.local.yml up -d --build >> /dev/null 2>&1
         break
       fi
   done
@@ -17,26 +21,9 @@ kill_docker() {
   docker-compose down >> /dev/null 2>&1
 }
 
-
 docker-compose -f docker-compose.driver.yml down > /dev/null 2>&1
-SECONDS=0
-docker-compose -f docker-compose.driver.yml up -d --build
-
-while true; do
-  if [ "$SECONDS" -gt "180" ]; then
-    echo "Starting driver FAILED (waited for 3 minutes)"
-    exit 1
-  fi
-  sleep 2
-  driver=$(docker ps --filter 'status=running' --format '{{.Names}}' | grep driver)
-  echo "Waiting for driver...in ($SECONDS seconds)"
-  if [ "$driver" == "driver" ]; then
-    echo "Driver UP"
-    break
-  fi
-done
 unlock_containers &
-docker exec -i $driver python /driver/driver.py "$@"
+docker-compose -f docker-compose.driver.yml run -T driver python /driver/driver.py "$@" 
 exit_status=$?
 if [ $exit_status -ne 0 ]; then
     echo "Something wrong with Driver"
