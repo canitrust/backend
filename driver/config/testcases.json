@@ -301,6 +301,33 @@
       }
     ]
   },
+  "17": {
+    "testNumber": 17,
+    "title": "max-age vs. expires in Cookies",
+    "description": "If a Set-Cookie header has both the max-age as well as the expires attribute set, which one is chosen to determine the life time of the cookie?",
+    "date_created": "15/09/2019",
+    "tagNums": [
+      2,
+      14,
+      15
+    ],
+    "path": "max-age-and-expires-in-cookies",
+    "question": "Which attribute defines the cookie life time if both max-age and expires are set?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "max-age"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "expires"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Non-deterministic browser behavior"
+      }
+    ]
+  },
   "20": {
     "testNumber": 20,
     "title": "no-store in Cache-Control Declaration",
