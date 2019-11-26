@@ -1,7 +1,7 @@
 node('Dev') {
 
   def DATABASE_NAME = 'cit-stg'
-  def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${DATABASE_NAME}"
+
   def MONGO_BACKEND_URI = 'mongodb://localhost:27017/Backend'
   
   stage('Keep Backend repository up to date') {
@@ -31,6 +31,7 @@ node('Dev') {
       usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
       string(credentialsId: devMongoUrl, variable: 'MONGO_URL')
     ]) {
+      def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${DATABASE_NAME}"
       def lastUpdate = ''
       def dateQuery = ''
       def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
@@ -94,6 +95,12 @@ node('Dev') {
   stage('Test: UI tests on Staging') {
     dir('backend/sync') {
       echo "Running UI tests on staging"
+    }
+  }
+
+  stage('Sync to Prod') {
+    dir('backend/sync') {
+      echo "Syncing all data to production"
     }
   }
 
