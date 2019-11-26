@@ -1,13 +1,12 @@
 node('Dev') {
 
-  def DATABASE_NAME = 'cit-stg'
-
-  def MONGO_BACKEND_URI = 'mongodb://localhost:27017/Backend'
+  def STAGING_DATABASE_NAME = 'cit-stg'
+  def PRODUCTION_DATABASE_NAME = 'cit-prod'
   
   stage('Keep Backend repository up to date') {
     dir('backend') {
       def repo = 'backend'
-      def gitBranch = 'master'
+      def gitBranch = 'feature/automatic-sync'
       def gitUrl = 'https://github.com/canitrust/backend.git'
       try {
         deleteDir()
@@ -25,17 +24,19 @@ node('Dev') {
       sh returnStdout: true, script: "python scripts/extractDataScript.py"
     }
   }
-    
-  stage('Extract latest test results from Backend') {
-    withCredentials([
-      usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
-      string(credentialsId: devMongoUrl, variable: 'MONGO_URL')
-    ]) {
-      def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${DATABASE_NAME}"
-      def lastUpdate = ''
-      def dateQuery = ''
-      def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
 
+  withCredentials([
+    usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
+    usernamePassword(credentialsId: 'mongo-prod-backup', usernameVariable: 'MONGO_PRODUCTION_USER', passwordVariable: 'MONGO_PRODUCTION_PASS'),
+    string(credentialsId: 'devMongoUrl', variable: 'MONGO_URL')
+  ]) {
+    def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${STAGING_DATABASE_NAME}"
+    def MONGO_PRODUCTION_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${PRODUCTION_DATABASE_NAME}"
+    def lastUpdate = ''
+    def dateQuery = ''
+    def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
+
+    stage('Extract latest test results from Backend') {
       dir('backend/sync') {
         echo "Connect to Staging DB and get latest update timestamp"
         sh returnStdout: true, script: "mongoexport --uri ${MONGO_STAGING_URI} --collection testresults --sort '{date_lasttest:-1}' --fields date_lasttest --limit 1 --out ./latest_testresult.json"
@@ -65,42 +66,47 @@ node('Dev') {
         sh returnStdout: true, script: "python3 scripts/translate.py dataLine.json"
       }
     }
-  }
 
-  stage('Test: Basic data completeness') {
-    dir('backend/test') {
-      echo "Running basic completeness tests for test results"
-      sh returnStdout: true, script: "python3 testresult_data_match_test.py"
+    stage('Test: Basic data completeness') {
+      dir('backend/test') {
+        echo "Running basic completeness tests for new test results"
+        sh returnStdout: true, script: "python3 testresult_data_match_test.py"
 
-      echo "Running data completeness tests" 
-      sh returnStdout: true, script: "python3 data_completeness_test.py"
+        echo "Running data completeness tests"
+        sh returnStdout: true, script: "python3 data_completeness_test.py"
+      }
     }
-  }
 
-  stage('Update staging DB with new data') {
-    dir('backend/sync') {
-      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testcases --drop --jsonArray testcases.db.json"
-      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection tags --drop --jsonArray tags.db.json"
+    stage('Update staging DB with new data') {
+      dir('backend/sync') {
+        sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testcases --drop --jsonArray testcases.db.json"
+        sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection tags --drop --jsonArray tags.db.json"
 
-      sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --mode 'upsert' --upsertFields 'testNumber','browser','browserVer'"
+        sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --jsonArray --mode 'upsert' --upsertFields 'testNumber','browser','browserVer'"
+      }
     }
-  }
 
-  stage('Test: Data completeness on Staging') {
-    dir('backend/sync') {
-      echo "Running data completeness tests for test results on staging DB"
+    stage('Test: Data completeness on Staging') {
+      dir('backend/test') {
+        echo "Running data completeness tests for test results on staging DB"
+        sh returnStdout: true, script: "python3 data_stg_completeness_test.py ${MONGO_STAGING_URI} ${STAGING_DATABASE_NAME}"
+      }
     }
-  }
 
-  stage('Test: UI tests on Staging') {
-    dir('backend/sync') {
-      echo "Running UI tests on staging"
+    stage('Test: UI tests on Staging') {
+      dir('backend/test') {
+        echo "Running UI tests on staging"
+      }
     }
-  }
 
-  stage('Sync to Prod') {
-    dir('backend/sync') {
-      echo "Syncing all data to production"
+    stage('Sync to Prod') {
+      dir('backend/sync') {
+        echo "Syncing all data to production"
+        // echo "Dump the staging DB"
+        // sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ${STAGING_DATABASE_NAME}"
+        // echo "Imports data to the production DB"
+        // sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --ssl --drop ${STAGING_DATABASE_NAME}"
+      }
     }
   }
 

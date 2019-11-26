@@ -74,7 +74,8 @@ if __name__ == '__main__':
     inputEntity = inputIgnored = inputIsBeta = outputNonBeta = outputBeta = outputBetaFilteredOut = 0
 
     # Readline input file
-    with open(sys.argv[1], "r") as inputFile, open("./translated.json","w") as outputFile:
+    outputArray = []
+    with open(sys.argv[1], "r") as inputFile:
         versionIdentityList = VersionIdentityList()
         betaTempoList = []
         for aLine in inputFile:
@@ -91,17 +92,20 @@ if __name__ == '__main__':
             else:
                 outputNonBeta += 1
                 versionIdentityList.memorize(aResult)
-                outputFile.write(json.dumps(aResult.translate()) + "\n")
+                outputArray.append(aResult.translate())
 
         # Process beta versions
         for aBetaResult in betaTempoList:
             if not versionIdentityList.find(aBetaResult):
             # this beta result does has a corresponding non-beta result
                 outputBeta += 1
-                outputFile.write(json.dumps(aBetaResult.translate()) + "\n")
+                outputArray.append(aBetaResult.translate())
             else:
                 outputBetaFilteredOut +=1
 
         # Print statistics
         print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnored}, isBeta: {inputIsBeta})")
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
+
+    with open("./translated.json","w") as outputFile:
+        outputFile.write(json.dumps(outputArray))
