@@ -41,16 +41,10 @@ class TestCase:
     def __init__(self):
         self.date = datetime.datetime.utcnow()
         self.isBeta = False
-
-    # save info to DB (param1: mongo client)
-    def saveToDB(self,mongoClient):
-        myCollection = mongoClient[constant.DB_COLL]
-        #check Beta version and bs_version
-        if(any(s in self.version for s in ('beta', 'insider preview'))):
-            self.isBeta = True
-
+    def get_data(self):
         #get dict to insert from class
-        data = {"date": self.date,
+        return {
+                    "date": self.date,
                     "testCaseNum": self.testCaseNum,
                     "result" : self.result,
                     "platform": self.platform,
@@ -61,6 +55,16 @@ class TestCase:
                     "data" : self.data,
                     "isBeta": self.isBeta
                 }
+
+
+    # save info to DB (param1: mongo client)
+    def saveToDB(self,mongoClient):
+        myCollection = mongoClient[constant.DB_COLL]
+        #check Beta version and bs_version
+        if(any(s in self.version for s in ('beta', 'insider preview'))):
+            self.isBeta = True
+
+        data = self.get_data()
         # Debug message:
         logger.debug('Result to be saved:{}'.format(data))
         #save data
@@ -117,13 +121,15 @@ class TestCase:
             # Save
             self.saveToDB(db)
             logger.debug('Running testcase - save - done')
-            return True
         except Exception as e:
             logger.error('Running testcase - Failed')
             logger.error(e)
-            return False
+            self.data = "Failed"
+            self.result = "Failed"
         finally:
             webDriver.quit()
+            data = self.get_data()
+            return data
     
     # Run the testcase against a specific browser version
     def runnotsave(self, platform, osversion, browser, version, key, user):
@@ -157,28 +163,17 @@ class TestCase:
             # Evaluate the raw data. An evaluate function must be defined in each testcase script
             self.evaluate()
             logger.debug('Running testcase - evaluate - done')
-            # Debug message:
-            #get dict to insert from class
-            data = {"date": self.date,
-                    "testCaseNum": self.testCaseNum,
-                    "result" : self.result,
-                    "platform": self.platform,
-                    "browser": self.browser,
-                    "version": self.version,
-                    "os_version":self.os_version,
-                    "elapsedTime": self.elapsedTime,
-                    "data" : self.data,
-                    "isBeta": self.isBeta
-            }
-            logger.debug('Result:{}'.format(data))
-            return True
         except Exception as e:
             logger.error('Running testcase - Failed')
             logger.error(e)
-            return False
+            self.data = "Failed"
+            self.result = "Failed"
         finally:
             webDriver.quit()
-
+            data = self.get_data()
+            # Debug message:
+            logger.debug('Result:{}'.format(data))
+            return data
     def runLocal(self):
         """ Run the testcase against a local Firefox(geckodriver) 
             geckodriver: version 0.24.0
@@ -189,7 +184,7 @@ class TestCase:
         self.browser = "Firefox/Gecko"
         self.version = "latest"
         self.platform = "Ubuntu(Linux)"
-        self.os_version = "16.04"
+        self.os_version = "18.04"
         try:
             # spawn a local gecko driver
             webDriver = TestCase.spawnWebDriver()
@@ -206,31 +201,28 @@ class TestCase:
             # Evaluate the raw data. An evaluate function must be defined in each testcase script
             self.evaluate()
             logger.debug('Running testcase - evaluate - done')
-            #get dict to insert from class
-            data = {"date": self.date,
-                    "testCaseNum": self.testCaseNum,
-                    "result" : self.result,
-                    "platform": self.platform,
-                    "browser": self.browser,
-                    "version": self.version,
-                    "os_version":self.os_version,
-                    "elapsedTime": self.elapsedTime,
-                    "data" : self.data,
-                    "isBeta": self.isBeta
-            }
-            logger.debug('Result:{}'.format(data))
-            return True
         except Exception as e:
             logger.debug('Running testcase - Failed')
             logger.error(e)
-            return False
+            self.data = "Failed"
+            self.result = "Failed"
         finally:
             webDriver.quit()
+            data = self.get_data()
+            logger.debug('Result:{}'.format(data))
+            return data
+
+
+    def respawn(self):
+        if self.browser == "Firefox/Gecko":
+            return TestCase.spawnWebDriver()
+        else:
+            return TestCase.testSpawnBS(self.platform, self.os_version, self.browser, self.version, self.key, self.user)
 
 
     #spawn web driver
     def spawnWebDriver():
-        capabilities = DesiredCapabilities.FIREFOX
+        capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities['marionette'] = True
         #capabilities['loggingPrefs'] = { 'browser':'ALL' }
         options = Options()

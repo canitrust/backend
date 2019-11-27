@@ -14,8 +14,14 @@ import sys
 import logging
 import pymongo
 from config import constant
-from browserstack.local import Local
+import subprocess
+from prettytable import PrettyTable
 
+def pretty_output(results):
+    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Result", "Data"])
+    for result in results:
+        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
+    return pretty_output.get_string(sortby="Case #")
 
 def get_browser_support(bs_user, bs_key):
     logger = Logger(__name__).logger
@@ -67,20 +73,31 @@ class Logger:
 
 class BS:
     def __init__(self):
-        # creates an instance of Local
-        bs_local = Local()
-        bs_local_args = {"key": constant.API_KEY, "forcelocal": "true", "binarypath": os.path.abspath(os.path.dirname(__file__)) + '/BrowserStackLocal'}
-
-        # starts the Local instance with the required arguments
-        bs_local.start(**bs_local_args)
-        self.bs_local = bs_local
+        # creates an instance of browserstack Local
+        self.key = constant.API_KEY
+        self.binary_path = os.path.abspath(os.path.dirname(__file__)) + '/BrowserStackLocal'
+        self.logfile = os.path.abspath(os.path.dirname(__file__)) + '/bs-local.log'
+        self.proc = subprocess.Popen([self.binary_path, '-d', 'start', '-logFile', self.logfile, self.key, '-forcelocal', '--verbose','3'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (out, err) = self.proc.communicate()
+        os.system('echo "" > "'+ self.logfile +'"')
+          
+    def stop(self):
+        try:
+            proc = subprocess.Popen([self.binary_path, 'stop'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            (out, err) = proc.communicate()
+        except Exception as e:
+            return
 
     def running(self):
-        return self.bs_local.isRunning()
-
-    # stop the Local instance
-    def stop(self):
-        self.bs_local.stop()
+        with open(self.logfile, 'r') as logfile:
+            line = logfile.readline()
+            while line:  
+                if 'Error:' in line.strip():
+                    raise Exception(line)
+                elif line.strip() == 'Press Ctrl-C to exit':
+                    return True
+                line = logfile.readline()
+        return False
 
 
 class Mongo:
@@ -88,7 +105,7 @@ class Mongo:
         self.client = pymongo.MongoClient(constant.DB_URL)
         self.db = self.client[constant.DB_DATABASE]
         self.coll = self.db[constant.DB_COLL]
-        self.ignore_list = self.db[constant.DB_IGNORE_LIST]
+        self.failed_tests = self.db[constant.DB_FAILED_TESTS]
 
     def close(self):
         self.client.close()

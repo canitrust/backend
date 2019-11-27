@@ -30,7 +30,7 @@ class Case1(TestCase):
         second_HSTS = webDriver.current_url
         if "https" in second_HSTS:
             webDriver.close()
-            new_browser = TestCase.testSpawnBS(self.platform, self.os_version, self.browser, self.version, self.key, self.user)
+            new_browser = self.respawn()
             new_browser.get("https://ssl.test-canitrust.com")
             WebDriverWait(new_browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             new_browser.get("http://test-canitrust.com")

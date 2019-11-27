@@ -13,7 +13,7 @@ import socket
 import importlib
 import logging
 import time
-from helper import get_browser_support, BS, Logger, Mongo
+from helper import get_browser_support, BS, Logger, Mongo, pretty_output
 from config import constant
 
 logger = Logger(__name__).logger
@@ -45,8 +45,11 @@ def start_infra():
                     raise Exception('Waiting for BrowserStack timeout > 30 secs')
             logger.debug('Browserstack-local instance is running...')
         # Unlock dns_server and test_app containers
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
-            lock.write('false')
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('browserstack')
+        elif TESTENV == 'local':
+            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+                lock.write('local')
         logger.debug('Wait for dns_server and test_app containers up...')
         start_containers_time = time.time()
         while not check_connect('dns_server', 53):
@@ -108,14 +111,21 @@ def run_local_main():
         start_infra()
         local_tests_ok = []
         local_tests_fail = []
+        results = []
         for local_test in local_tests:
-            if run_test_local(local_test):
+            result = run_test_local(local_test)
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 local_tests_ok.append(local_test)
             else:
                 local_tests_fail.append(local_test)
+                # Exit on failure
+                if CATCH_FAIL:
+                    logger.error("Driver stops - Fix testcase {} and try again".format(local_test))
+                    exit(1)
+            results.append(result)
         logger.info('Local tests running OK: {}'.format(local_tests_ok))
         logger.info('Local tests running Fail: {}'.format(local_tests_fail))
-
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
     elif len(local_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
 
@@ -125,19 +135,27 @@ def run_bs_list(bs_tests):
         start_infra()
         bs_tests_ok = []
         bs_tests_fail = []
+        results = []
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
-            if run_test_bs(bs_test['info_browser'], bs_test['test_case']):
+            result = run_test_bs(bs_test['info_browser'], bs_test['test_case'])
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
-                # Remove from ignore list if sucess
-                if DB.ignore_list.count_documents(object_dict): DB.ignore_list.remove(object_dict)
+                # Remove from the list of failed tests if sucess
+                if DB.failed_tests.count_documents(object_dict): DB.failed_tests.remove(object_dict)
             else:
                 bs_tests_fail.append(bs_test)
-                # Add to ignore list for next run if not already
-                if not DB.ignore_list.count_documents(object_dict): DB.ignore_list.insert(object_dict) 
-
+                # Add to the list of failed tests for next run if not exist
+                if not DB.failed_tests.count_documents(object_dict): 
+                    object_dict.update({'retry_count': 0})
+                    DB.failed_tests.insert(object_dict) 
+                # Increment retry_count if already 
+                else:
+                    DB.failed_tests.find_one_and_update(object_dict, {'$inc': {'retry_count': 1}})
+            results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
         BS_INSTANCE.stop()
     elif len(bs_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
@@ -188,8 +206,9 @@ def run_bs_main():
                     object_dict = format_mongo_object(info_browser, case)
                     result = DB.coll.count_documents(object_dict)
                     if result < 1 and not FORCE_RERUN:
-                        # Ignore if in the list
-                        if DB.ignore_list.count_documents(object_dict):
+                        # Ignore if retry count greater than maximum
+                        object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                        if DB.failed_tests.count_documents(object_dict):
                             bs_tests_ignored.append({"info_browser": info_browser, "test_case": case})
                             continue
                         logger.debug('New test detected {}'.format(object_dict))
@@ -213,8 +232,9 @@ def run_bs_main():
                 result = DB.coll.count_documents(object_dict)
                 if result < 1 and not FORCE_RERUN:
                     # Ignore if in the list
-                    if DB.ignore_list.count_documents(object_dict):
-                        bs_tests_ignored.append({"info_browser": info_browser, "test_case": case})
+                    object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                    if DB.failed_tests.count_documents(object_dict):
+                        bs_tests_ignored.append({"info_browser": obj['info_browser'], "test_case": case})
                         continue
                     logger.debug('New test detected {}'.format(object_dict))
                     bs_tests.append(obj)
@@ -256,12 +276,22 @@ def runlocal_main():
 
 def runlocal_main_wrapper(args):
     logger.info('Run Test Cases')
-    global TESTCASES, TESTENV, DRY_RUN
-    TESTCASES = args.testcases
+    global TESTCASES, TESTENV, DRY_RUN, CATCH_FAIL
     TESTENV = 'local'
     DRY_RUN = args.dry_run if args.dry_run else False
+    CATCH_FAIL = args.catch_fail if args.catch_fail else False
     logger.setLevel(logging.DEBUG)
     get_config()
+    if args.testcases: TESTCASES = args.testcases
+    elif args.all:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            TESTCASES.append(key)        
+    elif args.all_live:
+        TESTCASES = []
+        for key, value in dataJson.items():
+            if dataJson[key]['isLive']:
+                TESTCASES.append(key)
     runlocal_main()
 
 def runbs_bs_list(bs_tests):
@@ -270,15 +300,18 @@ def runbs_bs_list(bs_tests):
         start_infra()
         bs_tests_ok = []
         bs_tests_fail = []
+        results = []
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
-            rr = run_test_bs(bs_test['info_browser'], bs_test['test_case']) if SAVE_DB else run_test_bs_notsave(bs_test['info_browser'], bs_test['test_case']) 
-            if rr:
+            result = run_test_bs(bs_test['info_browser'], bs_test['test_case']) if SAVE_DB else run_test_bs_notsave(bs_test['info_browser'], bs_test['test_case']) 
+            if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
             else:
                 bs_tests_fail.append(bs_test)
+            results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+        logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
         BS_INSTANCE.stop()
     elif len(bs_tests) > 0 and DRY_RUN:
         logger.info('DRY RUN')
@@ -353,7 +386,8 @@ def autoupdate_main():
             result = DB.coll.count_documents(object_dict)
             if result < 1 and val['isLive']:
                 # Ignore if in the list
-                if DB.ignore_list.count_documents(object_dict) and not FORCE_RERUN:
+                object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                if DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
                     bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
                     continue
                 logger.debug('New test detected {}'.format(object_dict))
@@ -396,6 +430,9 @@ def parser_init():
     parser_run.set_defaults(func=run_main_wrapper)
     parser_runlocal = subparsers.add_parser('runlocal')
     parser_runlocal.add_argument('-t', '--testcases', type=lambda s: [str(item) for item in s.split(',')], help='run test cases, separate by comma')
+    parser_runlocal.add_argument('--all', action='store_true', help="Run all test cases")
+    parser_runlocal.add_argument('--all_live', action='store_true', help="Run all (live) test cases")
+    parser_runlocal.add_argument('--catch_fail', action='store_true', help="Exit on failure")
     parser_runlocal.add_argument('-d', '--dry_run', action='store_true', help="Dry run")
     parser_runlocal.set_defaults(func=runlocal_main_wrapper)
     parser_runbs = subparsers.add_parser('runbs')
