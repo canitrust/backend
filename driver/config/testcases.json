@@ -3,6 +3,7 @@
     "testNumber": 1,
     "title": "includeSubdomains Attribute in HSTS Headers",
     "description": "How is the 'includeSubdomains' attribute interpreted in the browser? If a page 'https://foo.bar.com' sets an HSTS header with the 'includeSubdomains' attribute, what happens if the browser subsequently visits pages in the same domain using only HTTP, like 'http://sub.foo.bar.com' (a subdomain), 'http://baz.bar.com' (a different host in the same domain), 'http://bar.com' (the base domain without any hosts)? Are those pages called via HTTP or HTTPS?",
+    "detailedDescription": "# Introduction",
     "date_created": "1/17/2019",
     "tagNums": [
       4,
@@ -192,6 +193,7 @@
     "testNumber": 13,
     "title": "Contradicting CSP and X-Frame-Options Headers",
     "description": "Which policy is enforced if both a Content Security Policy and the X-Frame-Options header govern the embedding into other pages? The spec says, CSP should take precedence (https://w3c.github.io/webappsec/specs/content-security-policy/#frame-ancestors-and-frame-options).",
+    "detailedDescription": "# Introduction",
     "date_created": "05/20/2019",
     "tagNums": [
       3,
@@ -275,6 +277,7 @@
     "testNumber": 16,
     "title": "Contradicting X-Frame-Options Headers",
     "description": "Which Policy is enforced, if the server sends two contradicting X-Frame-Options headers? Alway the first or the last header set? Or does the most restrictive header have precedence?",
+    "detailedDescription": "# Introduction",
     "date_created": "10/12/2018",
     "tagNums": [
       3,
@@ -305,6 +308,7 @@
     "testNumber": 17,
     "title": "max-age vs. expires in Cookies",
     "description": "If a Set-Cookie header has both the max-age as well as the expires attribute set, which one is chosen to determine the life time of the cookie?",
+    "detailedDescription": "# Introduction",
     "date_created": "15/09/2019",
     "tagNums": [
       2,
@@ -332,6 +336,7 @@
     "testNumber": 20,
     "title": "no-store in Cache-Control Declaration",
     "description": "What effect does the header Cache-Control: no-store have? How does the browser behave if a page which sets this header is visited twice? Is the page requested a second time or is the cached version used?",
+    "detailedDescription": "# Introduction",
     "date_created": "1/17/2019",
     "tagNums": [
       5
@@ -403,6 +408,7 @@
     "testNumber": 72,
     "title": "Contradicting HSTS Headers",
     "description": "Which Policy is enforced, if the server sends two contradicting Strict-Transport-Security (HSTS) headers? Alway the first or the last header set by the server? Or does the most restrictive header have precedence?",
+    "detailedDescription": "# Introduction",
     "date_created": "07/03/2019",
     "tagNums": [
       4,
