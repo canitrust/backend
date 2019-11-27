@@ -107,5 +107,6 @@ if __name__ == '__main__':
         print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnored}, isBeta: {inputIsBeta})")
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
 
-    with open("./translated.json","w") as outputFile:
-        outputFile.write(json.dumps(outputArray))
+    if outputArray:
+        with open("./translated.json","w") as outputFile:
+            outputFile.write(json.dumps(outputArray))
