@@ -122,7 +122,7 @@
     "question": "Can JavaScript set and read httpOnly cookies?",
     "possibleAnswers": [
       {
-        "ans_id": 0,
+        "ans_id": 1,
         "ans_desc": "No"
       },
       {
@@ -130,7 +130,7 @@
         "ans_desc": "Set but not read"
       },
       {
-        "ans_id": 1,
+        "ans_id": 0,
         "ans_desc": "Yes"
       }
     ]
