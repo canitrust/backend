@@ -27,6 +27,7 @@ class DriverTest(unittest.TestCase):
       with self.subTest(case=result):
         curr_test_num = result['testNumber']
         curr_result_num = result['result']
+        self.assertIn(curr_test_num, possible_answers, 'Testcase %d is not alive or does not exist' % curr_test_num)
         # test whether each answer id in the new test results exists in the test case descriptions
         self.assertIn(curr_result_num, possible_answers[curr_test_num], 'Error in test result number: ' + str(curr_test_num))
 
