@@ -409,7 +409,8 @@
   "72": {
     "testNumber": 72,
     "title": "Contradicting HSTS Headers",
-    "description": "Which Policy is enforced, if the server sends two contradicting Strict-Transport-Security (HSTS) headers? Alway the first or the last header set by the server? Or does the most restrictive header have precedence?",
+    "description": "Which Policy is enforced, if the server sends two contradicting Strict-Transport-Security (HSTS) headers? Alway the first or the last header set by the server? Or is the result dependant on the max-age value of the header?",
+    "detailedDescription": "# Introduction\nThe [Strict-Transport-Security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) HTTP header, often called HSTS, instructs the browser how SSL/TLS should be handled for this web site, e.g.:\n``` \nStrict-Transport-Security: max-age=31536000\n```\nThe above example tells the browser a number of things:\n1. This web site must only be called via HTTPS, never via HTTP.\n2. If an HTTP connection for this web site is requested, the browser automatically upgrades to HTTPS.\n3. This setting will be stored in the browaser for 31536000 seconds or 1 year.\n\nThis header is an important defence against man-in-the-middle attacks where an attacker tries to intercept connections before the SSL encryption is active and change HTTPS links to HTTP (so-called [SSL stripping](https://moxie.org/software/sslstrip/) attacks).\n\n# Problem\nImagine the server sends two separate ``Strict-Transport-Security`` headers with contradicting ``max-age`` values like this:\n```\nGET /index.html HTTP/1.1\nHost: foo.canitrust.in\n[...]\nStrict-Transport-Security: max-age=31536000\nStrict-Transport-Security: max-age=123\n[...]\n```\nIn this example, the two ``max-age`` values greatly differ: The first value tells the browser to keep up the HSTS protection for 1 year whereas the second value only stores the HSTS setting for a bit over 2 minutes. If the browser accepted the second header, the protection would be virtually non-existant.\n\n# How does the browser react?\nWhen the browser receives such contradicting HSTS headers when loading a web site, it has the following two options:\n\n1. Only accept the last ``Strict-Transport-Security`` header received from the server and ignore any previous headers.\n2. Only accept the first ``Strict-Transport-Security`` header received from the server and ignore any headers afterwards.\n3. Only accept the ``Strict-Transport-Security`` header with the longest ``max-age`` value and ignore the rest.\n4. Only accept the ``Strict-Transport-Security`` header with the shortest ``max-age`` value and ignore the rest.\n\nAll of these options make sense to a certain degree and none of them can be considered the correct solution in our opinion. This testcase tests which browser chooses which of these options.",
     "date_created": "07/03/2019",
     "tagNums": [
       4,
@@ -420,19 +421,19 @@
     "possibleAnswers": [
       {
         "ans_id": 3,
-        "ans_desc": "The last header"
+        "ans_desc": "Always the last header"
       },
       {
         "ans_id": 4,
-        "ans_desc": "The first header"
+        "ans_desc": "Always the first header"
       },
       {
         "ans_id": 2,
-        "ans_desc": "The header with the longest max-age value (the most restrictive)"
+        "ans_desc": "Always the header with the longest max-age value"
       },
       {
         "ans_id": 5,
-        "ans_desc": "The header with the shortest max-age value (the least restrictive)"
+        "ans_desc": "Always the header with the shortest max-age value"
       },
       {
         "ans_id": 9,
