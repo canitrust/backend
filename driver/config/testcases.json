@@ -33,6 +33,27 @@
       }
     ]
   },
+  "2": {
+    "testNumber": 2,
+    "title": "HSTS Headers via plain http",
+    "description": "<TODO>",
+    "date_created": "11/28/2019",
+    "tagNums": [
+      4
+    ],
+    "path": "HSTS-via-plain-http",
+    "question": "Is the HSTS header processed if received via plain http?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      }
+    ]
+  },
   "3": {
     "testNumber": 3,
     "title": "Is the header processed if received via https with invalid certificate? Will the invalid certificate be accepted by the next connection?",
@@ -148,11 +169,11 @@
     "question": "Can an HTTP web site set secure cookies?",
     "possibleAnswers": [
       {
-        "ans_id": 1,
+        "ans_id": 0,
         "ans_desc": "Yes"
       },
       {
-        "ans_id": 0,
+        "ans_id": 1,
         "ans_desc": "No"
       },
       {
@@ -321,6 +342,31 @@
       {
         "ans_id": 3,
         "ans_desc": "Page is not requested a second time"
+      }
+    ]
+  },
+  "21": {
+    "testNumber": 21,
+    "title": "no-cache, no-store, must-revalidate in Cache-Control Declaration",
+    "description": "What effect does the header Cache-Control: no-cache, no-store, must-revalidate have? How does the browser behave if a page which sets this header is visited twice? Is the page requested a second time or is the cached version used?",
+    "date_created": "11/28/2019",
+    "tagNums": [
+      5
+    ],
+    "path": "no-cache-no-store-must-revalidate-in-cache-control",
+    "question": "How does the browser behave?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Page not stored at all / browser sends second request without conditional"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "Browser does not send second request"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Browser sends request with conditional (e.g If-None-Match or If-Modified-Since)"
       }
     ]
   },

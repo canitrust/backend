@@ -7,7 +7,7 @@
     "2": {
         "modulename": "case2",
         "filename": "case2.py",
-        "isLive": false
+        "isLive": true
     },
     "3": {
         "modulename": "case3",
@@ -37,7 +37,7 @@
     "10": {
         "modulename": "case10",
         "filename": "case10.py",
-        "isLive": false
+        "isLive": true
     },
     "11": {
         "modulename": "case11",
