@@ -127,7 +127,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             return data
     
@@ -169,7 +170,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             # Debug message:
             logger.debug('Result:{}'.format(data))
@@ -207,7 +209,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             logger.debug('Result:{}'.format(data))
             return data
