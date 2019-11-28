@@ -336,20 +336,23 @@
     "testNumber": 20,
     "title": "no-store in Cache-Control Declaration",
     "description": "What effect does the header Cache-Control: no-store have? How does the browser behave if a page which sets this header is visited twice? Is the page requested a second time or is the cached version used?",
+    "detailedDescription": "# Introduction\nThe [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) HTTP header is used by the server to indicate to the browser and other caches how to [treat the loaded web site](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching):\n``` \nCache-Control: no-store\n```\nThe value ``no-store`` indicates that the loaded site should not be cached under any circumstances. Therefore, whenever this site is loaded, it must be requested from the server freshly and must never be loaded from a cache like the browser cache.\n\nIn some cases, the caching of web content can become a security problem, e.g. when the web site contains sensitive information like financial data in a banking application, the content should not be stored in the browser or other caches.\n\n# Problem\nTo check how the browser behaves when it receives a ``Cache-Control: no-store``, we load a page that sends HTTP headers similar to this:\n```\nGET /index.html HTTP/1.1\nHost: www.canitrust.in\n[...]\nCache-Control: no-store\n[...]\n```\nAfter fully loading the page, we request the page a second time. The browser should now send a new request and should not have stored the page loaded at the first time.\n\n# How does the browser react?\nWhen the browser loads a page sending the ``Cache-Control: no-store`` header a second time, these two options are possible:\n\n1. The browser loads the page again from the server. This is the correct behavior.\n2. The browser does not load the page again and displays a cached version. Thois behavior basically ignores the ``Cache-Control`` header.\n\nThis testcase tests which browser chooses which of these options.",
     "date_created": "1/17/2019",
     "tagNums": [
-      5
+      5,
+      16,
+      17
     ],
-    "path": "no-store-in-cache-control",
+    "path": "cache-control-no-store",
     "question": "How does the browser behave?",
     "possibleAnswers": [
       {
         "ans_id": 2,
-        "ans_desc": "Page is requested a second time"
+        "ans_desc": "The page is requested a second time"
       },
       {
         "ans_id": 3,
-        "ans_desc": "Page is not requested a second time"
+        "ans_desc": "The page is not requested a second time"
       }
     ]
   },
