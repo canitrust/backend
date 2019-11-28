@@ -1,7 +1,11 @@
 import sys
 import json
 import re
+import os
 import warnings
+
+BASE_PATH = os.path.abspath(os.path.dirname(__file__) + '/../../driver/config/')
+MAP_FILE = '%s/map.json'%BASE_PATH
 
 class Result:
     #A general class for test result, can hold data from backend as well as frontend
@@ -44,9 +48,16 @@ class Result:
             return False
 
     # @Output: (Bool) should this result be ignored (eg. Edge insider preview)
-    def shouldIgnore(self):
+    def shouldIgnoreInsiderPreview(self):
         shouldIgnore = self.backendData["version"] == "insider preview"
         return shouldIgnore
+
+    # @Output: (Bool) Ignore testresults of non-live testcases
+    def shouldIgnoreNonLiveTestResult(self):
+        testcaseNumb = str(self.backendData['testCaseNum'])
+        if testcaseNumb not in jsonMap:
+            return True
+        return not jsonMap[testcaseNumb]['isLive']
 
 class VersionIdentityList:
     data = {}
@@ -70,8 +81,12 @@ class VersionIdentityList:
 if __name__ == '__main__':
     # Maybe we will need to modulize this file
 
+    # Read Map file
+    with open(MAP_FILE) as jsonMapFile:
+        jsonMap = json.load(jsonMapFile)
+
     # Statistics
-    inputEntity = inputIgnored = inputIsBeta = outputNonBeta = outputBeta = outputBetaFilteredOut = 0
+    inputEntity = inputIgnoredNonLiveTestResult = inputIgnoredInsiderPreview = inputIsBeta = outputNonBeta = outputBeta = outputBetaFilteredOut = 0
 
     # Readline input file
     outputArray = []
@@ -83,8 +98,11 @@ if __name__ == '__main__':
             # instantiate Result obj
             aResult = Result(json.loads(aLine))
             # If the result should be ignored, skip
-            if aResult.shouldIgnore():
-                inputIgnored += 1
+            if aResult.shouldIgnoreInsiderPreview():
+                inputIgnoredInsiderPreview += 1
+                continue
+            if aResult.shouldIgnoreNonLiveTestResult():
+                inputIgnoredNonLiveTestResult +=1
                 continue
             if(aResult.isBeta()):
                 inputIsBeta += 1
@@ -104,7 +122,7 @@ if __name__ == '__main__':
                 outputBetaFilteredOut +=1
 
         # Print statistics
-        print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnored}, isBeta: {inputIsBeta})")
+        print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnoredInsiderPreview}, ignored (Non-live testresults): {inputIgnoredNonLiveTestResult}, isBeta: {inputIsBeta})")
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
 
     if outputArray:
