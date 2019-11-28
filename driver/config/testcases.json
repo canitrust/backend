@@ -36,12 +36,13 @@
   "2": {
     "testNumber": 2,
     "title": "HSTS Headers via plain http",
-    "description": "<TODO>",
+    "description": "Does the browser accept an HSTS header when set by a non-HTTPS web site? This should not be the case as it would allow for man-in-the-middle attacks.",
+    "detailedDescription": "# Introduction\nThe [Strict-Transport-Security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) HTTP header, often called HSTS, instructs the browser how SSL/TLS should be handled for this web site, e.g.:\n``` \nStrict-Transport-Security: max-age=31536000\n```\nThe above example tells the browser a number of things:\n1. This web site must only be called via HTTPS, never via HTTP.\n2. If an HTTP connection for this web site is requested, the browser automatically upgrades to HTTPS.\n3. This setting will be stored in the browaser for 31536000 seconds or 1 year.\n\nThis header is an important defence against man-in-the-middle attacks where an attacker tries to intercept connections before the SSL encryption is active and change HTTPS links to HTTP (so-called [SSL stripping](https://moxie.org/software/sslstrip/) attacks).\n\n# Problem\nImagine the browser requests ``http://www.canitrust.in`` (note the ``http://`` part) and the server sends a ``Strict-Transport-Security`` header in the reponse:\n```\nHTTP/1.1 200 OK\n[...]\nStrict-Transport-Security: max-age=31536000\n[...]\n```\nIn this example, the server tried to set the ``Strict-Transport-Security`` header for a web site that was loaded via HTTP. This should not work as it would allow attackers to intercept the request and set different HSTS headers or turn them off completely.\n\n# How does the browser react?\nWhen the browser receives an HSTS header when loading a non-HTTPS web site, it has the following two options:\n\n1. Ignore the header and not store any HSTS setting from this request. This is the correct and secure implementation.\n2. Accept the header and store its HSTS setting. This is a vulnerable implementation.\n\nThis testcase tests which browser chooses which of these two options.",
     "date_created": "11/28/2019",
     "tagNums": [
       4
     ],
-    "path": "HSTS-via-plain-http",
+    "path": "hsts-via-plain-http",
     "question": "Is the HSTS header processed if received via plain http?",
     "possibleAnswers": [
       {
