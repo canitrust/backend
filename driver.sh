@@ -21,25 +21,9 @@ kill_docker() {
   docker-compose down >> /dev/null 2>&1
 }
 
-
 docker-compose -f docker-compose.driver.yml down > /dev/null 2>&1
-docker-compose -f docker-compose.driver.yml up -d --build
-SECONDS=0
-while true; do
-  if [ "$SECONDS" -gt "60" ]; then
-    echo "Starting driver FAILED (waited for 1 minute)"
-    exit 1
-  fi
-  sleep 2
-  driver=$(docker ps --filter 'status=running' --format '{{.Names}}' | grep driver)
-  echo "Waiting for driver...in ($SECONDS seconds)"
-  if [ "$driver" == "driver" ]; then
-    echo "Driver UP"
-    break
-  fi
-done
 unlock_containers &
-docker exec -i $driver python /driver/driver.py "$@"
+docker-compose -f docker-compose.driver.yml run -T driver python /driver/driver.py "$@" 
 exit_status=$?
 if [ $exit_status -ne 0 ]; then
     echo "Something wrong with Driver"
