@@ -384,10 +384,14 @@ def autoupdate_main():
         for info_browser in browserSupport:
             object_dict = format_mongo_object(info_browser, key)
             result = DB.coll.count_documents(object_dict)
+            object_dict.update({'retry_count': {'$lt': constant.TEST_MAX_RETRY }})
+            # Add if lesser than max retry
+            if DB.failed_tests.count_documents(object_dict):
+                bs_tests.append({"info_browser": info_browser, "test_case": key})
+                continue
             if result < 1 and val['isLive']:
-                # Ignore if in the list
-                object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
-                if DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
+                # Ignore if reach max retry
+                if not DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
                     bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
                     continue
                 logger.debug('New test detected {}'.format(object_dict))
