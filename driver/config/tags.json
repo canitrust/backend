@@ -50,5 +50,13 @@
   "13": {
     "tagNumber": 13,
     "tagText": "Cookie-domain"
+  },
+  "14": {
+    "tagNumber": 14,
+    "tagText": "Cookie-max-age"
+  },
+  "15": {
+    "tagNumber": 15,
+    "tagText": "Cookie-expires"
   }
 }
