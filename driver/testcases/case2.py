@@ -32,6 +32,6 @@ class Case2(TestCase):
     def evaluate(self):
         # to check whether current url changed into https. this indicate hsts work or not
         if ('https' in self.data['current_url']):
-          self.result = 1
-        else:
           self.result = 0
+        else:
+          self.result = 1

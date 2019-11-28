@@ -33,6 +33,28 @@
       }
     ]
   },
+  "2": {
+    "testNumber": 2,
+    "title": "HSTS Headers via plain http",
+    "description": "Does the browser accept an HSTS header when set by a non-HTTPS web site? This should not be the case as it would allow for man-in-the-middle attacks.",
+    "detailedDescription": "# Introduction\nThe [Strict-Transport-Security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security) HTTP header, often called HSTS, instructs the browser how SSL/TLS should be handled for this web site, e.g.:\n``` \nStrict-Transport-Security: max-age=31536000\n```\nThe above example tells the browser a number of things:\n1. This web site must only be called via HTTPS, never via HTTP.\n2. If an HTTP connection for this web site is requested, the browser automatically upgrades to HTTPS.\n3. This setting will be stored in the browaser for 31536000 seconds or 1 year.\n\nThis header is an important defence against man-in-the-middle attacks where an attacker tries to intercept connections before the SSL encryption is active and change HTTPS links to HTTP (so-called [SSL stripping](https://moxie.org/software/sslstrip/) attacks).\n\n# Problem\nImagine the browser requests ``http://www.canitrust.in`` (note the ``http://`` part) and the server sends a ``Strict-Transport-Security`` header in the reponse:\n```\nHTTP/1.1 200 OK\n[...]\nStrict-Transport-Security: max-age=31536000\n[...]\n```\nIn this example, the server tried to set the ``Strict-Transport-Security`` header for a web site that was loaded via HTTP. This should not work as it would allow attackers to intercept the request and set different HSTS headers or turn them off completely.\n\n# How does the browser react?\nWhen the browser receives an HSTS header when loading a non-HTTPS web site, it has the following two options:\n\n1. Ignore the header and not store any HSTS setting from this request. This is the correct and secure implementation.\n2. Accept the header and store its HSTS setting. This is a vulnerable implementation.\n\nThis testcase tests which browser chooses which of these two options.",
+    "date_created": "11/28/2019",
+    "tagNums": [
+      4
+    ],
+    "path": "hsts-via-plain-http",
+    "question": "Is the HSTS header processed if received via plain http?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      }
+    ]
+  },
   "3": {
     "testNumber": 3,
     "title": "Is the header processed if received via https with invalid certificate? Will the invalid certificate be accepted by the next connection?",
@@ -139,20 +161,21 @@
     "testNumber": 10,
     "title": "Secure Cookie set by HTTP Web Site",
     "description": "What happens if a web site accessed via HTTP tries to set a cookie with the secure flag set? Will the browser simply ignore this cookie or will it actually accept the cookie?",
+    "detailedDescription": "# Introduction\n[Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) are key-value pairs which the server can set in the calling browser, like so:\n``` \nSet-Cookie: foo=bar; secure\n```\nIn the above example, the server sets the cookie ``foo`` with the value ``bar`` and sets the secure flag. This flag prevents the browser from sending this cookie to web sites which are not being called via HTTPS and therefore prevents the cookie from being sent unencrypted. This is an important security function to prevent [man-in-the-middle attacks](https://www.owasp.org/index.php/Man-in-the-middle_attack).\n\nIf a request is made to a server, the browser will automatically send all cookies stored for this [origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin). This is particularly useful for [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies) where cookies will be used to store session identifiers (session IDs). This behaviour makes such session cookies highly security relevant.\n\n# Problem\nSince the secure flag prevents browsers from sending the respective cookie to non-HTTPS sites it should also not possible for such sites to set secure cookies. Imagine the server sends the following HTTP headers when calling ``http://www.canitrust.in`` (note the ``http://`` part):\n```\nHTTP/1.1 200 OK\n[...]\nSet-Cookie: foo=bar; secure\n[...]\n```\nIn this example, the web site tries to set the cookie ``foo`` with the value ``bar`` and with the ``secure`` flag set. The browser should not accept this cookie as the site was loaded from a non-HTTPS server (``http://www.canitrust.in``).\n\n# How does the browser react?\nWhen the browser receives a ``Set-Cookie`` header with the ``secure`` flag set from a non-HTTPS site, the following results are possible:\n\n1. The browser does not allow setting secure cookies for sites loaded from a non-HTTPS URL. The cookie declaration is ignored. This is the correct and safe implementation.\n2. The browser allows setting secure cookies by non-HTTPS sites. This could lead to security vulnerabilities and should be avoided.\n3. The browser accepts the secure cookie from a non-HTTPS site, but stores it without the ``secure`` flag. This is even more dangerous than the second option.\n\nThis testcase tests which browser chooses which of these options.",
     "date_created": "06/14/2019",
     "tagNums": [
       2,
       10
     ],
-    "path": "HTTP-sites-setting-secure-cookies",
+    "path": "http-sites-setting-secure-cookies",
     "question": "Can an HTTP web site set secure cookies?",
     "possibleAnswers": [
       {
-        "ans_id": 1,
+        "ans_id": 0,
         "ans_desc": "Yes"
       },
       {
-        "ans_id": 0,
+        "ans_id": 1,
         "ans_desc": "No"
       },
       {
@@ -321,6 +344,31 @@
       {
         "ans_id": 3,
         "ans_desc": "Page is not requested a second time"
+      }
+    ]
+  },
+  "21": {
+    "testNumber": 21,
+    "title": "no-cache, no-store, must-revalidate in Cache-Control Declaration",
+    "description": "What effect does the header Cache-Control: no-cache, no-store, must-revalidate have? How does the browser behave if a page which sets this header is visited twice? Is the page requested a second time or is the cached version used?",
+    "date_created": "11/28/2019",
+    "tagNums": [
+      5
+    ],
+    "path": "no-cache-no-store-must-revalidate-in-cache-control",
+    "question": "How does the browser behave?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Page not stored at all / browser sends second request without conditional"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "Browser does not send second request"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Browser sends request with conditional (e.g If-None-Match or If-Modified-Since)"
       }
     ]
   },
