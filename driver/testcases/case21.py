@@ -4,6 +4,9 @@
 #-------------------------------------------------------------------------------------------------
 
 from testcases.testCase import TestCase
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from helper import Logger
 logger = Logger(__name__).logger
 
@@ -18,11 +21,13 @@ class Case21(TestCase):
             Test result MUST be set to self.data
         """
         webDriver.get("https://cache4.test-canitrust.com")
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'span')))
         html1 = webDriver.find_element_by_tag_name('span')
         randomString1 = html1.text
         webDriver.get("https://cache4.test-canitrust.com")
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'span')))
         html2 = webDriver.find_element_by_tag_name('span')
-        randomString2 = html2.text     
+        randomString2 = html2.text
         self.data = {'randomString1': randomString1, 'randomString2': randomString2}
         webDriver.close()
         return 1
