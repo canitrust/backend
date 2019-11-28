@@ -26,7 +26,7 @@ node('Dev') {
                 git credentialsId: credentials, url: gitLabCertUrl
                 echo "Checking out Certs form $gitLabCertUrl"
                 sh "mkdir ../backend/test_app/src/certs"
-                sh "cp -r test-canitrust.com ../backend/test_app/src/certs/"
+                sh "cp -r letsencrypt ../backend/test_app/src/certs/"
             }
         
         }
