@@ -132,7 +132,10 @@ class TestCase:
             self.result = "Failed"
         finally:
             if webDriver:
-                webDriver.quit()
+                try:
+                    webDriver.quit()
+                except Exception as e:
+                    logger.error('Quit webdriver - Failed')
             data = self.get_data()
             return data
     
@@ -175,7 +178,10 @@ class TestCase:
             self.result = "Failed"
         finally:
             if webDriver:
-                webDriver.quit()
+                try:
+                    webDriver.quit()
+                except Exception as e:
+                    logger.error('Quit webdriver - Failed')
             data = self.get_data()
             # Debug message:
             logger.debug('Result:{}'.format(data))
@@ -214,7 +220,10 @@ class TestCase:
             self.result = "Failed"
         finally:
             if webDriver:
-                webDriver.quit()
+                try:
+                    webDriver.quit()
+                except Exception as e:
+                    logger.error('Quit webdriver - Failed')
             data = self.get_data()
             logger.debug('Result:{}'.format(data))
             return data
