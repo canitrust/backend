@@ -83,7 +83,8 @@ def format_mongo_object(info_browser, case):
         "version": info_browser['browser_version'],
         "platform": info_browser['os'],
         "os_version": info_browser['os_version'],
-        "testCaseNum": int(case)
+        "testCaseNum": int(case),
+        "deprecated": False
     }
 
 
@@ -138,6 +139,12 @@ def run_bs_list(bs_tests):
         results = []
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
+            if FORCE_RERUN:
+                # search for current result not deprecated
+                current_results = DB.coll.find(object_dict)
+                for current_result in current_results:
+                    DB.coll.find_one_and_update(current_result, {'$set': {'deprecated': True }})
+                    logger.debug("DEPRECATED: {}".format(current_result))
             result = run_test_bs(bs_test['info_browser'], bs_test['test_case'])
             if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
