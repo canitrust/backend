@@ -127,7 +127,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             return data
     
@@ -169,7 +170,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             # Debug message:
             logger.debug('Result:{}'.format(data))
@@ -207,7 +209,8 @@ class TestCase:
             self.data = "Failed"
             self.result = "Failed"
         finally:
-            webDriver.quit()
+            if webDriver:
+                webDriver.quit()
             data = self.get_data()
             logger.debug('Result:{}'.format(data))
             return data
@@ -249,9 +252,9 @@ class TestCase:
             'browserstack.local' : 'true',
             #'browserstack.debug': 'true',
             'browserstack.networkLogs':'true',
-            'browserstack.appiumLogs':'true'
-            #"acceptSslCerts": 'true',   #firefox
-            #"acceptInsecureCerts": 'true' #Edge
+            'browserstack.appiumLogs':'true',
+            'acceptSslCerts': 'false',
+            'acceptInsecureCerts': 'true'
         }
         if browser == 'firefox':
             profile = webdriver.FirefoxProfile()

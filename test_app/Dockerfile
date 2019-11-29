@@ -3,7 +3,7 @@ FROM httpd:2.4
 RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-        libapache2-mod-php \
+		libapache2-mod-php \
 	; \
 	rm -rf /var/lib/apt/lists/*
 

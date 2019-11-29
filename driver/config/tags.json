@@ -53,6 +53,22 @@
   },
   "14": {
     "tagNumber": 14,
+    "tagText": "Cookie-max-age"
+  },
+  "15": {
+    "tagNumber": 15,
+    "tagText": "Cookie-expires"
+  },
+  "16": {
+    "tagNumber": 16,
+    "tagText": "Cache-Control"
+  },
+  "17": {
+    "tagNumber": 17,
+    "tagText": "Cache-Control-no-store"
+  },
+  "18": {
+    "tagNumber": 18,
     "tagText": "XSS-Protection"
   }
 }

@@ -48,9 +48,9 @@ class Case9(TestCase):
         
         if cookie_set == 1 :
             if cookie_read == 1:
-                result = 1
+                result = 0
             else:
                 result = 10
         else:
-            result = 0
+            result = 1
         self.result = result

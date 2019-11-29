@@ -83,7 +83,7 @@ class BS:
           
     def stop(self):
         try:
-            proc = subprocess.Popen([self.binary_path, '-d', 'stop'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen([self.binary_path, 'stop'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             (out, err) = proc.communicate()
         except Exception as e:
             return
