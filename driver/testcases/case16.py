@@ -55,4 +55,4 @@ class Case16(TestCase):
         
         # If neither iframe was loaded, DENY is more dominant
         elif (not isIframe1Loaded and not isIframe2Loaded):
-            self.result = 5
+            self.result = 1
