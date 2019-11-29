@@ -36,11 +36,13 @@ class TestCase:
     result = None
     os_version= ""
     isBeta = False
+    deprecated = False
 
     # Constructor
     def __init__(self):
         self.date = datetime.datetime.utcnow()
         self.isBeta = False
+        self.deprecated = False
     def get_data(self):
         #get dict to insert from class
         return {
@@ -53,7 +55,8 @@ class TestCase:
                     "os_version":self.os_version,
                     "elapsedTime": self.elapsedTime,
                     "data" : self.data,
-                    "isBeta": self.isBeta
+                    "isBeta": self.isBeta,
+                    "deprecated": self.deprecated
                 }
 
 
@@ -81,7 +84,8 @@ class TestCase:
                     "os_version": self.os_version,
                     "elapsedTime": self.elapsedTime,
                     "data" : self.data,
-                    "isBeta": self.isBeta
+                    "isBeta": self.isBeta,
+                    "deprecated": self.deprecated
                     }
         return json.dumps(my_dict)
 
