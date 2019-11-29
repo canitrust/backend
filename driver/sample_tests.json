@@ -1,35 +1,29 @@
 [
-    {
-        "test_case": "8",
-        "info_browser":
-            {
-                "browser_version": "37.0", 
-                "browser": "chrome", 
-                "os": "Windows", 
-                "os_version": "10"
-            }
-        
-    },
-    {
-        "test_case": "8",
-        "info_browser":
-            {
-                "browser_version": "38.0", 
-                "browser": "chrome", 
-                "os": "Windows", 
-                "os_version": "10"
-            }
-        
-    },
-    {
-        "test_case": "2",
-        "info_browser":
-            {
-                "browser_version": "38.0", 
-                "browser": "chrome", 
-                "os": "Windows", 
-                "os_version": "10"
-            }
-        
+  {
+    "test_case": "1",
+    "info_browser": {
+      "browser_version": "78.0",
+      "browser": "chrome",
+      "os": "Windows",
+      "os_version": "10"
     }
+  },
+  {
+    "test_case": "1",
+    "info_browser": {
+      "browser_version": "69.0",
+      "browser": "firefox",
+      "os": "Windows",
+      "os_version": "10"
+    }
+  },
+  {
+    "test_case": "1",
+    "info_browser": {
+      "browser_version": "13.0",
+      "browser": "safari",
+      "os": "OS X",
+      "os_version": "Catalina"
+    }
+  }
 ]

@@ -51,12 +51,12 @@ class Case1(TestCase):
         """
         result = 0 # Default value - meaning no https for other domains (includeSubdomain or HSTS is not supported)
         if "https" in self.data['first_HSTS']:
-            result = 2 # https for only sub.ssl.test-canitrust.com
+            result = 1 # https for only sub.ssl.test-canitrust.com
             if "https" in self.data['second_HSTS']:
                 if "https" in self.data['third_HSTS']:
                     result = 5 # https for every others
                 else:
                     result = 3 # https for sub.ssl.test-canitrust.com & plain.test-canitrust.com
             elif "https" in self.data['third_HSTS']:
-                result = 4 # http for plain.test-canitrust.com but https for test.canitrust.com
+                result = 4 # http for plain.test-canitrust.com but https for test-canitrust.com
         self.result = result

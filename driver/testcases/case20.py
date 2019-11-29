@@ -34,14 +34,10 @@ class Case20(TestCase):
 
     def evaluate(self):
         # when randomString1 is not equal to randomString2, it means the browser sent a 2nd request to the server
-        # => cache not stored => answer a) + c)
-        # in this case, we actually need to check whether there is a header "If-None-Match"/"If-Modified-Since" in the 2nd request or not.
-        # However, we haven't figured out how to check request headers without proxy so we combine answer a) and c) in one.
-        # This needs to be fixed later.
+        # => cache not stored 
         if (self.data['randomString1'] != self.data['randomString2']):
             self.result = 2
         # when randomString1 is equal to randomString2, it means the browser did not send a 2nd request to the server
-        # => cache stored => answer b)
+        # => cache stored
         elif (self.data['randomString1'] == self.data['randomString2']):
             self.result = 3
-        # classifying answers hasn't been completed yet, need to be fixed later.

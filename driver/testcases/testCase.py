@@ -252,9 +252,9 @@ class TestCase:
             'browserstack.local' : 'true',
             #'browserstack.debug': 'true',
             'browserstack.networkLogs':'true',
-            'browserstack.appiumLogs':'true'
-            #"acceptSslCerts": 'true',   #firefox
-            #"acceptInsecureCerts": 'true' #Edge
+            'browserstack.appiumLogs':'true',
+            'acceptSslCerts': 'false',
+            'acceptInsecureCerts': 'true'
         }
         if browser == 'firefox':
             profile = webdriver.FirefoxProfile()
