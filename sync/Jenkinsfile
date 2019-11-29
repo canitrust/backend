@@ -53,14 +53,15 @@ node('Dev') {
           if (lastUpdate) {
             echo "Latest update timestamp: ${lastUpdate}"
             lastUpdate = lastUpdate.trim()
-            dateQuery = "--query '{date: {\$gt: new Date(\"${lastUpdate}\")}}'"
+            dateQuery = "--query '{date: {\$gt: new Date(\"${lastUpdate}\")}, deprecated: false}'"
           } else {
+            dateQuery = "--query '{deprecated: false}'"
             echo "Staging DB does not have any testresult"
           }
         }
 
         echo "Find all entries since latest timestamp"
-        sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{date:1}' --out ./dataLine.json"
+        sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{testCaseNum: 1,  browser: 1, version: 1, date: -1}' --out ./dataLine.json"
 
         echo "Convert entries to Frontend DB format" 
         sh returnStdout: true, script: "python3 scripts/translate.py dataLine.json"

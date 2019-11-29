@@ -86,10 +86,11 @@ if __name__ == '__main__':
         jsonMap = json.load(jsonMapFile)
 
     # Statistics
-    inputEntity = inputIgnoredNonLiveTestResult = inputIgnoredInsiderPreview = inputIsBeta = outputNonBeta = outputBeta = outputBetaFilteredOut = 0
+    inputEntity = inputIgnoredOldTestResult = inputIgnoredNonLiveTestResult = inputIgnoredInsiderPreview = inputIsBeta = outputNonBeta = outputBeta = outputBetaFilteredOut = 0
 
     # Readline input file
     outputArray = []
+    previousResult = None
     with open(sys.argv[1], "r") as inputFile:
         versionIdentityList = VersionIdentityList()
         betaTempoList = []
@@ -102,7 +103,16 @@ if __name__ == '__main__':
                 inputIgnoredInsiderPreview += 1
                 continue
             if aResult.shouldIgnoreNonLiveTestResult():
-                inputIgnoredNonLiveTestResult +=1
+                inputIgnoredNonLiveTestResult += 1
+                continue
+            # Filter out outdated testresult
+            # testresults should be sorted by {testCaseNum: 1,  browser: 1, version: 1, date: -1}
+            if (previousResult is not None and
+                aResult.backendData['testCaseNum'] == previousResult.backendData['testCaseNum'] and
+                aResult.backendData['browser'] == previousResult.backendData['browser'] and
+                aResult.backendData['version'] == previousResult.backendData['version'] and
+                aResult.backendData['isBeta'] == previousResult.backendData['isBeta']):
+                inputIgnoredOldTestResult += 1
                 continue
             if(aResult.isBeta()):
                 inputIsBeta += 1
@@ -111,6 +121,7 @@ if __name__ == '__main__':
                 outputNonBeta += 1
                 versionIdentityList.memorize(aResult)
                 outputArray.append(aResult.translate())
+            previousResult = aResult
 
         # Process beta versions
         for aBetaResult in betaTempoList:
@@ -122,7 +133,7 @@ if __name__ == '__main__':
                 outputBetaFilteredOut +=1
 
         # Print statistics
-        print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnoredInsiderPreview}, ignored (Non-live testresults): {inputIgnoredNonLiveTestResult}, isBeta: {inputIsBeta})")
+        print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnoredInsiderPreview}, ignored (Non-live testresults): {inputIgnoredNonLiveTestResult}, ignored (Outdated testresult): {inputIgnoredOldTestResult}, isBeta: {inputIsBeta})")
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
 
     if outputArray:
