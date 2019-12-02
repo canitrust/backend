@@ -398,9 +398,12 @@ def autoupdate_main():
                 continue
             if result < 1 and val['isLive']:
                 # Ignore if reach max retry
-                if not DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
+                object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+                if DB.failed_tests.count_documents(object_dict) and not FORCE_RERUN:
                     bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
                     continue
+                # clean the filter
+                object_dict.pop('retry_count', None)
                 logger.debug('New test detected {}'.format(object_dict))
                 bs_tests.append({"info_browser": info_browser, "test_case": key})
     logger.info('IGNORE_TESTS:{}'.format(bs_tests_ignored))
