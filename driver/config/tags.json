@@ -66,5 +66,9 @@
   "17": {
     "tagNumber": 17,
     "tagText": "Cache-Control-no-store"
+  },
+  "18": {
+    "tagNumber": 18,
+    "tagText": "XSS-Protection"
   }
 }

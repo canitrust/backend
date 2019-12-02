@@ -7,6 +7,9 @@ services:
       - test_app
   test_app:
     container_name: test_app
+    ports: 
+      - 8080:80
+      - 8081:443
     build:
       context: test_app/.
       dockerfile: local.Dockerfile
