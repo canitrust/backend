@@ -17,10 +17,13 @@ class Case66(TestCase):
         """
         webDriver.get("https://ssl.test-canitrust.com/svg.html")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        p_content = webDriver.find_element_by_id("changeme").text
+        try:
+          WebDriverWait(webDriver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
+          p_content = webDriver.find_element_by_tag_name('p').text
+          self.data = {'content': p_content}
+        except:
+          self.data = {'content': 'no change'}
         webDriver.close()
-
-        self.data = {'content': p_content}
 
         return 1
 
