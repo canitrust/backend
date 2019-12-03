@@ -20,6 +20,14 @@ class Case28(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
+
+        # Check the virtualhost works or not
+        webDriver.get("https://ssl.test-canitrust.com/xss_get.php")
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        checkElement = webDriver.find_element_by_id('check')
+        if "49" not in checkElement.get_attribute('innerHTML'):
+            raise Exception('PHP does not work.')
+
         self.data = {}
         webDriver.get("https://ssl.test-canitrust.com/xss_get.php?payload=%3Cscript%3Edocument.getElementById(%22headline%22).innerHTML=%22XSS%20exploited%22%3C/script%3E")
         # server sets not X-XSS-Protection header, therefore browsers defauls setting is used
