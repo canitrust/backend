@@ -436,34 +436,34 @@
   },
   "27": {
     "testNumber": 27,
-    "title": "Browsers behavior for X-XSS-Protection mode block.",
-    "description": "How does the browser behave when the server sets the X-XSS-Protection header with the value \"1; mode=block\" and simple reflected XSS? Is the browser able to detect the XSS and will the rendering of the entire page get blocked or only the reflected component?",
+    "title": "Browser behavior for X-XSS-Protection mode block",
+    "description": "How does the browser behave when the server sets the X-XSS-Protection header with the value '1; mode=block' in case of a simple reflected XSS attack? Is the browser able to detect the attack and will the rendering of the entire page be blocked or only the reflected component?",
     "detailedDescription": "# Introduction\nSome browsers offer a feature called XSS Auditor (Chrome) or [XSS Filter](https://blogs.msdn.microsoft.com/ie/2008/07/02/ie8-security-part-iv-the-xss-filter/) (Internet Explorer, Edge) which is intended to offer the user some basic protection against [reflected Cross-site Scripting](https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)) attacks. These protection mechanisms have a default setting in the browser but can also be controlled by the server by setting the following HTTP header:\n``` \nX-XSS-Protection: 1; mode=block\n```\nIn the above example, the server tells the browsers supporting this feature to switch XSS protection on (by setting the value to ``1``) and also to block loading the page in case an XSS attack is detected (with ``mode=block``). Other potential values for this header are:\n``` \nX-XSS-Protection: 0\nX-XSS-Protection: 1\n```\nWith these, value ``0`` instructs the browser to turn off the protection and value ``1`` without ``mode=block`` instructs the browser to filter the identified attack payload instead of blocking the request.\n\nThe protection offered by this feature is rather limited and must therefore not be considered an adequate protection against XSS attacks. Also, browsers which do not support this feature (Firefox, Safari, Opera, etc.) will just ignore the header.\n\n# Problem\nEver since the XSS protection features were introduced, researchers have been finding [ways around the protection](https://github.com/EdOverflow/bugbounty-cheatsheet/blob/master/cheatsheets/xss.md) or even [XSS](http://p42.us/ie8xss/Abusing_IE8s_XSS_Filters.pdf) that was only possible due to the XSS Filter. Google and Microsoft have been struggling to keep up up with these vulnerabilities.\n\nMore recently, researchers have found more attacks that are only possible because of the [XSS Filter](https://www.slideshare.net/codeblue_jp/xss-attacks-exploiting-xss-filter-by-masato-kinugawa-code-blue-2015) or [Chrome's XSS Auditor](https://portswigger.net/research/abusing-chromes-xss-auditor-to-steal-tokens). The largest category of those attacks are so-called [Cross-site Leaks](https://portswigger.net/daily-swig/new-xs-leak-techniques-reveal-fresh-ways-to-expose-user-information) and [lots of them](https://github.com/xsleaks/xsleaks/wiki/Links) are only possible due to the XSS Filter or the XSS Auditor.\n\nDue to this series of problems and vulnerabilities first Microsoft decided to turn off the XSS Filter in Edge as described in [this blog post](https://blogs.windows.com/windowsexperience/2018/07/25/announcing-windows-10-insider-preview-build-17723-and-build-18204/#0hOpeoUeI62wJyD1.97) (interestingly, the announcement about new Emojis in the same post gets more than 5 times the screen real estate). Google first tried to fix some vulnerabilities in Chrome's XSS Auditor by switching the default from blocking (``X-XSS-Protection: 1; mode=block``) to filtering (``X-XSS-Protection: 1``) and back to blocking, but eventually gave in and [retired the XSS Auditor](https://bugs.chromium.org/p/chromium/issues/detail?id=968591) with version 78.\n\nFor further reading on the topic we suggest two excelent articles by the folks from Portswigger:\n* [Google deprecates XSS Auditor for Chrome](https://portswigger.net/daily-swig/google-deprecates-xss-auditor-for-chrome)\n* [XSS protection disappears from Microsoft Edge](https://portswigger.net/daily-swig/xss-protection-disappears-from-microsoft-edge)\n\n# How does the browser react?\nWhen the browser receives an HTTP header as follows:\n``` \nX-XSS-Protection: 1; mode=block\n```\nIt then has a few options on how to react:\n\n1. The browser complies and turns on XSS protection in blocking mode. This is what Chrome, Internet Explorer and Edge have been doing for most of the time. As described above, this behaviour is now considered vulnerable and deprecated and should therefore be avoided.\n2. The browser can ignore the header and fall back to it's default mode. Here each of the three modes could theoretically be a default:\n    2a. Do not use XSS protection at all. This is what Firefox, Safari, Opera have always been doing and what Chrome is doing since version 78. This should be considered the most secure option at the moment.\n    2b. Use XSS protection but in filter mode. This option does not make much sense.\n    2c. Use XSS protection in block mode. This option is not distinguishable from option 1 in this case.\n\nThis testcase tests which browser chooses which of these options.",
     "date_created": "06/11/2019",
     "tagNums": [
       14
     ],
     "path": "x-xss-protection-mode-block",
-    "question": "What can be observed?",
+    "question": "How does the browser behave if the server sets the X-XSS-Protection header to '1; mode=block'?",
     "possibleAnswers": [
       {
-        "ans_id": 5,
-        "ans_desc": "XSS is prevented and page rendered."
+        "ans_id": 1,
+        "ans_desc": "The XSS is exploited, no XSS protection is active"
       },
       {
         "ans_id": 6,
-        "ans_desc": "XSS is prevented by blocking the entire page."
+        "ans_desc": "The XSS attack is prevented by blocking the entire page"
       },
       {
-        "ans_id": 7,
-        "ans_desc": "XSS exploited."
+        "ans_id": 5,
+        "ans_desc": "The XSS attack is prevented by filtering and the page rendered"
       }
     ]
   },
   "28": {
     "testNumber": 28,
-    "title": "Browsers default behavior for the XSS protection.",
-    "description": "If the server does not set the X-XSS-Protection header, the browser uses a default. Does the browser detect reflected XSS with the default XSS protection and how does he react?",
+    "title": "Browser default behavior for X-XSS-Protection",
+    "description": "If the server does not set the X-XSS-Protection header, the browser uses a default. Does the browser detect reflected XSS with the default XSS protection and how does it react?",
     "detailedDescription": "# Introduction\nSome browsers offer a feature called XSS Auditor (Chrome) or [XSS Filter](https://blogs.msdn.microsoft.com/ie/2008/07/02/ie8-security-part-iv-the-xss-filter/) (Internet Explorer, Edge) which is intended to offer the user some basic protection against [reflected Cross-site Scripting](https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)) attacks. These protection mechanisms have a default setting in the browser but can also be controlled by the server by setting the following HTTP header:\n``` \nX-XSS-Protection: 1; mode=block\n```\nIn the above example, the server tells the browsers supporting this feature to switch XSS protection on (by setting the value to ``1``) and also to block loading the page in case an XSS attack is detected (with ``mode=block``). Other potential values for this header are:\n``` \nX-XSS-Protection: 0\nX-XSS-Protection: 1\n```\nWith these, value ``0`` instructs the browser to turn off the protection and value ``1`` without ``mode=block`` instructs the browser to filter the identified attack payload instead of blocking the request.\n\nThe protection offered by this feature is rather limited and must therefore not be considered an adequate protection against XSS attacks. Also, browsers which do not support this feature (Firefox, Safari, Opera, etc.) will just ignore the header.\n\n# Problem\nEver since the XSS protection features were introduced, researchers have been finding [ways around the protection](https://github.com/EdOverflow/bugbounty-cheatsheet/blob/master/cheatsheets/xss.md) or even [XSS](http://p42.us/ie8xss/Abusing_IE8s_XSS_Filters.pdf) that was only possible due to the XSS Filter. Google and Microsoft have been struggling to keep up up with these vulnerabilities.\n\nMore recently, researchers have found more attacks that are only possible because of the [XSS Filter](https://www.slideshare.net/codeblue_jp/xss-attacks-exploiting-xss-filter-by-masato-kinugawa-code-blue-2015) or [Chrome's XSS Auditor](https://portswigger.net/research/abusing-chromes-xss-auditor-to-steal-tokens). The largest category of those attacks are so-called [Cross-site Leaks](https://portswigger.net/daily-swig/new-xs-leak-techniques-reveal-fresh-ways-to-expose-user-information) and [lots of them](https://github.com/xsleaks/xsleaks/wiki/Links) are only possible due to the XSS Filter or the XSS Auditor.\n\nDue to this series of problems and vulnerabilities first Microsoft decided to turn off the XSS Filter in Edge as described in [this blog post](https://blogs.windows.com/windowsexperience/2018/07/25/announcing-windows-10-insider-preview-build-17723-and-build-18204/#0hOpeoUeI62wJyD1.97) (interestingly, the announcement about new Emojis in the same post gets more than 5 times the screen real estate). Google first tried to fix some vulnerabilities in Chrome's XSS Auditor by switching the default from blocking (``X-XSS-Protection: 1; mode=block``) to filtering (``X-XSS-Protection: 1``) and back to blocking, but eventually gave in and [retired the XSS Auditor](https://bugs.chromium.org/p/chromium/issues/detail?id=968591) with version 78.\n\nFor further reading on the topic we suggest two excelent articles by the folks from Portswigger:\n* [Google deprecates XSS Auditor for Chrome](https://portswigger.net/daily-swig/google-deprecates-xss-auditor-for-chrome)\n* [XSS protection disappears from Microsoft Edge](https://portswigger.net/daily-swig/xss-protection-disappears-from-microsoft-edge)\n\n# How does the browser react?\nWhen the browser loads a web site and does not receive an ``X-XSS-Protection`` HTTP header, it has to apply a default policy. These are the options:\n\n1. Do not use XSS protection at all, which implies defaulting to ``X-XSS-Protection: 0``. This is what Firefox, Safari, Opera have always been doing, what Edge is doing since 2018 and Chrome is doing since version 78. This should be considered the most secure option at the moment.\n2. Use XSS protection but in filter mode, which implies defaulting to ``X-XSS-Protection: 1``. This option was chosen by Chrome for a short period of time trying to fix some vulnerabilities.\n3. Use XSS protection in block mode, which implies defaulting to ``X-XSS-Protection: 1; mode=block``. This option was the chosen default for Chrome and Edge for a long time. Currently, only Internet Explorer still uses it.\n\nThis testcase tests which browser chooses which of these options.",
     "date_created": "06/11/2019",
     "tagNums": [
@@ -473,16 +473,16 @@
     "question": "What can be observed?",
     "possibleAnswers": [
       {
-        "ans_id": 5,
-        "ans_desc": "XSS is prevented and page rendered."
+        "ans_id": 1,
+        "ans_desc": "The XSS is exploited, no XSS protection is active"
       },
       {
         "ans_id": 6,
-        "ans_desc": "XSS is prevented by blocking the entire page."
+        "ans_desc": "The XSS attack is prevented by blocking the entire page"
       },
       {
-        "ans_id": 7,
-        "ans_desc": "XSS exploited."
+        "ans_id": 5,
+        "ans_desc": "The XSS attack is prevented by filtering and the page rendered"
       }
     ]
   },

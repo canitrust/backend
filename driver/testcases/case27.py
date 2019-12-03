@@ -50,7 +50,7 @@ class Case27(TestCase):
         # 
         if ('exploited' in self.data['XSS']):
             # no XSS protection, XSS exploited
-            result = 7 # orange
+            result = 1 # green
         if ('filtered' in self.data['XSS']):
             # successful XSS protection, page loaded
             result = 5 # blue
