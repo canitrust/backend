@@ -33,35 +33,32 @@ def get_config():
             browserSupport = json.load(read_it)
 
 def start_infra():
-    try:
-        if TESTENV == 'bs':
-            logger.debug('Create browserstack-local instance...')
-            global BS_INSTANCE
-            BS_INSTANCE = BS()
-            start_bs_time = time.time()
-            while not BS_INSTANCE.running():
-                time.sleep(3)
-                if (time.time() - start_bs_time) > 30:
-                    raise Exception('Waiting for BrowserStack timeout > 30 secs')
-            logger.debug('Browserstack-local instance is running...')
-        # Unlock dns_server and test_app containers
-            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
-                lock.write('browserstack')
-        elif TESTENV == 'local':
-            with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
-                lock.write('local')
-        logger.debug('Wait for dns_server and test_app containers up...')
-        start_containers_time = time.time()
-        while not check_connect('dns_server', 53):
+    if TESTENV == 'bs':
+        logger.debug('Create browserstack-local instance...')
+        global BS_INSTANCE
+        BS_INSTANCE = BS()
+        start_bs_time = time.time()
+        while not BS_INSTANCE.running():
             time.sleep(3)
-            if (time.time() - start_containers_time) > 60:
-                raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
-        # Update DNS server
-        os.system('echo "nameserver {}" > /etc/resolv.conf'.format(socket.gethostbyname('dns_server')))
-        logger.debug('Dns_server and test_app containers already up...')
-    except Exception as e:
-        logger.error(e)
-        BS_INSTANCE.stop()
+            if (time.time() - start_bs_time) > 30:
+                raise Exception('Waiting for BrowserStack timeout > 30 secs')
+        logger.debug('Browserstack-local instance is running...')
+    # Unlock dns_server and test_app containers
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+            lock.write('browserstack')
+    elif TESTENV == 'local':
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+            lock.write('local')
+    logger.debug('Wait for dns_server and test_app containers up...')
+    start_containers_time = time.time()
+    while not check_connect('dns_server', 53) or not check_connect('test_app', 80):
+        time.sleep(3)
+        if (time.time() - start_containers_time) > 60:
+            raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
+    # Update DNS server
+    os.system('echo "nameserver {}" > /etc/resolv.conf'.format(socket.gethostbyname('dns_server')))
+    logger.debug('Dns_server and test_app containers already up...')
+
 
 def check_connect(address, port):
     s = socket.socket()
