@@ -51,7 +51,7 @@ def start_infra():
             lock.write('local')
     logger.debug('Wait for dns_server and test_app containers up...')
     start_containers_time = time.time()
-    while not check_connect('dns_server', 53):
+    while not check_connect('dns_server', 53) or not check_connect('test_app', 80):
         time.sleep(3)
         if (time.time() - start_containers_time) > 60:
             raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
