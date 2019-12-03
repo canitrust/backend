@@ -137,5 +137,7 @@ if __name__ == '__main__':
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
 
     if outputArray:
+        print("Output file [translated.json]:")
+        print(str(outputArray))
         with open("./translated.json","w") as outputFile:
             outputFile.write(json.dumps(outputArray))

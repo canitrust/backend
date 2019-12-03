@@ -64,7 +64,7 @@ node('Dev') {
         sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{testCaseNum: 1,  browser: 1, version: 1, date: -1}' --out ./dataLine.json"
 
         echo "Convert entries to Frontend DB format" 
-        sh returnStdout: true, script: "python3 scripts/translate.py dataLine.json"
+        sh "python3 scripts/translate.py dataLine.json"
       }
     }
 
