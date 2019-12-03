@@ -6,7 +6,7 @@ node('Dev') {
   stage('Keep Backend repository up to date') {
     dir('backend') {
       def repo = 'backend'
-      def gitBranch = 'feature/automatic-sync'
+      def gitBranch = 'master'
       def gitUrl = 'https://github.com/canitrust/backend.git'
       try {
         deleteDir()
