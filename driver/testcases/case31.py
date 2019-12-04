@@ -27,6 +27,6 @@ class Case31(TestCase):
 
     def evaluate(self):
         result = 0
-        if self.data['cookie_path'] ==  "NO":
+        if self.data['cookie_path'].strip() ==  "NO":
             result = 1
         self.result = result
