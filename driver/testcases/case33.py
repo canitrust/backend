@@ -11,11 +11,11 @@ from selenium.common.exceptions import TimeoutException
 from helper import Logger
 logger = Logger(__name__).logger
 
-class Case30(TestCase):
+class Case33(TestCase):
 
     def __init__(self):
         TestCase.__init__(self)
-        self.testCaseNum = 30
+        self.testCaseNum = 33
 
     def executeTest(self, webDriver):
         """ Definition of a testcase
@@ -23,7 +23,7 @@ class Case30(TestCase):
         """
 
         # Check the virtualhost works or not
-        webDriver.get("http://case30.test-canitrust.com/?payload=<object%20data=\"javascript:alert(1)\"></object>")
+        webDriver.get("http://case33.test-canitrust.com/?payload=<object%20data=\"javascript:alert(1)\"></object>")
         try:
             WebDriverWait(webDriver, 2).until(EC.alert_is_present())
             self.data = {'bypassed': 1}
