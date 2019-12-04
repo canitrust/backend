@@ -508,6 +508,28 @@
       }
     ]
   },
+  "32": {
+    "testNumber": 32,
+    "title": "Browsers default behavior for cookie with samesite attribute.",
+    "description": "#Cookie with specific path",
+    "detailedDescription": "#",
+    "date_created": "06/11/2019",
+    "tagNums": [
+      2
+    ],
+    "path": "browsers-cookie-samesite",
+    "question": "Is the browser send the cookie with samesite attribute?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      }
+    ]
+  },
   "66": {
     "testNumber": 66,
     "title": "JavaScript in SVG loaded in IMG tag",
