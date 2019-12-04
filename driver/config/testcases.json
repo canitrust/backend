@@ -545,5 +545,28 @@
         "ans_desc": "Error in test execution"
       }
     ]
+  },
+  "30": {
+    "testNumber": 30,
+    "title": "Cross-site scripting CSP Bypass using object data",
+    "description": "Some versions of Firefox were vulnerable to a trivial CSP Bypass that might enable cross-site attacks. The idea of this testcase is to verify whether or not this technique can be applied to other browsers.",
+    "detailedDescription": "### Introduction\nThe following proof-of-concept page is vulnerable to reflected cross-site scripting attacks\n```\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n    <title>Document</title>\n</head>\n<body>\n    <h1>CSP Bypass using object data</h1>\n    <p id=\"reflect\"><?=(isset($_GET['payload']) ?  $_GET['payload'] : 'missing GET param payload')?></p>\n</body>\n</html>\n```\nHowever, cross-site scripting attacks are limited by a strict Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) setting that eliminate the use of inline Javascript:\n```\nHTTP/1.1 200\n[...]\nContent-Security-Policy: default-src 'none'; base-uri 'none'; object-src 'none';\n```\nIn October 2019, a security researcher, Matheus Vrech discovered a technique to bypass the above CSP settings. The author made a working proof of concept that worked for the then-currently Firefox version. Below is the idea of the bypass:\n```\n?payload=<object%20data=\"javascript:alert(1)\"></object>\n```\nWith this testcase, CanITrust team verifies this technique against many other browsers and versions. Furthermore, let's see if in the future, any other browsers would make the same mistake as Mozilla did.",
+    "date_created": "04/12/2019",
+    "tagNums": [
+      1,
+      18
+    ],
+    "path": "csp-xss-protection",
+    "question": "Does this CSP evasion technique work for other browsers/versions?",
+    "possibleAnswers": [
+      {
+        "ans_id": 0,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 1,
+        "ans_desc": "Yes"
+      }
+    ]
   }
 }
