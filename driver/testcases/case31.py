@@ -17,16 +17,22 @@ class Case31(TestCase):
         """
         webDriver.get("http://cookie-path.test-canitrust.com/")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        webDriver.get("http://cookie-path.test-canitrust.com/path1/")
+        WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        cookie_path1 = webDriver.find_element_by_id("cookie_path").text
         webDriver.get("http://cookie-path.test-canitrust.com/path2/")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        cookie_path = webDriver.find_element_by_id("cookie_path").text
+        cookie_path2 = webDriver.find_element_by_id("cookie_path").text
         webDriver.close()
 
-        self.data = { "cookie_path" : cookie_path.strip() }
+        self.data = { "cookie_path1": cookie_path1.strip(),"cookie_path2" : cookie_path2.strip() }
         return 1
 
     def evaluate(self):
         result = 0
-        if self.data['cookie_path'] ==  "NO":
-            result = 1
+        if self.data['cookie_path1'] == "YES":
+            if self.data['cookie_path2'] ==  "NO":
+                result = 1
+        else:
+            result=9
         self.result = result
