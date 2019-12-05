@@ -12,11 +12,11 @@ logger = Logger(__name__).logger
 
 #import time
 
-class Case27(TestCase):
+class Case29(TestCase):
 
     def __init__(self):
         TestCase.__init__(self)
-        self.testCaseNum = 27
+        self.testCaseNum = 29
 
     def executeTest(self, webDriver):
         """ Definition of a testcase
@@ -24,14 +24,14 @@ class Case27(TestCase):
         """
 
         # Check the virtualhost works or not
-        webDriver.get("https://xss1.test-canitrust.com/xss_get.php")
+        webDriver.get("https://xss2.test-canitrust.com/xss_get.php")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         checkElement = webDriver.find_element_by_id('check')
         if "49" not in checkElement.get_attribute('innerHTML'):
             raise Exception('PHP does not work.')
 
         self.data = {}
-        webDriver.get("https://xss1.test-canitrust.com/xss_get.php?payload=%3Cscript%3Edocument.getElementById(%22headline%22).innerHTML=%22XSS%20exploited%22%3C/script%3E")
+        webDriver.get("https://xss2.test-canitrust.com/xss_get.php?payload=%3Cscript%3Edocument.getElementById(%22headline%22).innerHTML=%22XSS%20exploited%22%3C/script%3E")
         # server returns x-xss-protection header with value: 1; mode=block
         try:
             WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
@@ -44,10 +44,9 @@ class Case27(TestCase):
         except:
             self.data = {'XSS': "page blocked"}
         webDriver.close()
-        return 1  
+        return 1
 
     def evaluate(self):
-        # 
         if ('exploited' in self.data['XSS']):
             # no XSS protection, XSS exploited
             result = 1 # green

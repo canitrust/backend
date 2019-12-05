@@ -18,7 +18,7 @@ class Case8(TestCase):
     def __init__(self):
         TestCase.__init__(self)
         self.testCaseNum = 8
-    # Todo
+    
     def executeTest(self, webDriver):
         """ Definition of a testcase
             Test result MUST be set to self.data
@@ -31,12 +31,23 @@ class Case8(TestCase):
         webDriver.close()
         self.data = {'cookies_in_noexamplemgm': cookies}
         return 1
-    # Todo
+    
     def evaluate(self):
         result = 1 # setting cookie to a foreign domain is ignored - expected cookie was not found
-        for cookie in self.data['cookies_in_noexamplemgm']:
-            if cookie['name'] == 'cookie2' and cookie['value'] == 'value1':
-                # expected cookie was found
-                result = 0
-                break
+        cookies = self.data['cookies_in_noexamplemgm']
+
+        # Test whether cookies object is iterable to prevent bug in Edge
+        try:
+            iterator = iter(cookies)
+        except TypeError:
+            # not iterable
+            result = 1
+        else:
+            # iterable
+            for cookie in cookies:
+                if cookie['name'] == 'cookie2' and cookie['value'] == 'value1':
+                    # expected cookie was found
+                    result = 0
+                    break
+        
         self.result = result
