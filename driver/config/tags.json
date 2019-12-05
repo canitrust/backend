@@ -31,6 +31,10 @@
     "tagNumber": 8,
     "tagText": "HSTS-includeSubdomains"
   },
+  "9": {
+    "tagNumber": 9,
+    "tagText": "SVG"
+  },
   "10": {
     "tagNumber": 10,
     "tagText": "Cookie-secure"
