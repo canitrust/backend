@@ -99,6 +99,7 @@ node('Dev') {
     stage('Test: UI tests on Staging') {
       dir('backend/test') {
         echo "Running UI tests on staging"
+        def ui_test_job = build job: 'staging-ui-test'
       }
     }
 
