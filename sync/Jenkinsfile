@@ -106,10 +106,10 @@ node('Dev') {
     stage('Sync to Prod') {
       dir('backend/sync') {
         echo "Syncing all data to production"
-        // echo "Dump the staging DB"
-        // sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ${STAGING_DATABASE_NAME}"
-        // echo "Imports data to the production DB"
-        // sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --ssl --drop ${STAGING_DATABASE_NAME}"
+        echo "Dump the staging DB"
+        sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ${STAGING_DATABASE_NAME}"
+        echo "Imports data to the production DB"
+        sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --ssl --drop ${STAGING_DATABASE_NAME}"
       }
     }
   }
