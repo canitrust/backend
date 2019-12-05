@@ -69,6 +69,6 @@
   },
   "18": {
     "tagNumber": 18,
-    "tagText": "XSS-Protection"
+    "tagText": "X-XSS-Protection"
   }
 }

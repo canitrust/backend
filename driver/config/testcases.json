@@ -494,7 +494,7 @@
     "tagNums": [
       9
     ],
-    "path": "JS-in-SVG",
+    "path": "JS-in-SVG-loaded-by-img",
     "question": "Can the JavaScript code inside the SVG change the web site's content?",
     "possibleAnswers": [
       {
@@ -513,13 +513,13 @@
   },
   "67": {
     "testNumber": 67,
-    "title": "JavaScript in SVG loaded in IMG tag",
-    "description": "SVG images can contain JavaScript code which would be executed in the user's browser if this SVG is loaded in a web site. This becomes dangerous if the JavaScript code can access and change the DOM of the web site loading it. This test case uses a web site which loads an SVG in an IMG tag where the SVG is hosted on the same host. This SVG contains JS code that attempts to change the loading web site.",
-    "date_created": "06/26/2019",
+    "title": "JavaScript in SVG loaded in EMBED tag",
+    "description": "SVG images can contain JavaScript code which would be executed in the user's browser if this SVG is loaded in a web site. This becomes dangerous if the JavaScript code can access and change the DOM of the web site loading it. This test case uses a web site which loads an SVG in an EMBED tag where the SVG is hosted on the same host. This SVG contains JS code that attempts to change the loading web site.",
+    "date_created": "12/05/2019",
     "tagNums": [
       9
     ],
-    "path": "JS-in-SVG",
+    "path": "JS-in-SVG-loaded-by-embed",
     "question": "Can the JavaScript code inside the SVG change the web site's content?",
     "possibleAnswers": [
       {
@@ -538,13 +538,13 @@
   },
   "68": {
     "testNumber": 68,
-    "title": "JavaScript in SVG loaded in IMG tag",
-    "description": "SVG images can contain JavaScript code which would be executed in the user's browser if this SVG is loaded in a web site. This becomes dangerous if the JavaScript code can access and change the DOM of the web site loading it. This test case uses a web site which loads an SVG in an IMG tag where the SVG is hosted on the same host. This SVG contains JS code that attempts to change the loading web site.",
-    "date_created": "06/26/2019",
+    "title": "JavaScript in SVG loaded in OBJECT tag",
+    "description": "SVG images can contain JavaScript code which would be executed in the user's browser if this SVG is loaded in a web site. This becomes dangerous if the JavaScript code can access and change the DOM of the web site loading it. This test case uses a web site which loads an SVG in an OBJECT tag where the SVG is hosted on the same host. This SVG contains JS code that attempts to change the loading web site.",
+    "date_created": "12/05/2019",
     "tagNums": [
       9
     ],
-    "path": "JS-in-SVG",
+    "path": "JS-in-SVG-loaded-by-object",
     "question": "Can the JavaScript code inside the SVG change the web site's content?",
     "possibleAnswers": [
       {
