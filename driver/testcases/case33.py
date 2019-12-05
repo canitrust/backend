@@ -22,15 +22,15 @@ class Case33(TestCase):
             Test result MUST be set to self.data
         """
 
-        # Check the virtualhost works or not
-        webDriver.get("http://case33.test-canitrust.com/?payload=<object%20data=\"javascript:alert(1)\"></object>")
+        webDriver.get("http://case33.test-canitrust.com/?payload=%3Cobject%20data=%22javascript:(function(){p=document.createElement(%27p%27);p.id=p.innerHTML=%27exploited%27;document.body.appendChild(p)}())%22%3E%3C/object%3E")
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         try:
-            WebDriverWait(webDriver, 2).until(EC.alert_is_present())
+            WebDriverWait(webDriver, 2).until(EC.presence_of_element_located((By.ID, 'exploited')))
             self.data = {'bypassed': 1}
         except TimeoutException:
             self.data = {'bypassed': 0}
         webDriver.close()
-        return 1  
+        return 1
 
     def evaluate(self):
         self.result = self.data['bypassed']
