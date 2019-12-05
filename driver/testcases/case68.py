@@ -5,11 +5,11 @@ from selenium.webdriver.common.by import By
 from helper import Logger
 logger = Logger(__name__).logger
 
-class Case66(TestCase):
+class Case68(TestCase):
 
     def __init__(self):
         TestCase.__init__(self)
-        self.testCaseNum = 66
+        self.testCaseNum = 68
 
     def executeTest(self, webDriver):
         """ Definition of a testcase
