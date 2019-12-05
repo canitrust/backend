@@ -26,11 +26,11 @@ class Case33(TestCase):
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         try:
             WebDriverWait(webDriver, 2).until(EC.presence_of_element_located((By.ID, 'exploited')))
-            self.data = {'bypassed': 1}
+            self.data = {'CSPblocked': 0}
         except TimeoutException:
-            self.data = {'bypassed': 0}
+            self.data = {'CSPblocked': 1}
         webDriver.close()
         return 1
 
     def evaluate(self):
-        self.result = self.data['bypassed']
+        self.result = self.data['CSPblocked']
