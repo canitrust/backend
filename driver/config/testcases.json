@@ -548,15 +548,15 @@
       1,
       19
     ],
-    "path": "csp-object-xss-protection",
+    "path": "csp-object-directive-for-xss-protection",
     "question": "Does the CSP protect from this attack?",
     "possibleAnswers": [
       {
-        "ans_id": 0,
+        "ans_id": 1,
         "ans_desc": "Yes"
       },
       {
-        "ans_id": 1,
+        "ans_id": 0,
         "ans_desc": "No"
       }
     ]
