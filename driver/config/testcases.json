@@ -488,15 +488,15 @@
   },
   "31": {
     "testNumber": 31,
-    "title": "Browsers default behavior for cookie with specific path attribute.",
-    "description": "#Cookie with specific path",
-    "detailedDescription": "#",
-    "date_created": "06/11/2019",
+    "title": "Cookie with a specific path",
+    "description": "Do browsers handle the \"path\" directive of cookies correctly?",
+    "detailedDescription": "",
+    "date_created": "05/12/2019",
     "tagNums": [
       2
     ],
-    "path": "browsers-default-cookie-with-specific-path",
-    "question": "Is the browser send the cookie with specfic path attribute to diferrence path?",
+    "path": "cookie-path-directive",
+    "question": "Does the browser send cookies with a specfic path to diferrent path?",
     "possibleAnswers": [
       {
         "ans_id": 1,
