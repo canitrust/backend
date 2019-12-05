@@ -565,7 +565,7 @@
     "testNumber": 31,
     "title": "Cookie with a specific path",
     "description": "Do browsers handle the \"path\" directive of cookies correctly?",
-    "detailedDescription": "",
+    "detailedDescription": "Do browsers handle the \"path\" directive of cookies correctly?",
     "date_created": "05/12/2019",
     "tagNums": [
       2
