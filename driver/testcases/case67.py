@@ -3,6 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from helper import Logger
+import time
 logger = Logger(__name__).logger
 
 class Case67(TestCase):
@@ -16,13 +17,11 @@ class Case67(TestCase):
             Test result MUST be set to self.data
         """
         webDriver.get("https://ssl.test-canitrust.com/svg-object.html")
-        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        try:
-          WebDriverWait(webDriver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
-          p_content = webDriver.find_element_by_tag_name('p').text
-          self.data = {'content': p_content}
-        except:
-          self.data = {'content': 'no change'}
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.ID, 'changeme')))
+        # Wait for svg run script
+        time.sleep(2)
+        p_content = webDriver.find_element_by_id('changeme').text
+        self.data = {'content': p_content}
         webDriver.close()
 
         return 1
