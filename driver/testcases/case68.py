@@ -15,7 +15,7 @@ class Case66(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        webDriver.get("https://ssl.test-canitrust.com/svg-img.html")
+        webDriver.get("https://ssl.test-canitrust.com/svg-embed.html")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
         try:
           WebDriverWait(webDriver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
