@@ -561,6 +561,28 @@
       }
     ]
   },
+  "34": {
+    "testNumber": 34,
+    "title": "How browsers treat a CSP setting with an invalid directive",
+    "description": "TODO",
+    "date_created": "06/12/2019",
+    "tagNums": [
+      1,
+      19
+    ],
+    "path": "csp-with-invalid-directive",
+    "question": "Does the invalid directive break the whole CSP setting?",
+    "possibleAnswers": [
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes, the browser drops the whole CSP if it finds an invalid directive."
+      },
+      {
+        "ans_id": 1,
+        "ans_desc": "No, the browser just ignores the invalid directive."
+      }
+    ]
+  },
   "66": {
     "testNumber": 66,
     "title": "JavaScript in SVG loaded in IMG tag",
