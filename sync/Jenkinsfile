@@ -26,8 +26,8 @@ node('Dev') {
   }
 
   withCredentials([
-    usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
-    usernamePassword(credentialsId: 'mongo-prod-backup', usernameVariable: 'MONGO_PRODUCTION_USER', passwordVariable: 'MONGO_PRODUCTION_PASS'),
+    usernamePassword(credentialsId: 'mongo-sync-staging', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
+    usernamePassword(credentialsId: 'mongo-sync-prod', usernameVariable: 'MONGO_PRODUCTION_USER', passwordVariable: 'MONGO_PRODUCTION_PASS'),
     string(credentialsId: 'devMongoUrl', variable: 'MONGO_URL')
   ]) {
     def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${STAGING_DATABASE_NAME}"
