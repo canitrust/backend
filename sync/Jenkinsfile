@@ -83,6 +83,9 @@ node('Dev') {
         sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testcases --drop --jsonArray testcases.db.json"
         sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection tags --drop --jsonArray tags.db.json"
 
+        echo "Create text indexes for fields title and description"
+        sh returnStdout: true, script: "mongo ${MONGO_STAGING_URI} --ssl --eval 'db.testcases.createIndex( { title: \"text\", description: \"text\" } )'"
+
         if (fileExists('./translated.json')) {
           sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --jsonArray --mode 'upsert' --upsertFields 'testNumber','browser','browserVer'"
         }
