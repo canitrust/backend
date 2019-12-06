@@ -104,16 +104,6 @@
         "filename": "case30.py",
         "isLive": true
     },
-    "66": {
-        "modulename": "case66",
-        "filename": "case66.py",
-        "isLive": false
-    },
-    "72": {
-      "modulename": "case72",
-      "filename": "case72.py",
-      "isLive": true
-    },
     "31": {
         "modulename": "case31",
         "filename": "case31.py",
@@ -124,6 +114,11 @@
       "filename": "case33.py",
       "isLive": true
     },
+    "66": {
+        "modulename": "case66",
+        "filename": "case66.py",
+        "isLive": false
+    },
     "67": {
         "modulename": "case67",
         "filename": "case67.py",
@@ -133,5 +128,10 @@
         "modulename": "case68",
         "filename": "case68.py",
         "isLive": false
+    },
+    "72": {
+      "modulename": "case72",
+      "filename": "case72.py",
+      "isLive": true
     }
 }
