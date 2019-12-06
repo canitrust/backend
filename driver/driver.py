@@ -137,6 +137,8 @@ def run_bs_list(bs_tests):
         for bs_test in bs_tests:
             object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
             if FORCE_RERUN:
+                # Clear from the list of failed tests 
+                if DB.failed_tests.count_documents(object_dict): DB.failed_tests.remove(object_dict)
                 # search for current result not deprecated
                 current_results = DB.coll.find(object_dict)
                 for current_result in current_results:
