@@ -26,12 +26,12 @@ node('Dev') {
   }
 
   withCredentials([
-    usernamePassword(credentialsId: 'mongo-staging-backup', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
-    usernamePassword(credentialsId: 'mongo-prod-backup', usernameVariable: 'MONGO_PRODUCTION_USER', passwordVariable: 'MONGO_PRODUCTION_PASS'),
+    usernamePassword(credentialsId: 'mongo-sync-staging', usernameVariable: 'MONGO_STAGING_USER', passwordVariable: 'MONGO_STAGING_PASS'),
+    usernamePassword(credentialsId: 'mongo-sync-prod', usernameVariable: 'MONGO_PRODUCTION_USER', passwordVariable: 'MONGO_PRODUCTION_PASS'),
     string(credentialsId: 'devMongoUrl', variable: 'MONGO_URL')
   ]) {
     def MONGO_STAGING_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${STAGING_DATABASE_NAME}"
-    def MONGO_PRODUCTION_URI = "mongodb+srv://${MONGO_STAGING_USER}:${MONGO_STAGING_PASS}@${env.MONGO_STAGING_HOST}/${PRODUCTION_DATABASE_NAME}"
+    def MONGO_PRODUCTION_URI = "mongodb+srv://${MONGO_PRODUCTION_USER}:${MONGO_PRODUCTION_PASS}@${env.MONGO_PRODUCTION_HOST}/${PRODUCTION_DATABASE_NAME}"
     def lastUpdate = ''
     def dateQuery = ''
     def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
@@ -99,16 +99,17 @@ node('Dev') {
     stage('Test: UI tests on Staging') {
       dir('backend/test') {
         echo "Running UI tests on staging"
+        def ui_test_job = build job: 'staging-ui-test'
       }
     }
 
     stage('Sync to Prod') {
       dir('backend/sync') {
         echo "Syncing all data to production"
-        // echo "Dump the staging DB"
-        // sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ${STAGING_DATABASE_NAME}"
-        // echo "Imports data to the production DB"
-        // sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --ssl --drop ${STAGING_DATABASE_NAME}"
+        echo "Dump the staging DB"
+        sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ."
+        echo "Imports data to the production DB"
+        sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --db ${PRODUCTION_DATABASE_NAME} --ssl --drop --dir ${STAGING_DATABASE_NAME}"
       }
     }
   }
