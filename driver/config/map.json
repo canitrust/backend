@@ -117,12 +117,12 @@
   "67": {
     "modulename": "case67",
     "filename": "case67.py",
-    "isLive": false
+    "isLive": true
   },
   "68": {
     "modulename": "case68",
     "filename": "case68.py",
-    "isLive": false
+    "isLive": true
   },
   "72": {
     "modulename": "case72",
