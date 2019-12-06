@@ -564,7 +564,8 @@
   "34": {
     "testNumber": 34,
     "title": "How browsers treat a CSP setting with an invalid directive",
-    "description": "TODO",
+    "description": "What would happen if a Content-Security-Policy header contains an invalid directive (eg. due to a policy injection vulnerability)? Does the browser drop the whole CSP setting?",
+    "detailedDescription": "### Introduction\nImagine there is an injection vulnerability that allows attackers to control a part of the Content-Security-Policy [(CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) header, as shown in the example below.\n```\nHTTP/1.1 200\n[...]\nContent-Security-Policy: script-src 'none'; report-uri /security-alert?source=/?id=<injectable>\n[...]\n```\nIn such cases, attackers might inject an invalid directive, hoping it to break the whole CSP setting. Following payload was used for the test, note the semi-colon and the underscore at the end.\n```\n/?id=1;_\n```\nLet's find out for which browser does this trick work.\nThe idea of this testcase was first introduced by Gareth Heyes.\n[@garethheyes](https://twitter.com/garethheyes), thank you for the cool research!",
     "date_created": "06/12/2019",
     "tagNums": [
       1,
