@@ -561,6 +561,32 @@
       }
     ]
   },
+  "31": {
+    "testNumber": 31,
+    "title": "Cookie with a specific path",
+    "description": "Do browsers handle the \"path\" directive of cookies correctly?",
+    "detailedDescription": "### Introduction\nThe ``Path`` directive of cookies defines the *scope* of the cookies: what URL path the cookies should be sent to.\nThe value of the ``Path`` directive specifies a URL path that must exist in the requested URL in order for the browser to send the cookie. For example, if *Path=/path1* is set, then these paths will match and the cookie will be sent:\n* /path1\n* /path1/subpath\n* /path1/subpath/subsubpath\n\nThe cookie with *Path=/path1* must not be sent to other paths, eg. */path2*.\n### The test\nIn this testcase, we verify the default behavior of browsers to find out whether or not they handle the cookie's ``Path`` directive correctly.",
+    "date_created": "05/12/2019",
+    "tagNums": [
+      2
+    ],
+    "path": "cookie-path-directive",
+    "question": "Does the browser send cookies with a specfic path to diferrent paths?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No (expected behavior)"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes (incorrect behavior)"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error during the execution"
+      }
+    ]
+  },
   "34": {
     "testNumber": 34,
     "title": "How browsers treat CSP with an invalid Directive",
