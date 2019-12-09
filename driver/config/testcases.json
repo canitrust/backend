@@ -616,23 +616,23 @@
   },
   "32": {
     "testNumber": 32,
-    "title": "SameSite cookie",
-    "description": "Supportivity for SameSite cookie and do browsers handle the \"SameSite\" directive correctly?",
+    "title": "SameSite cookies",
+    "description": "Support for SameSite cookies or do browsers handle the \"SameSite\" directive correctly?",
     "detailedDescription": "### Introduction\nThe ``SameSite`` directive of cookies lets servers require that a cookie shouldn't be sent with cross-site requests, which provides some protection against cross-site request forgery attacks (CSRF). Below is an example:\n```\nSet-Cookie: key=value; SameSite=Strict\n```\nThe ``SameSite`` directive can be set to one of these three values:\n* **None**: The browser will send cookies with both cross-site requests and same-site requests.\n* **Strict**: The browser will not send cookies with cross-site requests.\n* **Lax**: The browser will only send cookies with cross-site requests if the request is classified as a \"top-level navigation\" request, eg. by following a link.\n\nA detailed explanation of the ``SameSite`` directive of cookies can be found here: [https://web.dev/samesite-cookies-explained/](https://web.dev/samesite-cookies-explained/)\n### The test\nThis testcase verifies the supportivity of browsers for the cookie's ``SameSite`` directive. The **Strict** value of the ``SameSite`` directive was used for the test, and the cross-site request was triggered by an embedded iframe.",
     "date_created": "06/11/2019",
     "tagNums": [
       2
     ],
-    "path": "browsers-cookie-samesite",
-    "question": "Is the browser send the cookie with samesite attribute?",
+    "path": "browsers-samesite-cookies",
+    "question": "Does the browser send cookies with SameSite attribute set to strict on cross-site requests?",
     "possibleAnswers": [
       {
         "ans_id": 1,
-        "ans_desc": "No"
+        "ans_desc": "No (expected behavior)."
       },
       {
         "ans_id": 0,
-        "ans_desc": "Yes"
+        "ans_desc": "Yes (either \"SameSite\" is not supported or this is an incorrect behavior)."
       },
       {
         "ans_id": 9,
