@@ -33,5 +33,7 @@ class Case34(TestCase):
     def evaluate(self):
         if 'exploited' in self.data['content']:
             self.result = 0
-        else:
+        elif 'safe' in self.data['content']:
             self.result = 1
+        else:
+            self.result = 9
