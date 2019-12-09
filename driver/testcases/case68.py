@@ -6,17 +6,17 @@ from helper import Logger
 import time
 logger = Logger(__name__).logger
 
-class Case66(TestCase):
+class Case68(TestCase):
 
     def __init__(self):
         TestCase.__init__(self)
-        self.testCaseNum = 66
+        self.testCaseNum = 68
 
     def executeTest(self, webDriver):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        webDriver.get("https://ssl.test-canitrust.com/svg-img.html")
+        webDriver.get("https://ssl.test-canitrust.com/svg-embed.html")
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.ID, 'changeme')))
         # Wait for svg run script
         time.sleep(2)

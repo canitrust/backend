@@ -3,5 +3,7 @@
 
 <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
 	<polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
-	<script>document.getElementById("changeme").innerHTML="SVG";</script>
+	<script type="text/javascript">
+		setTimeout(function(){with(document)body.getElementsByTagName('p')[0].innerHTML="SVG"},500)
+	</script>
 </svg>
