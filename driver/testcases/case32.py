@@ -26,13 +26,13 @@ class Case32(TestCase):
         cookie_samesite2 = webDriver.find_element(By.ID, "cookie_samesite").text
         webDriver.close()
 
-        self.data = { "cookie_samesite1" : cookie_samesite1.strip(), "cookie_sanesite2" : cookie_samesite2.strip() }
+        self.data = { "cookie_samesite1" : cookie_samesite1.strip(), "cookie_samesite2" : cookie_samesite2.strip() }
         return 1
 
     def evaluate(self):
         result = 0
         if self.data['cookie_samesite1'] == "YES":
-            if self.data['cookie_sanesite2'] ==  "NO":
+            if self.data['cookie_samesite2'] ==  "NO":
                 result = 1
         else:
             result=9
