@@ -563,23 +563,54 @@
   },
   "31": {
     "testNumber": 31,
-    "title": "Browsers default behavior for cookie with specific path attribute.",
-    "description": "#Cookie with specific path",
-    "detailedDescription": "#",
-    "date_created": "06/11/2019",
+    "title": "Cookie with a specific path",
+    "description": "Do browsers handle the \"path\" directive of cookies correctly?",
+    "detailedDescription": "### Introduction\nThe ``Path`` directive of cookies defines the *scope* of the cookies: what URL path the cookies should be sent to.\nThe value of the ``Path`` directive specifies a URL path that must exist in the requested URL in order for the browser to send the cookie. For example, if *Path=/path1* is set, then these paths will match and the cookie will be sent:\n* /path1\n* /path1/subpath\n* /path1/subpath/subsubpath\n\nThe cookie with *Path=/path1* must not be sent to other paths, eg. */path2*.\n### The test\nIn this testcase, we verify the default behavior of browsers to find out whether or not they handle the cookie's ``Path`` directive correctly.",
+    "date_created": "05/12/2019",
     "tagNums": [
       2
     ],
-    "path": "browsers-default-cookie-with-specific-path",
-    "question": "Is the browser send the cookie with specfic path attribute to diferrence path?",
+    "path": "cookie-path-directive",
+    "question": "Does the browser send cookies with a specfic path to diferrent paths?",
     "possibleAnswers": [
       {
         "ans_id": 1,
-        "ans_desc": "No"
+        "ans_desc": "No (expected behavior)"
       },
       {
         "ans_id": 0,
-        "ans_desc": "Yes"
+        "ans_desc": "Yes (incorrect behavior)"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error during the execution"
+      }
+    ]
+  },
+  "34": {
+    "testNumber": 34,
+    "title": "How browsers treat CSP with an invalid Directive",
+    "description": "What would happen if a Content-Security-Policy header contains an invalid directive (eg. due to a policy injection vulnerability)? Does the browser drop the whole CSP setting?",
+    "detailedDescription": "### Introduction\nThe [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) or CSP allows a web application to give detailed instructions to the browser about how to handle its content. This usually happens with an HTTP header like:\n``` \nContent-Security-Policy: script-src 'none'; report-uri /security-alert\n```\nThe above example tells the browser to not execute any Javascript code. An in case of a policy violation, the browser should report to the URL specified in the ``report-uri`` directive.\n### Problem\nImagine there is an injection vulnerability that allows attackers to control a part of the Content-Security-Policy header, as shown in the example below.\n```\nHTTP/1.1 200\n[...]\nContent-Security-Policy: script-src 'none'; report-uri /security-alert?source=/?id=<injectable>\n[...]\n```\nIn such cases, attackers might inject an invalid directive, hoping it to break the whole CSP setting. Following payload was used for the test, note the semi-colon and the underscore at the end.\n```\n/?id=1;_\n```\n### How does the browser react?\nWhen the browser receives such CSP header, it has the following two options:\n1. It might just ignores the invalid part and ``still apply the other valid directives``\n2. It treats the whole CSP header as an invalid one and ``does not apply any restriction``.  \n \nThe second option is considered a dangerous behavior as it might allow attackers to bypass strict CSP settings.  \n### Credit\nThe idea of this testcase was first introduced by Gareth Heyes.\n[@garethheyes](https://twitter.com/garethheyes), thank you for the cool research!",
+    "date_created": "06/12/2019",
+    "tagNums": [
+      1,
+      19
+    ],
+    "path": "csp-with-invalid-directives",
+    "question": "Does the invalid directive break the whole CSP setting?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No, the browser just ignores the invalid directive."
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes, the browser drops the whole CSP if it finds an invalid directive."
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error during the execution."
       }
     ]
   },
