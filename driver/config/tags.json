@@ -27,10 +27,6 @@
     "tagNumber": 7,
     "tagText": "Contradicting-Headers"
   },
-  "8": {
-    "tagNumber": 8,
-    "tagText": "HSTS-includeSubdomains"
-  },
   "9": {
     "tagNumber": 9,
     "tagText": "SVG"
