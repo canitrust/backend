@@ -2,7 +2,7 @@
   "1": {
     "modulename": "case1",
     "filename": "case1.py",
-    "isLive": true
+    "isLive": false
   },
   "2": {
     "modulename": "case2",
