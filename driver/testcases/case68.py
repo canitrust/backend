@@ -28,9 +28,9 @@ class Case68(TestCase):
 
     def evaluate(self):
         if self.data['content'] == 'no change':
-          result = 1
-        elif self.data['content'] == 'SVG':
           result = 0
+        elif self.data['content'] == 'SVG':
+          result = 1
         else:
           result = 9
 
