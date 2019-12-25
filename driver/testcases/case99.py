@@ -27,7 +27,7 @@ class Case99(TestCase):
         webDriver.close()
 
         if (div_result == 'div_result'):
-            self.data = {'div_result': '-99'}
+            self.data = {'div_result': '9'}
         else:
             self.data = {'div_result': div_result}
 
@@ -35,8 +35,8 @@ class Case99(TestCase):
 
     def evaluate(self):
 	# Possible results:
-	# -99 = driver issue
-	# -1  = JS/page issue
+	#  9 = driver issue
+	#  8  = JS/page issue
 	#  0  = test succeeded, nothing executed
 	# >0  = test succeeded, something executed ("something" defined by value)
         self.result = self.data['div_result']
