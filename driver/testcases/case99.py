@@ -27,9 +27,9 @@ class Case99(TestCase):
         webDriver.close()
 
         if (div_result == 'div_result'):
-            self.data = {'div_result': '9'}
+            self.data = {'div_result': 9}
         else:
-            self.data = {'div_result': div_result}
+            self.data = {'div_result': int(div_result)}
 
         return 1
 
