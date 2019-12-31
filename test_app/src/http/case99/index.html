@@ -19,7 +19,7 @@ function printresult(test, result)
 
 	var totalWeight = 0;
 	var endTest = true;
-	for(let c in allResults)
+	for(var c in allResults)
 	{
 		if(allResults[c]['result'] === undefined)
 			endTest = false;
@@ -32,7 +32,7 @@ function printresult(test, result)
 
 	if(endTest)
 		document.title = 'finished';
-}
+};
 
 </script>
 

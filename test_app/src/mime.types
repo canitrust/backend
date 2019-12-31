@@ -1,6 +1,3 @@
-application/x-httpd-php		json
-#application/json				json
-
 # This file maps Internet media types to unique file extension(s).
 # Although created for httpd, this file is used by many software systems
 # and has been placed in the public domain for unlimited redisribution.
@@ -149,6 +146,7 @@ application/javascript				js
 # application/jose
 # application/jose+json
 # application/jrd+json
+application/json				json
 # application/json-patch+json
 # application/json-seq
 application/jsonml+json				jsonml

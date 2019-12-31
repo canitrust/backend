@@ -70,5 +70,17 @@
   "19": {
     "tagNumber": 19,
     "tagText": "XSS"
+  },
+  "20": {
+    "tagNumber": 20,
+    "tagText": "Content-Type"
+  },
+  "21": {
+    "tagNumber": 21,
+    "tagText": "MIME"
+  },
+  "22": {
+    "tagNumber": 22,
+    "tagText": "X-Content-Type-Options-nosniff"
   }
 }

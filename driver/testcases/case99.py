@@ -20,7 +20,7 @@ class Case99(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        webDriver.get("http://jsonpinc.test-canitrust.com/case99/index.html")
+        webDriver.get("http://case99.test-canitrust.com/index.html")
         WebDriverWait(webDriver, 10).until(EC.title_contains(('finished')))
         div_result = webDriver.find_element_by_tag_name("div").text
 
