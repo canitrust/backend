@@ -752,5 +752,61 @@
         "ans_desc": "Error in test execution"
       }
     ]
+  },
+  "99": {
+    "testNumber": 99,
+    "title": "Content-Type values allowing for script execution with nosniff enabled",
+    "description": "When the server sends the response header \"X-Content-Type-Options: nosniff\" together with \"Content-Type: application/json\" or \"Content-Type: text/json\", will the browser treat  the response body as a script?",
+    "detailedDescription": "Some time ago, JSON files were treated as valid Javascript sources. This was true at least for some versions of Firefox, as hinted in the following Mozila blog post: [Mozilla Security Blog: Mitigating MIME Confusion Attacks in Firefox 50](https://blog.mozilla.org/security/2016/08/26/mitigating-mime-confusion-attacks-in-firefox/):\n\n```\n[...]\nValid Content-Types for Scripts:\n– “application/javascript”\n– “application/x-javascript”\n– “application/ecmascript”\n– “application/json”\t\t\t<---\n– “text/ecmascript”\n– “text/javascript”\n– “text/json”\t\t\t<---\n```\nThis behavior of Firefox browser was changed in [Mozilla Firefox 60](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/60) release: \n```\n[...]\nSecurity\nThe X-Content-Type-Options header, when set to no-sniff, now follows the specification for JavaScript MIME types. In particular, text/json and application/json are no longer valid values (bug 1431095).\n```\nThis testcase tests which browser/version accepts JSON files (`application/json` and `text/json`) as valid `Content-Type` for Javascript.",
+    "date_created": "28/12/2019",
+    "tagNums": [
+      20,
+      21,
+      22
+    ],
+    "path": "nosniff-content-type-script-execution",
+    "question": "Which Content-Types are considered valid for script execution?",
+    "possibleAnswers": [
+      {
+        "ans_id": 0,
+        "ans_desc": "No scripts executed"
+      },
+      {
+        "ans_id": 1,
+        "ans_desc": "text/javascript"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "application/json"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "text/javascript, application/json"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "text/json"
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "text/javascript, text/json"
+      },
+      {
+        "ans_id": 6,
+        "ans_desc": "application/json, text/json"
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "text/javascript, application/json, text/json"
+      },
+      {
+        "ans_id": 8,
+        "ans_desc": "Error in test execution (browser)"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error in test execution (framework)"
+      }
+    ]
   }
 }

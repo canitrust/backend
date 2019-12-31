@@ -1,0 +1,43 @@
+<html>
+
+<div id="status">8</div>
+
+<script>
+
+var allResults = 
+{
+	"default": 		{"weight": 1, "result": undefined}, 
+	"application-json": 	{"weight": 2, "result": undefined}, 
+	"text-json": 		{"weight": 4, "result": undefined}
+};
+
+
+function printresult(test, result)
+{
+
+	allResults[test]['result'] = result;
+
+	var totalWeight = 0;
+	var endTest = true;
+	for(var c in allResults)
+	{
+		if(allResults[c]['result'] === undefined)
+			endTest = false;
+		else if(allResults[c]['result'] === 'loaded')
+			totalWeight += allResults[c]['weight'];
+	}
+
+	// totalWeight = totalWeight +' ('+navigator.userAgent+')';  //UA debug
+	document.getElementById('status').innerHTML = totalWeight;
+
+	if(endTest)
+		document.title = 'finished';
+};
+
+</script>
+
+<script src="script.json?type=default"          onerror="printresult('default', 'blocked')"></script>
+<script src="script.json?type=application-json" onerror="printresult('application-json', 'blocked')"></script>
+<script src="script.json?type=text-json"        onerror="printresult('text-json', 'blocked')"></script>
+
+</html>
