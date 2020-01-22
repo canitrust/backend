@@ -9,9 +9,9 @@ This is where CanITrust.in comes to the rescue. Inspired by the great [caniuse.c
 Please check out the corresponding [guide](https://github.com/canitrust/backend/wiki/How-to-contribute).
 
 ## Cross-browser testing
-Cross-browser testing is provided by BrowserStack free of charge.
+Cross-browser testing is provided by [Browserstack](https://www.browserstack.com/) free of charge.
 
-Special thanks to [Browserstack](https://www.browserstack.com/) for supporting CanITrust.
+Special thanks to Browserstack for supporting CanITrust.
 
 [![Browserstack](http://wallpapers-for-ipad.com/fullpage/imgs3/logos/browserstack3.png)](https://www.browserstack.com/)
 
