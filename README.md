@@ -11,7 +11,7 @@ Please check out the corresponding [guide](https://github.com/canitrust/backend/
 ## Cross-browser testing
 Cross-browser testing is provided by BrowserStack free of charge. 
 Special thanks to [Browserstack](https://www.browserstack.com/) for supporting CanITrust. 
-[![Browserstack](http://wallpapers-for-ipad.com/fullpage/imgs3/logos/browserstack3.png)](http://www.browserstack.com/)
+[![Browserstack](http://wallpapers-for-ipad.com/fullpage/imgs3/logos/browserstack3.png)](https://www.browserstack.com/)
 
 ## License
 
