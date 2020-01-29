@@ -614,6 +614,42 @@
       }
     ]
   },
+  "36": {
+    "testNumber": 36,
+    "title": "For which Content-Type header browser perform MIME sniffing?",
+    "description": "MIME sniffing (or content sniffing) could lead to Cross-Site-Scripting (XSS). It is unclear when does the browsers perform MIME sniffing. Here we test the behavior for different Content-Type headers in the reponse.",
+    "detailedDescription": "### Introduction\nWe generally recommend to set the security header `X-Content-Type-Options: nosniff` for protections against MIME sniffing and eventually Cross-Site-Scripting (XSS) vulnerabilities.\nSince it is unclear, when the different browsers perform MIME sniffing, we conducted a test with different `Content-Type` headers in the servers response. \n\n### Problem\nImaging an application which provides a file upload to it's users, e.g. image upload. Additioanlly, these images can be accessed via direct link after the upload. If an attacker can upload files, which contain HTML including JavaScript and the application serves these files afterwards, it could be possible that the browser is sniffing the content, recognizing the HTML and renders it. Then we have an XSS vulnerability.\nThis attack only works, if the browser performs MIME sniffing. We want to understand which `Content-Type` headers still cause sniffing and what are the differences between the browsers.\nIn our responses we varied different common `Content-Type` header values and some unusual values. The body contained HTML with XSS payload. If the browser performs MIME sniffing and renderes the HTML, the XSS will be exploited.\n\n### For which Content-Type the browser still sniffs the content?\nWhich `Content-Type` header values still lead to MIME sniffing.\n1. Only text/html. (No sniffing, expected behavior)\n2. 1 more \n3. 2 more\n4. 3 more\n5. 4 more\n",
+    "date_created": "29/01/2020",
+    "tagNums": [
+      20,
+      21,
+      22
+    ],
+    "path": "mime-sniffing_content-type",
+    "question": "For which Content-Type header browser perform MIME sniffing?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "Only text/html. (No sniffing, expected behavior)"
+      },
+      {
+        "ans_id": 2,
+        "ans_desc": "1 more"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "2 more"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "3 more"
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "4 more"
+      }
+    ]
+  },
   "32": {
     "testNumber": 32,
     "title": "SameSite cookies",
