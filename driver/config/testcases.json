@@ -614,6 +614,30 @@
       }
     ]
   },
+  "35": {
+    "testNumber": 35,
+    "title": "Which browsers perform MIME sniffing even if X-Content-Type-Options: nosniff is set?",
+    "description": "MIME sniffing (or content sniffing) could lead to Cross-Site-Scripting (XSS). Therefore, the web server can add the X-Content-Type-Options: nosniff header to the responses. However, it seems not all browsers follow this directive.",
+    "detailedDescription": "### Introduction\nWe generally recommend to set the security header `X-Content-Type-Options: nosniff`. This header was intruduced to prevent browsers from sniffing of the content and potentially render HTML including JavaScript.\nIt seems some browser still perform MIME sniffing, even this header is set. Eventually, one these browser it is possible to perform Cross-Site-Scripting (XSS) attacks.\n\n### Problem\nImaging an application which provides a file upload to it's users, e.g. image upload. Additioanlly, these images can be accessed via direct link after the upload. If an attacker can upload files, which contain HTML including JavaScript and the application serves these files afterwards, it could be possible that the browser is sniffing the content, recognizing the HTML and renders it. Then we have an XSS vulnerability.\nBrowsers usually only performs sniffing in case of inconsitancuies between file type and the Content-Type header. However, these situations can maybe be forced by an attacker, due to missing input validation and inconsitancies between web server and the programing language.\nTo prevent content sniffing, the `X-Content-Type-Options: nosniff` header was intruduced, which  should prevent browsers from sniffing of the content.\nIt seems, that some browser still perform MIME sniffing in some situations. Mozilla explains the nosniff directive forces Firefox to use \"the MIME types advertised in the Content-Type header\". But what if no Content-Type header is provided? In this test we check how the browsers behave, when the nosniff attribute is provided, but no Content-Type header is served. This is usual behavior when the web server does not know the file type. The file which is returned in the response contains content of the following structure:\n`<img src=x onerror=alert(1)><!--[+binary stuff]`\nas proposed by Hanno Böck: https://www.youtube.com/watch?v=8t8JYpt0egE\nIf the browser performs MIME sniffing and renderes the HTML, the XSS will be exploited.\n\n### How does the browser react?\nDoes the browser perform MIME sniffing when `X-Content-Type-Options: nosniff` is set but no `Content-Type` is provided?:\n1. No.\n2. Yes.  \n \nThe second option is considered a dangerous behavior as it might allow attackers to exploit XSS attacks.",
+    "date_created": "06/01/2020",
+    "tagNums": [
+      20,
+      21,
+      22
+    ],
+    "path": "mime-sniffing",
+    "question": "Did the browser perform MIME sniffing if `nosniff` is provided but no Content-Type?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No, the browser was not sniffing."
+      },
+      {
+        "ans_id": 7,
+        "ans_desc": "Yes, the browser sniffed the content, rendered the HTML and JavaScript was executed."
+      }
+    ]
+  },
   "36": {
     "testNumber": 36,
     "title": "For which Content-Type header browser perform MIME sniffing?",
