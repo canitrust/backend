@@ -132,7 +132,7 @@
   "36": {
     "modulename": "case36",
     "filename": "case36.py",
-    "isLive": false
+    "isLive": true
   },
   "66": {
     "modulename": "case66",

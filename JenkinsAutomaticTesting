@@ -1,7 +1,7 @@
 node('Dev') {
     cleanWs()
     def repo = 'backend'
-    def browserstackCredentials = 'bs_user_key'
+    def browserstackCredentials = 'bs_free_user_key'
     def devMongoUrl = 'cit-dev-mongo-url'
     def running_output
     def cit_new_tests = 0
