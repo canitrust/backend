@@ -110,77 +110,63 @@ class Case36(TestCase):
         
         self.data = {}
 
-        # start loop
-        for content_type in content_types:
-            # create new temp webDriver for each Content-Type test
-            tmpWebDriver = TestCase.spawnWebDriver()
+        if "firefox" in self.browser.lower():
+            # this test does not runs in Firefox
+            for content_type in content_types:
+                self.data[content_type] = "aborted"
+        else:
+            # start loop
+            for content_type in content_types:
+                # create new temp webDriver for each Content-Type test
+                tmpWebDriver = TestCase.spawnWebDriver()
 
-            # load defaulf page as a primary test
-            tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/")
-            try:
-                WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-            except:
-                # error with test
-                logger.debug("error loading test site")
+                # load defaulf page as a primary test
+                tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/")
+                try:
+                    WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                except:
+                    # error with test
+                    logger.debug("error loading test site")
 
-            # setup time for the case when webdriver stucks at the download window            
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(5) #Set the parameter to the amount of seconds you want to wait
-            
-            try:
-                tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(content_type))
-                # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
-                # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
-            except Exception as e:
-                # the exception rises when the time set (see above) exceeded when performing the steps in try
-                # in the case the download window shows up, the webdriver hangs and needs to be killed
-                self.data[content_type] = "download"
+                # setup time for the case when webdriver stucks at the download window            
+                signal.signal(signal.SIGALRM, handler)
+                signal.alarm(5) #Set the parameter to the amount of seconds you want to wait
+                
                 try:
-                    os.system("ps -C firefox -o pid=|xargs kill -9") # kills all firefox sessions on linux based systems (local)
-                except:
-                    pass
-                try:
-                    os.system("ps -C safari -o pid=|xargs kill -9") # kills all safari sessions (OSX)
-                except:
-                    pass
-                try:
-                    os.system("taskkill /f /im  firefox.exe") # kills firefox in Windows system
-                except:
-                    pass
-                try:
-                    os.system("taskkill /f /im  chrome.exe") # kills Chrome in Windows system
-                except:
-                    pass
-                try:
-                    os.system("taskkill /f /im  MicrosoftEdge.exe") # kills MicrosoftEdge in Windows system
-                except:
-                    pass
-                try:
-                    os.system("taskkill /f /im  iexplore.exe") # kills IE in Windows system
-                except:
-                    pass
-                continue
+                    tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(content_type))
+                    # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
+                    # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
+                except Exception as e:
+                    # the exception rises when the time set (see above) exceeded when performing the steps in try
+                    # in the case the download window shows up, the webdriver hangs and needs to be killed
+                    self.data[content_type] = "download"
+                    try:
+                        os.system("ps -C firefox -o pid=|xargs kill -9") # kills all firefox sessions on linux based systems (local)
+                        # only required for Firefox when running a local test
+                    except:
+                        pass
+                    continue
 
-            signal.alarm(10) #Resets the alarm to 10 new seconds
-            signal.alarm(0) #Disables the alarm 
+                signal.alarm(10) #Resets the alarm to 10 new seconds
+                signal.alarm(0) #Disables the alarm 
 
-            # evaluation phase
-            try:
-                WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-                oHeadline = tmpWebDriver.find_element_by_id('headline')
-                textHeadline = str(oHeadline.get_attribute('innerHTML'))
-                if (textHeadline == "XSS exploited"):
-                    self.data[content_type] = "exploited"
-                else:
+                # evaluation phase
+                try:
+                    WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                    oHeadline = tmpWebDriver.find_element_by_id('headline')
+                    textHeadline = str(oHeadline.get_attribute('innerHTML'))
+                    if (textHeadline == "XSS exploited"):
+                        self.data[content_type] = "exploited"
+                    else:
+                        self.data[content_type] = "not sniffed"
+                except:
                     self.data[content_type] = "not sniffed"
-            except:
-                self.data[content_type] = "not sniffed"
-            tmpWebDriver.close()
-            #logger.debug(self.data)
-            logger.debug(content_type + ": " + self.data[content_type])
-        # end loop
-        webDriver = TestCase.spawnWebDriver() # creates new webDriver (because original webDriver is probably killed)
-        return 1
+                tmpWebDriver.close()
+                #logger.debug(self.data)
+                logger.debug(content_type + ": " + self.data[content_type])
+            # end loop
+            webDriver = TestCase.spawnWebDriver() # creates new webDriver (because original webDriver is probably killed)
+            return 1
 
     def evaluate(self):
         logger.debug("--== Data evaluation ==--")
@@ -193,5 +179,8 @@ class Case36(TestCase):
                 # response sniffed, rendered and XSS exploited
                 counter = counter + 1
         logger.debug("No. of exploited Content-Types: " + str(counter))
-        result = counter # 1=green, expected from text/html, all above will result in higher result/different color
+        if counter != 0:
+            result = counter # 1=green, expected from text/html, all above will result in higher result/different color
+        else:
+            result = 8 # special case when Firefox test is skipped
         self.result = result
