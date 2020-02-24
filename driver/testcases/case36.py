@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------------
 #  Copyright (c) mgm security partners GmbH. All rights reserved.
 #  Licensed under the AGPLv3 License. See LICENSE.md in the project root for license information.
-#-------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 
 from testcases.testCase import TestCase
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,7 +10,8 @@ from selenium.webdriver.common.by import By
 from helper import Logger
 import urllib.parse
 import time as time
-import os, signal
+import os
+import signal
 
 logger = Logger(__name__).logger
 
@@ -89,13 +90,16 @@ content_types = [
     # "audio/3gpp2",
     # "application/x-7z-compressed",
     "aaa",
-    "some/thing" 
+    "some/thing"
 ]
 
-#Close session
+# Close session
+
+
 def handler(signum, frame):
     raise Exception('Action took too much time')
     # source: https://stackoverflow.com/questions/3810869/python-timeout-of-try-except-statement-after-x-number-of-seconds
+
 
 class Case36(TestCase):
 
@@ -107,10 +111,11 @@ class Case36(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-        
+
         self.data = {}
 
         if "firefox" in self.browser.lower():
+            logger.debug("Skipping " + self.browser)
             # this test does not runs in Firefox
             for content_type in content_types:
                 self.data[content_type] = "aborted"
@@ -118,61 +123,67 @@ class Case36(TestCase):
             # start loop
             for content_type in content_types:
                 # create new temp webDriver for each Content-Type test
-                tmpWebDriver = TestCase.spawnWebDriver()
+                tmpWebDriver = TestCase.respawn(self)
 
                 # load defaulf page as a primary test
                 tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/")
                 try:
-                    WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                    WebDriverWait(tmpWebDriver, 10).until(
+                        EC.presence_of_element_located((By.TAG_NAME, 'body')))
                 except:
                     # error with test
                     logger.debug("error loading test site")
 
-                # setup time for the case when webdriver stucks at the download window            
+                # setup time for the case when webdriver stucks at the download window
                 signal.signal(signal.SIGALRM, handler)
-                signal.alarm(5) #Set the parameter to the amount of seconds you want to wait
-                
+                # Set the parameter to the amount of seconds you want to wait
+                signal.alarm(5)
+
                 try:
-                    tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(content_type))
+                    tmpWebDriver.get(
+                        "https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(content_type))
                     # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
                     # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
                 except Exception as e:
                     # the exception rises when the time set (see above) exceeded when performing the steps in try
                     # in the case the download window shows up, the webdriver hangs and needs to be killed
+                    logger.debug(str(e))
                     self.data[content_type] = "download"
-                    try:
-                        os.system("ps -C firefox -o pid=|xargs kill -9") # kills all firefox sessions on linux based systems (local)
-                        # only required for Firefox when running a local test
-                    except:
-                        pass
-                    continue
+                    logger.debug(content_type + ": " + self.data[content_type])
+                    # tmpWebDriver.close()
+                    # continue
 
-                signal.alarm(10) #Resets the alarm to 10 new seconds
-                signal.alarm(0) #Disables the alarm 
+                signal.alarm(10)  # Resets the alarm to 10 new seconds
+                signal.alarm(0)  # Disables the alarm
 
                 # evaluation phase
                 try:
-                    WebDriverWait(tmpWebDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                    WebDriverWait(tmpWebDriver, 10).until(
+                        EC.presence_of_element_located((By.TAG_NAME, 'body')))
                     oHeadline = tmpWebDriver.find_element_by_id('headline')
                     textHeadline = str(oHeadline.get_attribute('innerHTML'))
                     if (textHeadline == "XSS exploited"):
                         self.data[content_type] = "exploited"
                     else:
                         self.data[content_type] = "not sniffed"
+
                 except:
                     self.data[content_type] = "not sniffed"
+
                 tmpWebDriver.close()
-                #logger.debug(self.data)
+                # logger.debug(self.data)
                 logger.debug(content_type + ": " + self.data[content_type])
             # end loop
-            webDriver = TestCase.spawnWebDriver() # creates new webDriver (because original webDriver is probably killed)
+            # wait until all drivers are done
+            while len(self.data) != len(content_types):
+                webDriver.close()
             return 1
 
     def evaluate(self):
         logger.debug("--== Data evaluation ==--")
         logger.debug(self.data)
         counter = 0
-        result = 1 # green
+        result = 1  # green
         for content_type in content_types:
             logger.debug(content_type + ": " + self.data[content_type])
             if ('exploited' in self.data[content_type]):
@@ -180,7 +191,7 @@ class Case36(TestCase):
                 counter = counter + 1
         logger.debug("No. of exploited Content-Types: " + str(counter))
         if counter != 0:
-            result = counter # 1=green, expected from text/html, all above will result in higher result/different color
+            result = counter  # 1=green, expected from text/html, all above will result in higher result/different color
         else:
-            result = 8 # special case when Firefox test is skipped
+            result = 8  # special case when Firefox test is skipped
         self.result = result

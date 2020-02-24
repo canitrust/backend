@@ -137,7 +137,7 @@ class TestCase:
                 logger.error('Quit webdriver - Failed')
             data = self.get_data()
             return data
-    
+
     # Run the testcase against a specific browser version
     def runnotsave(self, platform, osversion, browser, version, key, user):
         """ Run the testcase against a specific browser version
@@ -185,11 +185,11 @@ class TestCase:
             logger.debug('Result:{}'.format(data))
             return data
     def runLocal(self):
-        """ Run the testcase against a local Firefox(geckodriver) 
+        """ Run the testcase against a local Firefox(geckodriver)
             geckodriver: version 0.24.0
             Firefox: latest
         """
-        
+
         # set all the necessary field for displaying result
         self.browser = "Firefox/Gecko"
         self.version = "latest"
@@ -246,11 +246,11 @@ class TestCase:
         profile.set_preference("browser.cache.memory.enable", False)
         profile.set_preference("browser.cache.offline.enable", False)
         profile.set_preference("network.http.use-cache", False)
-        profile.set_preference("security.csp.enable", True);
+        profile.set_preference("security.csp.enable", True)
         webDriver = webdriver.Firefox(firefox_profile=profile, capabilities=capabilities,firefox_options=options)
         return webDriver
 
-    
+
 
     def testSpawnBS(platform,osversion,browser,version,api_key,userBs):
         desired_cap = {
@@ -278,14 +278,14 @@ class TestCase:
                 command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
                 desired_capabilities=desired_cap)
         return driver
-    
+
     def evaluate(self):
         """ This function MUST be extended in testcase definition class
             Evaluate the raw data collected from browserstack to one of the expected results
             Evaluated result (int) must be compliant with the testcase definition
         """
         pass
-    
+
     def translate(backendFormatData):
         """ Static function
             Translate data in BackendDB format to the FrontendDB format
@@ -293,7 +293,7 @@ class TestCase:
         try:
             browser_ver = float(backendFormatData['version'].replace(' beta','5'))
         except:
-            browser_ver = backendFormatData['version'] 
+            browser_ver = backendFormatData['version']
         translatedData = {
             "testNumber": backendFormatData['testCaseNum'],
             "browser": backendFormatData['browser'].capitalize(),
