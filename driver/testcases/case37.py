@@ -15,20 +15,20 @@ class Case37(TestCase):
         self.testCaseNum = 37
 
     def executeTest(self, webDriver):
-        webDriver.get("http://csp5.test-canitrust.com/demo1.html")
+        webDriver.get("http://csp5.test-canitrust.com/contradict-csp-header-and-meta1.html")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content1 = webDriver.find_element_by_id('demo1').text
-        webDriver.get("http://csp6.test-canitrust.com/demo2.html")
+        content1 = webDriver.find_element_by_id('content1').text
+        webDriver.get("http://csp6.test-canitrust.com/contradict-csp-header-and-meta2.html")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content2 = webDriver.find_element_by_id('demo2').text
+        content2 = webDriver.find_element_by_id('content2').text
         webDriver.close()
 
         self.data = { 'content1': content1, 'content2': content2 }
         return 1
 
     def evaluate(self):
-        if self.data['content1'] == 'Demo1':
-          if self.data['content2'] == 'Demo2':
+        if self.data['content1'] == 'Content1':
+          if self.data['content2'] == 'Content2':
             result = 2
         else:
           result = 0
