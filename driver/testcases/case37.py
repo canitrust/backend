@@ -39,8 +39,8 @@ class Case37(TestCase):
                       'Meta page 1': content2,
                       'Header page 2': content3,
                       'Meta page 2': content4,
-                      'Is Stricter page 1': content5,
-                      'Is Stricter page 2': content6 }
+                      'Is Looser page 1': content5,
+                      'Is Looser page 2': content6 }
         return 1
 
     def evaluate(self):
