@@ -24,17 +24,17 @@ class Case37(TestCase):
         webDriver.close()
 
         if content1 == 'No' and content2 == 'No':
-            self.data = { 'Stricter declaration win page 1': content1,
-                        'Stricter declaration win page 2': content2,}
+            self.data = {'Stricter page 1 win, is script run?': content1,
+                        'Stricter page 2 win, is script run?': content2,}
         elif content1 == 'Yes' and content2 == 'No':
-            self.data = { 'Meta win page 1': content1,
-                        'Header win page 2': content2,}
+            self.data = {'Meta page 1 win, is script run?': content1,
+                        'Meta page 2 win, is script run?': content2,}
         elif content1 == 'No' and content2 == 'Yes':
-            self.data = { 'Header win page 1': content1,
-                        'Meta win page 2': content2,}
+            self.data = {'Header page 1 win, is script run?': content1,
+                        'Header page 2 win, is script run?': content2,}
         elif content1 == 'Yes' and content2 == 'Yes':
-            self.data = {'Looser declaration win page 1': content1,
-                        'Looser declaration win page 2': content2}
+            self.data = {'Looser page 1 win, is script run?': content1,
+                        'Looser page 2 win, is script run?': content2}
         return 1
 
     def evaluate(self):
