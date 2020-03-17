@@ -17,36 +17,30 @@ class Case37(TestCase):
     def executeTest(self, webDriver):
         webDriver.get("http://csp5.test-canitrust.com/contradict-csp-header-and-meta1.html")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content1 = webDriver.find_element_by_id('content1').text
+        content1 = webDriver.find_element_by_id('text').text
         webDriver.get("http://csp6.test-canitrust.com/contradict-csp-header-and-meta2.html")
         WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content2 = webDriver.find_element_by_id('content2').text
-        webDriver.get("http://csp7.test-canitrust.com/contradict-csp-header-and-meta3.html")
-        WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content3 = webDriver.find_element_by_id('content3').text
-        webDriver.get("http://csp8.test-canitrust.com/contradict-csp-header-and-meta4.html")
-        WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content4 = webDriver.find_element_by_id('content4').text
-        webDriver.get("http://csp9.test-canitrust.com/contradict-csp-header-and-meta5.html")
-        WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content5 = webDriver.find_element_by_id('content5').text
-        webDriver.get("http://csp10.test-canitrust.com/contradict-csp-header-and-meta6.html")
-        WebDriverWait(webDriver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'script')))
-        content6 = webDriver.find_element_by_id('content6').text
+        content2 = webDriver.find_element_by_id('text').text
         webDriver.close()
 
-        self.data = { 'Header page 1': content1,
-                      'Meta page 1': content2,
-                      'Header page 2': content3,
-                      'Meta page 2': content4,
-                      'Is Looser page 1': content5,
-                      'Is Looser page 2': content6 }
+        if content1 == 'No' and content2 == 'No':
+            self.data = { 'Stricter declaration win page 1': content1,
+                        'Stricter declaration win page 2': content2,}
+        elif content1 == 'Yes' and content2 == 'No':
+            self.data = { 'Meta win page 1': content1,
+                        'Header win page 2': content2,}
+        elif content1 == 'No' and content2 == 'Yes':
+            self.data = { 'Header win page 1': content1,
+                        'Meta win page 2': content2,}
+        elif content1 == 'Yes' and content2 == 'Yes':
+            self.data = {'Looser declaration win page 1': content1,
+                        'Looser declaration win page 2': content2}
         return 1
 
     def evaluate(self):
         if self.data:
             result = 2
         else:
-          result = 0
+            result = 0
 
         self.result = result
