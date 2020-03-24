@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 
 class Case37(TestCase):
-
+    idResult = 0
     def __init__(self):
         TestCase.__init__(self)
         self.testCaseNum = 37
@@ -24,22 +24,26 @@ class Case37(TestCase):
         webDriver.close()
 
         if content1 == 'No' and content2 == 'No':
-            self.data = {'Stricter page 1 win, is script run?': content1,
-                        'Stricter page 2 win, is script run?': content2,}
+            self.data = {'Script run with Stricter page 1': content1,
+                        'Script run with Stricter page 2': content2,}
+            Case37.idResult = 2
         elif content1 == 'Yes' and content2 == 'No':
-            self.data = {'Meta page 1 win, is script run?': content1,
-                        'Meta page 2 win, is script run?': content2,}
+            self.data = {'Script run with header page 1': content1,
+                        'Script run with header page 2': content2,}
+            Case37.idResult = 3
         elif content1 == 'No' and content2 == 'Yes':
-            self.data = {'Header page 1 win, is script run?': content1,
-                        'Header page 2 win, is script run?': content2,}
+            self.data = {'Script run with meta page 1': content1,
+                        'Script run with meta page 2': content2,}
+            Case37.idResult = 4
         elif content1 == 'Yes' and content2 == 'Yes':
-            self.data = {'Looser page 1 win, is script run?': content1,
-                        'Looser page 2 win, is script run?': content2}
+            self.data = {'Script run with Looser page 1': content1,
+                        'Script run with Looser page 2': content2}
+            Case37.idResult = 5
         return 1
 
     def evaluate(self):
         if self.data:
-            result = 2
+            result = Case37.idResult
         else:
             result = 0
 
