@@ -9,7 +9,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 
 class Case37(TestCase):
-    idResult = 0
     def __init__(self):
         TestCase.__init__(self)
         self.testCaseNum = 37
@@ -23,27 +22,29 @@ class Case37(TestCase):
         content2 = webDriver.find_element_by_id('text').text
         webDriver.close()
 
-        if content1 == 'No' and content2 == 'No':
-            self.data = {'Script run with Stricter page 1': content1,
-                        'Script run with Stricter page 2': content2,}
-            Case37.idResult = 2
-        elif content1 == 'Yes' and content2 == 'No':
-            self.data = {'Script run with header page 1': content1,
-                        'Script run with header page 2': content2,}
-            Case37.idResult = 3
-        elif content1 == 'No' and content2 == 'Yes':
-            self.data = {'Script run with meta page 1': content1,
-                        'Script run with meta page 2': content2,}
-            Case37.idResult = 4
-        elif content1 == 'Yes' and content2 == 'Yes':
-            self.data = {'Script run with Looser page 1': content1,
-                        'Script run with Looser page 2': content2}
-            Case37.idResult = 5
+        self.data = {'Content1': content1,
+                    'Content2': content2}
         return 1
 
     def evaluate(self):
         if self.data:
-            result = Case37.idResult
+            if self.data['Content1'] == 'No' and self.data['Content2'] == 'No':
+                self.data = {'scriptRunWithStricterPage1': self.data['Content1'],
+                            'scriptRunWithStricterPage2': self.data['Content2'],}
+                idResult = 2
+            elif self.data['Content1'] == 'Yes' and self.data['Content2'] == 'No':
+                self.data = {'scriptRunWithHeaderPage1': self.data['Content1'],
+                            'scriptRunWithHeaderPage2': self.data['Content2'],}
+                Case37.idResult = 3
+            elif self.data['Content1'] == 'No' and self.data['Content2'] == 'Yes':
+                self.data = {'scriptRunWithMetaPage1': self.data['Content1'],
+                            'scriptRunWithMetaPage 2': self.data['Content2'],}
+                Case37.idResult = 4
+            elif self.data['Content1'] == 'Yes' and self.data['Content2'] == 'Yes':
+                self.data = {'scriptRunWithLooserPage1': self.data['Content1'],
+                            'scriptRunWithLooserPage2': self.data['Content2']}
+                Case37.idResult = 5
+            result = idResult
         else:
             result = 0
 

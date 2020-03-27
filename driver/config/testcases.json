@@ -872,5 +872,35 @@
         "ans_desc": "Error in test execution (framework)"
       }
     ]
+  },
+  "37": {
+    "testNumber": 37,
+    "title": "Contradicting CSP in header and meta tag",
+    "description": "Which Content Security Policy is enforced if there are two contradict declaration in both header and meta tag?",
+    "detailedDescription": "### Introduction\nThe HTTP [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src) scrpit-src directive specifies valid sources for JavaScript. This includes not only URLs loaded directly into ``script`` elements, but also things like inline script and XSLT stylesheet which can trigger script execution. It can be declared in both header and meta tag:\n``` \nContent-Security-Policy: script-src <source>\n```\nOne or more source can be allowed for the ``script-src``.\n\n### Problem\nNow let's create two pages that are implemented as below:\n\n  1. Page 1:\n    *Header: Content-Security-Policy: script-src: self\n    *Meta: Content-Security-Policy: self unsafe-inline\n  2. Page 2:\n    *Header: Content-Security-Policy: script-src: self unsafe-inline\n    *Meta: Content-Security-Policy: srcipt-src: self\n\nThen on each page, we try to add an inline Javascript to modify the content of the page like this:\n```\n<html>\n  <head>\n    <meta [...]>\n  </head>\n  <body>\n    <h1>Is script run?</h1>\n    <p id =\"text\">No</p>\n    <script type = \"text/javascript\">\n      document.getElementById(\"text\").innerHTML = \"Yes\"\n    </script>\n  </body>\n</html>\n```\nThen, we will check if the brower allow the script or not.\n\n### How does the browser react?\nThere are four possible results whether the script run or not:\n\n  1. Header wins:\n    * Page 1: No\n    * Page 2: Yes\n  2. Meta tag wins:\n    * Page 1: Yes\n    * Page 2: No\n  3. Stricter declaration wins:\n    * Page 1: No\n    * Page 2: No\n  4. Looser declaration wins:\n    * Page 1: Yes\n    * Page 2: Yes\nThis test case tests how browser behave in four possible results above.",
+    "date_created": "09/03/2020",
+    "tagNums": [
+      1
+    ],
+    "path": "contradict-csp-in-header-and-meta-tag",
+    "question": "Which declaration will wins?",
+    "possibleAnswers": [
+      {
+        "ans_id": 2,
+        "ans_desc": "Stricter declaration wins"
+      },
+      {
+        "ans_id": 3,
+        "ans_desc": "Meta wins"
+      },
+      {
+        "ans_id": 4,
+        "ans_desc": "Header wins"
+      },
+      {
+        "ans_id": 5,
+        "ans_desc": "Looser declaration wins"
+      }
+    ]
   }
 }
