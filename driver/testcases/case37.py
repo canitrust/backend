@@ -29,21 +29,13 @@ class Case37(TestCase):
     def evaluate(self):
         if self.data:
             if self.data['Content1'] == 'No' and self.data['Content2'] == 'No':
-                self.data = {'scriptRunWithStricterPage1': self.data['Content1'],
-                            'scriptRunWithStricterPage2': self.data['Content2'],}
                 idResult = 2
             elif self.data['Content1'] == 'Yes' and self.data['Content2'] == 'No':
-                self.data = {'scriptRunWithHeaderPage1': self.data['Content1'],
-                            'scriptRunWithHeaderPage2': self.data['Content2'],}
-                Case37.idResult = 3
+                idResult = 3
             elif self.data['Content1'] == 'No' and self.data['Content2'] == 'Yes':
-                self.data = {'scriptRunWithMetaPage1': self.data['Content1'],
-                            'scriptRunWithMetaPage 2': self.data['Content2'],}
-                Case37.idResult = 4
+                idResult = 4
             elif self.data['Content1'] == 'Yes' and self.data['Content2'] == 'Yes':
-                self.data = {'scriptRunWithLooserPage1': self.data['Content1'],
-                            'scriptRunWithLooserPage2': self.data['Content2']}
-                Case37.idResult = 5
+                idResult = 5
             result = idResult
         else:
             result = 0
