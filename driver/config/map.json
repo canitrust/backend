@@ -84,6 +84,11 @@
     "filename": "case21.py",
     "isLive": false
   },
+  "37": {
+    "modulename": "case37",
+    "filename": "case37.py",
+    "isLive": true
+  },
   "27": {
     "modulename": "case27",
     "filename": "case27.py",

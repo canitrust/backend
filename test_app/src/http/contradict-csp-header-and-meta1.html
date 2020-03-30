@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>Demo</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+  </head>
+  <body>
+    <h1>Is script run?</h1>
+    <p id="text">No</p>
+    <script type="text/javascript">
+      document.getElementById("text").innerHTML = "Yes"
+    </script>
+  </body>
+</html>
