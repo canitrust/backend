@@ -24,9 +24,10 @@ class Case35(TestCase):
         """
 
         # Check the virtualhost works or not
-        logger.debug("Before")
+        
+        browserversion = webDriver.capabilities['browserVersion']
+        logger.debug("Gecko Version: {}".format(browserversion))
         webDriver.get("https://nosniff.test-canitrust.com/sniff.uct")
-        logger.debug("After")
         # server returns file without content-type and with X-Content-Type-Options: nosniff
         self.data = {}
         try:
