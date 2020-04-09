@@ -20,3 +20,5 @@ Special thanks to Browserstack for supporting CanITrust.
 Copyright (c) mgm security partners GmbH. All rights reserved.
 
 Licensed under the [AGPLv3](LICENSE.md) License.
+
+## Foobar
