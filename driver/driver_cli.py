@@ -17,6 +17,7 @@ logger = Logger(__name__).logger
 
 def run_main_wrapper(args):
     settings.TESTENV = args.env if args.env else 'bs'
+    settings.SAVE_DB = True
     if args.testcases: settings.TESTCASES = args.testcases
     elif args.json:
         settings.TESTCASES = None
@@ -71,6 +72,7 @@ def autoupdate_main_wrapper(args):
     settings.FORCE_RERUN = args.force if args.force else False
     # always use browserstack
     settings.TESTENV = 'bs'
+    settings.SAVE_DB = True
     logger.setLevel(logging.DEBUG) if args.verbose else logger.setLevel(logging.INFO)
     get_config()
     autoupdate_main()
