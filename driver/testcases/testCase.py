@@ -286,19 +286,3 @@ class TestCase:
         """
         pass
 
-    def translate(backendFormatData):
-        """ Static function
-            Translate data in BackendDB format to the FrontendDB format
-        """
-        try:
-            browser_ver = float(backendFormatData['version'].replace(' beta','5'))
-        except:
-            browser_ver = backendFormatData['version']
-        translatedData = {
-            "testNumber": backendFormatData['testCaseNum'],
-            "browser": backendFormatData['browser'].capitalize(),
-            "browserVer": browser_ver,
-            "result": backendFormatData['result'],
-            "date_lasttest": backendFormatData['date']
-        }
-        return translatedData

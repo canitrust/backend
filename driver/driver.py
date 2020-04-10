@@ -148,12 +148,6 @@ def exec_bs_test_list(bs_tests):
         logger.info('DRY RUN')
     settings.DB.close()
 
-def translate_test_bs(object_dict, test_case):
-    logger.info('test-case running: {}'.format(test_case))
-    module_object = dynamic_import(test_case)
-    test_case_class = getattr(module_object, 'Case{}'.format(test_case))
-    return test_case_class.translate(object_dict)
-
 
 def run_local_main():
     logger.info('testing environment: local')
