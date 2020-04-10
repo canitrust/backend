@@ -13,41 +13,11 @@ import os
 import sys
 import logging
 import pymongo
-from config import constant
+import time
+import socket
+from config import constant, settings
 import subprocess
 from prettytable import PrettyTable
-
-def pretty_output(results):
-    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Result", "Data"])
-    for result in results:
-        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
-    return pretty_output.get_string(sortby="Case #")
-
-def get_browser_support(bs_user, bs_key):
-    logger = Logger(__name__).logger
-    logger.info('Browser Support from Browser Stack')
-    rq = 'https://api.browserstack.com/automate/browsers.json'
-    rs = requests.get(rq, auth=(bs_user,bs_key), timeout=5)
-
-    if rs.status_code == 200:
-        list_bs_browsers = rs.json()
-        list_cit_browsers = []
-        for browser in list_bs_browsers:
-            if (browser['os'] == 'Windows' and browser['os_version'] == '10') or (browser['os'] == 'OS X' and browser['browser'] == 'safari'):
-                # Only need os, os version, browser, browser_version
-                c = dict(browser)
-                for (key, value) in c.items() :
-                    if key not in ('os', 'os_version', 'browser', 'browser_version'):
-                        del browser[key]
-                list_cit_browsers.append(browser)
-        logger.info('Browsers supported by BS: {}'.format(len(list_bs_browsers)))
-        logger.info('Browsers supported by CIT: {}'.format(len(list_cit_browsers)))
-        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/browsersupport.json', 'w') as json_file:
-            json.dump(list_cit_browsers, json_file, indent=4, sort_keys=True)
-        return True
-
-    return False
-
 
 class Logger:
     def __init__(self, logger_name):
@@ -109,3 +79,86 @@ class Mongo:
 
     def close(self):
         self.client.close()
+
+
+logger = Logger(__name__).logger
+
+def pretty_output(results):
+    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Result", "Data"])
+    for result in results:
+        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
+    return pretty_output.get_string(sortby="Case #")
+
+
+def get_browser_support(bs_user, bs_key):
+    logger.info('Browser Support from Browser Stack')
+    rq = 'https://api.browserstack.com/automate/browsers.json'
+    rs = requests.get(rq, auth=(bs_user,bs_key), timeout=5)
+
+    if rs.status_code == 200:
+        list_bs_browsers = rs.json()
+        list_cit_browsers = []
+        for browser in list_bs_browsers:
+            if (browser['os'] == 'Windows' and browser['os_version'] == '10') or (browser['os'] == 'OS X' and browser['browser'] == 'safari'):
+                # Only need os, os version, browser, browser_version
+                c = dict(browser)
+                for (key, value) in c.items() :
+                    if key not in ('os', 'os_version', 'browser', 'browser_version'):
+                        del browser[key]
+                list_cit_browsers.append(browser)
+        logger.info('Browsers supported by BS: {}'.format(len(list_bs_browsers)))
+        logger.info('Browsers supported by CIT: {}'.format(len(list_cit_browsers)))
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/browsersupport.json', 'w') as json_file:
+            json.dump(list_cit_browsers, json_file, indent=4, sort_keys=True)
+        return True
+
+    return False
+
+# data
+def get_config():
+    with open(os.path.abspath(os.path.dirname(__file__)) + '/config/map.json', "r") as read_it:
+        settings.dataJson = json.load(read_it)
+    with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+        lock.write('true')
+    if settings.TESTENV == 'bs':
+        get_browser_support(constant.USERBS, constant.API_KEY)
+        logger.info('Successful checking latest browser versions')
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/browsersupport.json', "r") as read_it:
+            settings.browserSupport = json.load(read_it)
+
+
+def start_infra():
+    if settings.TESTENV == 'bs':
+        logger.debug('Create browserstack-local instance...')
+        settings.BS_INSTANCE = BS()
+        start_bs_time = time.time()
+        while not settings.BS_INSTANCE.running():
+            time.sleep(3)
+            if (time.time() - start_bs_time) > 30:
+                raise Exception('Waiting for BrowserStack timeout > 30 secs')
+        logger.debug('Browserstack-local instance is running...')
+    # Unlock dns_server and test_app containers
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+            lock.write('browserstack')
+    elif settings.TESTENV == 'local':
+        with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
+            lock.write('local')
+    logger.debug('Wait for dns_server and test_app containers up...')
+    start_containers_time = time.time()
+    while not check_connect('dns_server', 53) or not check_connect('test_app', 80):
+        time.sleep(3)
+        if (time.time() - start_containers_time) > 60:
+            raise Exception('Waiting for dns_server and test_app containers up timeout > 60 secs')
+    # Update DNS server
+    os.system('echo "nameserver {}" > /etc/resolv.conf'.format(socket.gethostbyname('dns_server')))
+    logger.debug('Dns_server and test_app containers already up...')
+
+
+def check_connect(address, port):
+    s = socket.socket()
+    try:
+      s.connect((address, port))
+      s.shutdown(2)
+      return True
+    except:
+      return False

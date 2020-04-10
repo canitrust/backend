@@ -22,12 +22,12 @@ class Case35(TestCase):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
-
-        # Check the virtualhost works or not
-        webDriver.get("https://nosniff.test-canitrust.com/sniff.uct")
-        # server returns file without content-type and with X-Content-Type-Options: nosniff
         self.data = {}
         try:
+            webDriver.set_page_load_timeout(10)
+            # Check the virtualhost works or not
+            webDriver.get("https://nosniff.test-canitrust.com/sniff.uct")
+            # server returns file without content-type and with X-Content-Type-Options: nosniff
             WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             oHeadline = webDriver.find_element_by_id('headline')
             textHeadline = str(oHeadline.get_attribute('innerHTML'))

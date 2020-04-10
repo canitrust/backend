@@ -29,7 +29,7 @@ exit_lock() {
 docker-compose -f docker-compose.driver.yml down > /dev/null 2>&1
 docker-compose -f docker-compose.driver.yml build  > /dev/null 2>&1
 unlock_containers &
-docker-compose -f docker-compose.driver.yml run -T driver python /driver/driver.py "$@" 
+docker-compose -f docker-compose.driver.yml run -T driver python /driver/driver_cli.py "$@" 
 exit_status=$?
 if [ $exit_status -ne 0 ]; then
     echo "Something wrong with Driver"
