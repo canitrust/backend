@@ -5,7 +5,7 @@ node('Dev') {
     def devMongoUrl = 'cit-dev-mongo-url'
     try {
         stage('Prepare') {
-            def gitBranch = 'Feature/junit-report'
+            def gitBranch = 'master'
             def gitLabUrl = 'https://github.com/canitrust/backend.git'
             def credentials = 'e7acb748-22b5-47e2-b5c8-f740048baac1'
             dir('backend') {
