@@ -13,6 +13,9 @@ TESTOBJECTS = FORCE_RERUN = None
 # only for "runbs" command
 SAVE_DB = IS_RUNBS = None
 
+# autoupdate
+ENABLE_JUNIT = None
+
 # Data
 dataJson = browserSupport = None
 
