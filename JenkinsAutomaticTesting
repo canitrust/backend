@@ -3,13 +3,9 @@ node('Dev') {
     def repo = 'backend'
     def browserstackCredentials = 'bs_free_user_key'
     def devMongoUrl = 'cit-dev-mongo-url'
-    def running_output
-    def cit_new_tests = 0
-    def cit_new_tests_summary = 'Unknown'
-
     try {
         stage('Prepare') {
-            def gitBranch = 'master'
+            def gitBranch = 'Feature/junit-report'
             def gitLabUrl = 'https://github.com/canitrust/backend.git'
             def credentials = 'e7acb748-22b5-47e2-b5c8-f740048baac1'
             dir('backend') {
@@ -47,20 +43,7 @@ node('Dev') {
                     """
                     writeFile file: './driver/config/.env', text: "${cfg}"
                 }
-                running_output = sh ( 
-                    script: "./driver.sh autoupdate",
-                    returnStdout: true
-                ).trim()
-                cit_new_tests = sh (
-                        script: """echo '$running_output' | grep -o 'AMOUNT_BS_TESTS.*'| awk -F ':' '{print \$2}'""",
-                        returnStdout: true
-                    ).toInteger()
-                if (cit_new_tests > 0) {
-                    cit_new_tests_summary = sh (
-                        script: """echo '$running_output' | sed -n '/TEST SUMMARY/,\$p'""",
-                        returnStdout: true
-                    )
-                }
+                sh "./driver.sh autoupdate --junit"
                     
             }
         }
@@ -71,25 +54,19 @@ node('Dev') {
              body: "Something is wrong with ${env.BUILD_URL}"
         throw e
     } finally {
-        def currentResult = currentBuild.result ?: 'SUCCESS'
-        if (currentResult == 'SUCCESS') {
-            echo "SUCCESS"
-            echo "cit new tests: $cit_new_tests"
-            echo "$cit_new_tests_summary"
-            if (cit_new_tests > 0) {
+        echo 'Junit report'
+        def summary = junit allowEmptyResults: true, testResults: 'backend/driver/junit_output.xml'
+        echo "Test Summary"
+        echo "Total: ${summary.totalCount}, Failures: ${summary.failCount}, Successes: ${summary.passCount}"
+        if (summary.totalCount > 0) {
                 mail to: "${env.CIT_EMAIL_RECIPIENTS}",
-                    subject: "$cit_new_tests new tests found ${currentBuild.fullDisplayName}",
-                    body: """$cit_new_tests new tests found in pipeline ${env.BUILD_URL}
-$cit_new_tests_summary
+                    subject: "${summary.totalCount} new tests found ${currentBuild.fullDisplayName}",
+                    body: """
+                    TEST SUMMARY
+                    Total: ${summary.totalCount}, Failures: ${summary.failCount}, Successes: ${summary.passCount}
+                    pipeline ${env.BUILD_URL}
                     """
-            }
            
-        }
-        echo 'Clean up'
-        try {
-            cleanWs()
-        } catch (err) {
-            echo "Caught: ${err}"
         }
         
     }
