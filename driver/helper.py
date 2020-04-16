@@ -95,10 +95,10 @@ def junit_report(results):
     test_cases = []
     for result in results:
         if result["result"] != 'Failed' and result["data"] != 'Failed':
-            tc = TestCase(name='Case #{}'.format(result["testCaseNum"]), classname="browser: {}, version: {}".format(result["browser"], result["version"]), 
+            tc = TestCase(name="browser: {}, version: {}".format(result["browser"], result["version"]), classname='TestCaseNum {}'.format(result["testCaseNum"]), 
                 elapsed_sec=round(result["elapsedTime"],1), stdout="result: {}, data: {}".format(result["result"], result["data"]))
         else:
-            tc = TestCase(name='Case #{}'.format(result["testCaseNum"]), classname="browser: {}, version: {}".format(result["browser"], result["version"]), 
+            tc = TestCase(name="browser: {}, version: {}".format(result["browser"], result["version"]), classname='TestCaseNum {}'.format(result["testCaseNum"]), 
                 elapsed_sec=round(result["elapsedTime"],1), stdout="result: Failed, data: Failed")
             tc.add_failure_info("Failed")
         test_cases.append(tc)
