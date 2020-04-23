@@ -18,6 +18,8 @@ import socket
 from config import constant, settings
 import subprocess
 from prettytable import PrettyTable
+from junit_xml import TestSuite, TestCase
+
 
 class Logger:
     def __init__(self, logger_name):
@@ -89,6 +91,20 @@ def pretty_output(results):
         pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
     return pretty_output.get_string(sortby="Case #")
 
+def junit_report(results):
+    test_cases = []
+    for result in results:
+        if result["result"] != 'Failed' and result["data"] != 'Failed':
+            tc = TestCase(name="browser: {}, version: {}".format(result["browser"], result["version"]), classname='TestCaseNum {}'.format(result["testCaseNum"]), 
+                elapsed_sec=round(result["elapsedTime"],1), stdout="result: {}, data: {}".format(result["result"], result["data"]))
+        else:
+            tc = TestCase(name="browser: {}, version: {}".format(result["browser"], result["version"]), classname='TestCaseNum {}'.format(result["testCaseNum"]), 
+                elapsed_sec=round(result["elapsedTime"],1), stdout="result: Failed, data: Failed")
+            tc.add_failure_info("Failed")
+        test_cases.append(tc)
+    ts = TestSuite("autoupdate", test_cases)
+    with open(os.path.abspath(os.path.dirname(__file__)) + '/junit_output.xml', 'w') as f:
+        TestSuite.to_file(f, [ts])
 
 def get_browser_support(bs_user, bs_key):
     logger.info('Browser Support from Browser Stack')

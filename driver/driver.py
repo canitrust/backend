@@ -7,7 +7,7 @@
 #
 
 import importlib
-from helper import BS, Logger, Mongo, pretty_output, start_infra
+from helper import BS, Logger, Mongo, pretty_output, start_infra, junit_report
 from config import constant, settings
 from functools import wraps
 
@@ -142,6 +142,8 @@ def exec_bs_test_list(bs_tests):
             results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+        if settings.ENABLE_JUNIT:
+            junit_report(results)
         logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
         settings.BS_INSTANCE.stop()
     elif bs_tests and settings.DRY_RUN:
@@ -149,7 +151,7 @@ def exec_bs_test_list(bs_tests):
     settings.DB.close()
 
 
-def run_local_main():
+def cmd_run_local_main():
     logger.info('testing environment: local')
     local_tests = get_test_cases()
     logger.info('AMOUNT_LOCAL_TESTS:{}'.format(len(local_tests)))
@@ -172,12 +174,14 @@ def run_local_main():
             results.append(result)
         logger.info('Local tests running OK: {}'.format(local_tests_ok))
         logger.info('Local tests running Fail: {}'.format(local_tests_fail))
+        if settings.ENABLE_JUNIT:
+            junit_report(results)
         logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 
     elif len(local_tests) > 0 and settings.DRY_RUN:
         logger.info('DRY RUN')
 
 
-def run_bs_main():
+def cmd_run_bs_main():
     settings.DB = Mongo()
     bs_tests = get_test_cases()
     logger.info('AMOUNT_BS_TESTS:{}'.format(len(bs_tests)))
@@ -185,12 +189,12 @@ def run_bs_main():
     settings.DB.close()
 
 
-def runlocal_main():
+def cmd_runlocal_main():
     # same with run command
-    run_local_main()
+    cmd_run_local_main()
 
 
-def runbs_main():
+def cmd_runbs_main():
     settings.DB = Mongo()
     bs_tests = get_test_cases()
     logger.info('BS_TESTS:{}'.format(bs_tests))
@@ -198,7 +202,7 @@ def runbs_main():
     exec_bs_test_list(bs_tests)
 
 
-def autoupdate_main():
+def cmd_autoupdate_main():
     settings.DB = Mongo()
     bs_tests = []
     bs_tests_ignored = []

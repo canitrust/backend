@@ -28,6 +28,7 @@ test_app/src/certs/
 **/*.log
 driver/config/container.lock
 driver/config/browsersupport.json
+driver/junit_output.xml
 sync/tags.db.json
 sync/testcases.db.json
 sync/translated.json
