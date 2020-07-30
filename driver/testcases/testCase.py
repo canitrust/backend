@@ -37,6 +37,8 @@ class TestCase:
     os_version= ""
     isBeta = False
     deprecated = False
+    variationId = None
+    variationData = None
 
     # Constructor
     def __init__(self):
@@ -45,7 +47,7 @@ class TestCase:
         self.deprecated = False
     def get_data(self):
         #get dict to insert from class
-        return {
+        result = {
                     "date": self.date,
                     "testCaseNum": self.testCaseNum,
                     "result" : self.result,
@@ -58,7 +60,9 @@ class TestCase:
                     "isBeta": self.isBeta,
                     "deprecated": self.deprecated
                 }
-
+        if self.variationId is not None:
+            result["variationId"] = self.variationId
+        return result
 
     # save info to DB (param1: mongo client)
     def saveToDB(self,mongoClient):

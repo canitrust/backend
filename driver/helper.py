@@ -86,9 +86,9 @@ class Mongo:
 logger = Logger(__name__).logger
 
 def pretty_output(results):
-    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Result", "Data"])
+    pretty_output = PrettyTable(["Case #", "Browser", "Version", "Elapsed", "Variation #", "Result", "Data"])
     for result in results:
-        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), result["result"], result["data"]])
+        pretty_output.add_row([result["testCaseNum"], result["browser"], result["version"], round(result["elapsedTime"],1), str(result.get("variationId", "")), result["result"], result["data"]])
     return pretty_output.get_string(sortby="Case #")
 
 def junit_report(results):
@@ -134,6 +134,8 @@ def get_browser_support(bs_user, bs_key):
 def get_config():
     with open(os.path.abspath(os.path.dirname(__file__)) + '/config/map.json', "r") as read_it:
         settings.dataJson = json.load(read_it)
+    with open(os.path.abspath(os.path.dirname(__file__)) + '/config/testcases.json', "r", encoding='utf-8') as read_it:
+        settings.testcasesJson = json.load(read_it)
     with open(os.path.abspath(os.path.dirname(__file__)) + '/config/container.lock', "w") as lock:
         lock.write('true')
     if settings.TESTENV == 'bs':

@@ -28,6 +28,8 @@ class Result:
             "result": self.backendData['result'],
             "date_lasttest": self.backendData['date']
         }
+        if 'variationId' in self.backendData:
+            translatedData.update({'variationId': self.backendData['variationId']})
         return translatedData
 
     # @Output: bool
@@ -111,7 +113,10 @@ if __name__ == '__main__':
                 aResult.backendData['testCaseNum'] == previousResult.backendData['testCaseNum'] and
                 aResult.backendData['browser'] == previousResult.backendData['browser'] and
                 aResult.backendData['version'] == previousResult.backendData['version'] and
-                aResult.backendData['isBeta'] == previousResult.backendData['isBeta']):
+                aResult.backendData['isBeta'] == previousResult.backendData['isBeta'] and not
+                ("variationId" in aResult.backendData and
+                "variationId" in previousResult.backendData and
+                aResult.backendData["variationId"] != previousResult.backendData["variationId"])):
                 inputIgnoredOldTestResult += 1
                 continue
             if(aResult.isBeta()):
