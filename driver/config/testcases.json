@@ -642,7 +642,7 @@
     "testNumber": 36,
     "title": "For which Content-Type header browser perform MIME sniffing?",
     "description": "MIME sniffing (or content sniffing) could lead to Cross-Site-Scripting (XSS). It is unclear when doing the browsers perform MIME sniffing. Here we test the behavior for different Content-Type headers in the response.",
-    "detailedDescription": "### Introduction\nWe generally recommend to set the security header `X-Content-Type-Options: nosniff` for protections against MIME sniffing and eventually Cross-Site-Scripting (XSS) vulnerabilities.\nSince it is unclear, when the different browsers perform MIME sniffing, we conducted a test with different `Content-Type` headers in the servers response. \n\n### Problem\nImagine an application that provides a file upload to its users, e.g. image upload. Additionally, these images can be accessed via a direct link after the upload. If an attacker can upload files, which contain HTML including JavaScript and the application serves these files afterward, it could be possible that the browser is sniffing the content, recognizing the HTML and renders it. Then we have an XSS vulnerability.\nThis attack only works, if the browser performs MIME sniffing. We want to understand which `Content-Type` headers still cause sniffing and what are the differences between the browsers.\nIn our responses, we varied different common `Content-Type` header values and some unusual values. The body contained HTML with an XSS payload. If the browser performs MIME sniffing and renders the HTML, the XSS will be exploited.\n\n### For which Content-Type the browser still sniffs the content?\nWhich `Content-Type` header values still lead to MIME sniffing.\n1. Only text/html. (No sniffing, expected behavior)\n2. 1 more \n3. 2 more\n4. 3 more\n5. 4 more\n",
+    "detailedDescription": "### Introduction\nWe generally recommend to set the security header `X-Content-Type-Options: nosniff` for protections against MIME sniffing and eventually Cross-Site-Scripting (XSS) vulnerabilities.\nSince it is unclear, when the different browsers perform MIME sniffing, we conducted a test with different `Content-Type` headers in the servers response. \n\n### Problem\nImagine an application that provides a file upload to its users, e.g. image upload. Additionally, these images can be accessed via a direct link after the upload. If an attacker can upload files, which contain HTML including JavaScript and the application serves these files afterward, it could be possible that the browser is sniffing the content, recognizing the HTML and renders it. Then we have an XSS vulnerability.\nThis attack only works, if the browser performs MIME sniffing. We want to understand which `Content-Type` headers still cause sniffing and what are the differences between the browsers.\nIn our responses, we varied different common `Content-Type` header values and some unusual values. The body contained HTML with an XSS payload. If the browser performs MIME sniffing and renders the HTML, the XSS will be exploited.\n\n",
     "date_created": "01/29/2020",
     "tagNums": [
       20,
@@ -654,29 +654,92 @@
     "possibleAnswers": [
       {
         "ans_id": 1,
-        "ans_desc": "Only text/html. (No sniffing, expected behavior)"
+        "ans_desc": "No sniffing, expected behavior"
       },
       {
-        "ans_id": 2,
-        "ans_desc": "1 more"
-      },
-      {
-        "ans_id": 3,
-        "ans_desc": "2 more"
-      },
-      {
-        "ans_id": 4,
-        "ans_desc": "3 more"
-      },
-      {
-        "ans_id": 5,
-        "ans_desc": "4 more"
+        "ans_id": 0,
+        "ans_desc": "Sniffing"
       },
       {
         "ans_id": 8,
         "ans_desc": "Error in test execution (browser)"
       }
-    ]
+    ],
+    "variations": [
+      {
+        "description": "",
+        "data": { "content_type": "application/octet-stream" },
+        "id": 0,
+        "title": "Content-Type: application/octet-stream"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "text/css" },
+        "id": 1,
+        "title": "Content-Type: text/css"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "image/gif" },
+        "id": 2,
+        "title": "Content-Type: image/gif"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "image/jpeg" },
+        "id": 3,
+        "title": "Content-Type: image/jpeg"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "text/javascript" },
+        "id": 4,
+        "title": "Content-Type: text/javascript"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "audio/wav" },
+        "id": 5,
+        "title": "Content-Type: audio/wav"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "video/webm" },
+        "id": 6,
+        "title": "Content-Type: video/webm"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "font/woff" },
+        "id": 7,
+        "title": "Content-Type: font/woff"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "text/xml" },
+        "id": 8,
+        "title": "Content-Type: text/xml"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "application/zip" },
+        "id": 9,
+        "title": "Content-Type: application/zip"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "aaa" },
+        "id": 10,
+        "title": "Content-Type: aaa"
+      },
+      {
+        "description": "",
+        "data": { "content_type": "some/thing" },
+        "id": 11,
+        "title": "Content-Type: some/thing"
+      }
+    ],
+    "variationOverview": "For which Content-Type the browser still sniffs the content?"
   },
   "32": {
     "testNumber": 32,
