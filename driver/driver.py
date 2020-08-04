@@ -18,25 +18,27 @@ def dynamic_import(test_case):
     return module_object
 
 
-def format_mongo_object(info_browser, case):
-    return {
-        "browser": info_browser['browser'],
-        "version": info_browser['browser_version'],
-        "platform": info_browser['os'],
-        "os_version": info_browser['os_version'],
-        "testCaseNum": int(case),
+def format_mongo_object(testcase):
+    result = {
+        "browser": testcase['info_browser']['browser'],
+        "version": testcase['info_browser']['browser_version'],
+        "platform": testcase['info_browser']['os'],
+        "os_version": testcase['info_browser']['os_version'],
+        "testCaseNum": int(testcase['test_case']),
         "deprecated": False
     }
+    if "variation_id" in testcase and testcase['variation_id'] is not None: result["variation_id"] = testcase['variation_id']
+    return result
 
 
-def count_docs_success(info_browser, case):
-    object_dict = format_mongo_object(info_browser, case)
+def count_docs_success(testcase):
+    object_dict = format_mongo_object(testcase)
     result = settings.DB.coll.count_documents(object_dict)
     return result
 
 
-def count_docs_failed(info_browser, case):
-    object_dict = format_mongo_object(info_browser, case)
+def count_docs_failed(testcase):
+    object_dict = format_mongo_object(testcase)
     object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
     result = settings.DB.failed_tests.count_documents(object_dict)
     return result
@@ -46,45 +48,88 @@ def get_test_cases():
     logger.info('test-cases from input:{}'.format(settings.TESTCASES))
     logger.info('test-object from input:{}'.format(settings.TESTOBJECTS))
     if settings.TESTCASES and settings.TESTENV == 'local':
-        tests = [ case for case in settings.TESTCASES if case in settings.dataJson ]
+        # tests = [ case for case in settings.TESTCASES if case in settings.dataJson ]
+        tests = get_test_cases_without_browsers()
     # "runbs" command
     elif settings.TESTCASES and settings.TESTENV == 'bs' and settings.IS_RUNBS and settings.SAVE_DB:
-        tests = [ {"info_browser": info_browser, "test_case": case} for case in settings.TESTCASES if case in settings.dataJson and settings.dataJson[case]['isLive'] 
-            for info_browser in settings.browserSupport]
+        tests = get_test_cases_with_browsers(True)
     # "runbs" command
     elif settings.TESTCASES and settings.TESTENV == 'bs' and settings.IS_RUNBS:
-        tests = [ {"info_browser": info_browser, "test_case": case} for case in settings.TESTCASES if case in settings.dataJson 
-            for info_browser in settings.browserSupport]
+        tests = get_test_cases_with_browsers()
     # "run" command with settings.FORCE_RERUN option
     elif settings.TESTCASES and settings.TESTENV == 'bs' and settings.FORCE_RERUN:
-        tests = [ {"info_browser": info_browser, "test_case": case} for case in settings.TESTCASES if case in settings.dataJson and settings.dataJson[case]['isLive'] 
-            for info_browser in settings.browserSupport ] 
+        tests = get_test_cases_with_browsers(True)
     # "run" command 
     elif settings.TESTCASES and settings.TESTENV == 'bs':
-        tests = [ {"info_browser": info_browser, "test_case": case} for case in settings.TESTCASES if case in settings.dataJson and settings.dataJson[case]['isLive'] 
-            for info_browser in settings.browserSupport if count_docs_success(info_browser, case) < 1 and count_docs_failed(info_browser, case) ]         
+        tests = get_test_cases_with_browsers(True, True)
     # "runbs" command
     elif settings.TESTOBJECTS and settings.IS_RUNBS and settings.SAVE_DB:
-        tests = [ obj for obj in settings.TESTOBJECTS if obj['test_case'] in settings.dataJson and settings.dataJson[obj['test_case']]['isLive'] ]
+        tests = get_test_objects(True)
     # "runbs" command
     elif settings.TESTOBJECTS and settings.IS_RUNBS:
-        tests = [ obj for obj in settings.TESTOBJECTS if obj['test_case'] in settings.dataJson ]
+        tests = get_test_objects()
     # "run" command with settings.FORCE_RERUN option
     elif settings.TESTOBJECTS and settings.FORCE_RERUN:
-        tests = [ obj for obj in settings.TESTOBJECTS if obj['test_case'] in settings.dataJson and settings.dataJson[obj['test_case']]['isLive'] ]
+        tests = get_test_objects(True)
      # "run" command 
     elif settings.TESTOBJECTS:
-        tests = [ obj for obj in settings.TESTOBJECTS if obj['test_case'] in settings.dataJson and settings.dataJson[obj['test_case']]['isLive'] 
-            and count_docs_success(obj['info_browser'], obj['test_case']) < 1 and count_docs_failed(obj['info_browser'], obj['test_case'])]
+        tests = get_test_objects(True, True)
     logger.info('test-cases processing:{}'.format(tests))
     return tests
+
+def get_test_cases_without_browsers():
+    cases = []
+    for case in settings.TESTCASES:
+        if case in settings.dataJson:
+            cases.append({"test_case": case})
+            if case in settings.testcasesJson and "variations" in settings.testcasesJson[case]:
+                for variation in settings.testcasesJson[case]["variations"]:
+                    cases.append({"test_case": case, "variation_id":  variation["id"], "variation_data": variation["data"]})
+    return cases
+
+def get_test_cases_with_browsers(checkIsLive=False, checkNewOrFailedTestcase=False):
+    cases = []
+    for case in settings.TESTCASES:
+        if case in settings.dataJson:
+            if checkIsLive and not settings.dataJson[case]['isLive']: continue
+            for info_browser in settings.browserSupport:
+                testcase = {"info_browser": info_browser, "test_case": case}
+                if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(testcase): continue
+                cases.append(testcase)
+            if case in settings.testcasesJson and "variations" in settings.testcasesJson[case]:
+                for variation in settings.testcasesJson[case]["variations"]:
+                    for info_browser in settings.browserSupport:
+                        testcase = {"info_browser": info_browser, "test_case": case, "variation_id":  variation["id"], "variation_data": variation["data"]}
+                        if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(testcase): continue
+                        cases.append(testcase)
+    return cases
+
+def get_test_objects(checkIsLive=False, checkNewOrFailedTestcase=False):
+    cases = []
+    for obj in settings.TESTOBJECTS:
+        if obj['test_case'] in settings.dataJson:
+            if checkIsLive and not settings.dataJson[obj['test_case']]['isLive']: continue
+            if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(obj): continue
+            cases.append(obj)
+            if obj["test_case"] in settings.testcasesJson and "variations" in settings.testcasesJson[obj["test_case"]]:
+                for variation in settings.testcasesJson[obj["test_case"]]["variations"]:
+                    variationObj = obj.copy()
+                    variationObj["variation_id"] = variation["id"]
+                    variationObj["variation_data"] = variation["data"]
+                    if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(variationObj): continue
+                    cases.append(variationObj)
+    return cases
+
+def checkNewOrFailedTestcaseFunc(testcase):
+    return count_docs_success(testcase) < 1 and count_docs_failed(testcase)
+
 
 def check_failure_data(f):
     @wraps(f)
     def checked(bs_tests):
         if bs_tests and settings.FORCE_RERUN and not settings.DRY_RUN:
             for bs_test in bs_tests:
-                object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
+                object_dict = format_mongo_object(bs_test)
                 # Clear from the list of failed tests 
                 if settings.DB.failed_tests.count_documents(object_dict): settings.DB.failed_tests.remove(object_dict)
                 # search for current result not deprecated
@@ -96,22 +141,31 @@ def check_failure_data(f):
         return f(bs_tests)    
     return checked
 
+def getTestcaseInstance(test_case):
+    module_object = dynamic_import(test_case["test_case"])
+    test_case_class = getattr(module_object, 'Case{}'.format(test_case["test_case"]))
+    # If the test_case is a variation testcase, init with variation data
+    if "variation_id" in test_case:
+        logger.debug('Testcase variation id: {}'.format(test_case["variation_id"]))
+        return test_case_class(test_case["variation_id"], test_case["variation_data"])
+    else:
+        return test_case_class()
 
 def exec_local_test(test_case):
-    logger.debug('test-case running: {}'.format(test_case))
-    module_object = dynamic_import(test_case)
-    test_case_class = getattr(module_object, 'Case{}'.format(test_case))
-    return test_case_class().runLocal()
+    logger.debug('test-case running: {}'.format(test_case["test_case"]))
+    test_case_instance = getTestcaseInstance(test_case)
+    return test_case_instance.runLocal()
 
-def exec_bs_test(info_browser, test_case):
+def exec_bs_test(bs_test):
+    test_case = bs_test["test_case"]
+    info_browser = bs_test["info_browser"]
     logger.info('test-case running: {}'.format(test_case))
-    module_object = dynamic_import(test_case)
-    test_case_class = getattr(module_object, 'Case{}'.format(test_case))
+    test_case_instance = getTestcaseInstance(bs_test)
     #if test_case not live never save to database
     if settings.SAVE_DB and settings.dataJson[test_case]['isLive']:
-        return test_case_class().run(info_browser['os'], info_browser['os_version'], info_browser['browser'],
+        return test_case_instance.run(info_browser['os'], info_browser['os_version'], info_browser['browser'],
                             info_browser['browser_version'], constant.API_KEY, constant.USERBS, settings.DB.db)
-    return test_case_class().runnotsave(info_browser['os'], info_browser['os_version'], info_browser['browser'],
+    return test_case_instance.runnotsave(info_browser['os'], info_browser['os_version'], info_browser['browser'],
                           info_browser['browser_version'], constant.API_KEY, constant.USERBS) 
 
 
@@ -124,8 +178,8 @@ def exec_bs_test_list(bs_tests):
         bs_tests_fail = []
         results = []
         for bs_test in bs_tests:
-            object_dict = format_mongo_object(bs_test['info_browser'], bs_test['test_case'])
-            result = exec_bs_test(bs_test['info_browser'], bs_test['test_case']) 
+            object_dict = format_mongo_object(bs_test)
+            result = exec_bs_test(bs_test)
             if result["result"] != "Failed" and result["data"] != "Failed"  :
                 bs_tests_ok.append(bs_test)
                 # Remove from the list of failed tests if sucess
@@ -155,6 +209,7 @@ def cmd_run_local_main():
     logger.info('testing environment: local')
     local_tests = get_test_cases()
     logger.info('AMOUNT_LOCAL_TESTS:{}'.format(len(local_tests)))
+    logger.info('LOCAL_TESTS LENGTH:{}'.format(len(local_tests))) #TODO: SHOULD REMOVE
     logger.info('LOCAL_TESTS:{}'.format(local_tests))
     if len(local_tests) > 0 and not settings.DRY_RUN:       
         start_infra()
@@ -202,29 +257,40 @@ def cmd_runbs_main():
     exec_bs_test_list(bs_tests)
 
 
+def autoupdate_handler(bs_tests, bs_tests_ignored, testcase, isLive):
+    object_dict = format_mongo_object(testcase)
+    result = settings.DB.coll.count_documents(object_dict)
+    object_dict.update({'retry_count': {'$lt': constant.TEST_MAX_RETRY }})
+    # Add if lesser than max retry
+    if settings.DB.failed_tests.count_documents(object_dict):
+        bs_tests.append(testcase)
+        return
+    if result < 1 and isLive:
+        # Ignore if reach max retry
+        object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
+        if settings.DB.failed_tests.count_documents(object_dict) and not settings.FORCE_RERUN:
+            bs_tests_ignored.append(testcase)
+            return
+        # clean the filter
+        object_dict.pop('retry_count', None)
+        logger.debug('New test detected {}'.format(object_dict))
+        bs_tests.append(testcase)
+
 def cmd_autoupdate_main():
     settings.DB = Mongo()
     bs_tests = []
     bs_tests_ignored = []
     for key, val in settings.dataJson.items():
         for info_browser in settings.browserSupport:
-            object_dict = format_mongo_object(info_browser, key)
-            result = settings.DB.coll.count_documents(object_dict)
-            object_dict.update({'retry_count': {'$lt': constant.TEST_MAX_RETRY }})
-            # Add if lesser than max retry
-            if settings.DB.failed_tests.count_documents(object_dict):
-                bs_tests.append({"info_browser": info_browser, "test_case": key})
-                continue
-            if result < 1 and val['isLive']:
-                # Ignore if reach max retry
-                object_dict.update({'retry_count': {'$gte': constant.TEST_MAX_RETRY }})
-                if settings.DB.failed_tests.count_documents(object_dict) and not settings.FORCE_RERUN:
-                    bs_tests_ignored.append({"info_browser": info_browser, "test_case": key})
-                    continue
-                # clean the filter
-                object_dict.pop('retry_count', None)
-                logger.debug('New test detected {}'.format(object_dict))
-                bs_tests.append({"info_browser": info_browser, "test_case": key})
+            testcase = {"info_browser": info_browser, "test_case": key}
+            autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
+
+        if key in settings.testcasesJson and "variations" in settings.testcasesJson[key]:
+            for variation in settings.testcasesJson[key]["variations"]:
+                for info_browser in settings.browserSupport:
+                    testcase = {"info_browser": info_browser, "test_case": key, "variation_id":  variation["id"], "data": variation["data"]}
+                    autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
+
     logger.info('IGNORE_TESTS:{}'.format(bs_tests_ignored))
     logger.info('BS_TESTS:{}'.format(bs_tests))
     logger.info('AMOUNT_IGNORE_TESTS:{}'.format(len(bs_tests_ignored)))
