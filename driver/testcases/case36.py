@@ -103,95 +103,79 @@ def handler(signum, frame):
 
 class Case36(TestCase):
 
-    def __init__(self):
+    def __init__(self, variationId=None, variationData=None):
         TestCase.__init__(self)
         self.testCaseNum = 36
+        self.variationId = variationId
+        self.variationData = variationData
 
     def executeTest(self, webDriver):
         """ Definition of a testcase
             Test result MUST be set to self.data
         """
 
-        self.data = {}
+        if self.variationId is None:
+            self.data = {"content_type": "text/html"}
+        else:
+            self.data = {"content_type": self.variationData["content_type"]}
 
         if "firefox" in self.browser.lower():
             logger.debug("Skipping " + self.browser)
             # this test does not runs in Firefox
-            for content_type in content_types:
-                self.data[content_type] = "aborted"
+            self.data["result"] = "aborted"
         else:
-            # start loop
-            for content_type in content_types:
-                # create new temp webDriver for each Content-Type test
-                tmpWebDriver = TestCase.respawn(self)
+            # load defaulf page as a primary test
+            webDriver.get("https://nosniff_dynamic.test-canitrust.com/")
+            try:
+                WebDriverWait(webDriver, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            except:
+                # error with test
+                logger.debug("error loading test site")
 
-                # load defaulf page as a primary test
-                tmpWebDriver.get("https://nosniff_dynamic.test-canitrust.com/")
-                try:
-                    WebDriverWait(tmpWebDriver, 10).until(
-                        EC.presence_of_element_located((By.TAG_NAME, 'body')))
-                except:
-                    # error with test
-                    logger.debug("error loading test site")
+            # setup time for the case when webdriver stucks at the download window
+            signal.signal(signal.SIGALRM, handler)
+            # Set the parameter to the amount of seconds you want to wait
+            signal.alarm(5)
 
-                # setup time for the case when webdriver stucks at the download window
-                signal.signal(signal.SIGALRM, handler)
-                # Set the parameter to the amount of seconds you want to wait
-                signal.alarm(5)
-
-                try:
-                    tmpWebDriver.get(
-                        "https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(content_type))
-                    # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
-                    # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
-                except Exception as e:
-                    # the exception rises when the time set (see above) exceeded when performing the steps in try
-                    # in the case the download window shows up, the webdriver hangs and needs to be killed
-                    logger.debug(str(e))
-                    self.data[content_type] = "download"
-                    logger.debug(content_type + ": " + self.data[content_type])
-                    # tmpWebDriver.close()
-                    # continue
-
-                signal.alarm(10)  # Resets the alarm to 10 new seconds
-                signal.alarm(0)  # Disables the alarm
-
-                # evaluation phase
-                try:
-                    WebDriverWait(tmpWebDriver, 10).until(
-                        EC.presence_of_element_located((By.TAG_NAME, 'body')))
-                    oHeadline = tmpWebDriver.find_element_by_id('headline')
-                    textHeadline = str(oHeadline.get_attribute('innerHTML'))
-                    if (textHeadline == "XSS exploited"):
-                        self.data[content_type] = "exploited"
-                    else:
-                        self.data[content_type] = "not sniffed"
-
-                except:
-                    self.data[content_type] = "not sniffed"
-
-                tmpWebDriver.close()
-                # logger.debug(self.data)
-                logger.debug(content_type + ": " + self.data[content_type])
-            # end loop
-            # wait until all drivers are done
-            while len(self.data) != len(content_types):
+            try:
+                webDriver.get(
+                    "https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(self.data["content_type"]))
+                # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
+                # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
+            except:
+                # the exception rises when the time set (see above) exceeded when performing the steps in try
+                # in the case the download window shows up, the webdriver hangs and needs to be killed
+                self.data["result"] = "download"
+                logger.debug(self.data["content_type"] + ": " + self.data["result"])
                 webDriver.close()
+                return 1
+
+            signal.alarm(10)  # Resets the alarm to 10 new seconds
+            signal.alarm(0)  # Disables the alarm
+
+            # evaluation phase
+            try:
+                WebDriverWait(webDriver, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                oHeadline = webDriver.find_element_by_id('headline')
+                textHeadline = str(oHeadline.get_attribute('innerHTML'))
+                if (textHeadline == "XSS exploited" and self.data["content_type"] is not "text/html"):
+                    self.data["result"] = "exploited"
+                else:
+                    self.data["result"] = "not sniffed"
+
+            except:
+                self.data["result"] = "not sniffed"
+
+            webDriver.close()
             return 1
 
     def evaluate(self):
         logger.debug("--== Data evaluation ==--")
-        logger.debug(self.data)
-        counter = 0
-        result = 1  # green
-        for content_type in content_types:
-            logger.debug(content_type + ": " + self.data[content_type])
-            if ('exploited' in self.data[content_type]):
-                # response sniffed, rendered and XSS exploited
-                counter = counter + 1
-        logger.debug("No. of exploited Content-Types: " + str(counter))
-        if counter != 0:
-            result = counter  # 1=green, expected from text/html, all above will result in higher result/different color
+        if "exploited" in self.data["result"]:
+            self.result = 0
+        elif "aborted" in self.data["result"]:
+            self.result = 8
         else:
-            result = 8  # special case when Firefox test is skipped
-        self.result = result
+            self.result = 1
