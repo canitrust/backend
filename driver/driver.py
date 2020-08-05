@@ -288,7 +288,7 @@ def cmd_autoupdate_main():
         if key in settings.testcasesJson and "variations" in settings.testcasesJson[key]:
             for variation in settings.testcasesJson[key]["variations"]:
                 for info_browser in settings.browserSupport:
-                    testcase = {"info_browser": info_browser, "test_case": key, "variation_id":  variation["id"], "data": variation["data"]}
+                    testcase = {"info_browser": info_browser, "test_case": key, "variation_id":  variation["id"], "variation_data": variation["data"]}
                     autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
 
     logger.info('IGNORE_TESTS:{}'.format(bs_tests_ignored))
