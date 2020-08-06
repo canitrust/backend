@@ -11,6 +11,7 @@ from config import constant
 import time
 from helper import Logger
 import os
+import threading
 
 #import selenium
 from selenium import webdriver
@@ -118,7 +119,7 @@ class TestCase:
             start_time = time.time()
             logger.debug('Running testcase - spawn - done')
             # Run the actual test definition
-            self.executeTest(webDriver)
+            flag = self.executeTest(webDriver)
             logger.debug('Running testcase - execute - done')
             # Elapsed time
             self.elapsedTime = time.time() - start_time
@@ -136,7 +137,12 @@ class TestCase:
             self.result = "Failed"
         finally:
             try:
-                webDriver.quit()
+                if flag is 3:
+                    logger.debug("Quit webDriver with new thread")
+                    quitThread = threading.Thread(target=webDriver.quit)
+                    quitThread.start()
+                else:
+                    webDriver.quit()
             except Exception as e:
                 logger.error('Quit webdriver - Failed')
             data = self.get_data()
@@ -166,7 +172,7 @@ class TestCase:
             start_time = time.time()
             logger.debug('Running testcase - spawn - done')
             # Run the actual test definition
-            self.executeTest(webDriver)
+            flag = self.executeTest(webDriver)
             logger.debug('Running testcase - execute - done')
             # Elapsed time
             self.elapsedTime = time.time() - start_time
@@ -181,7 +187,12 @@ class TestCase:
             self.result = "Failed"
         finally:
             try:
-                webDriver.quit()
+                if flag is 3:
+                    logger.debug("Quit webDriver with new thread")
+                    quitThread = threading.Thread(target=webDriver.quit)
+                    quitThread.start()
+                else:
+                    webDriver.quit()
             except Exception as e:
                 logger.error('Quit webdriver - Failed')
             data = self.get_data()
@@ -207,7 +218,7 @@ class TestCase:
             start_time = time.time()
             logger.debug('Running testcase - spawn - done')
             # Run the actual test definition
-            self.executeTest(webDriver)
+            flag = self.executeTest(webDriver)
             logger.debug('Running testcase - execute - done')
             # Elapsed time
             self.elapsedTime = time.time() - start_time
@@ -222,7 +233,12 @@ class TestCase:
             self.result = "Failed"
         finally:
             try:
-                webDriver.quit()
+                if flag is 3:
+                    logger.debug("Quit webDriver with new thread")
+                    quitThread = threading.Thread(target=webDriver.quit)
+                    quitThread.start()
+                else:
+                    webDriver.quit()
             except Exception as e:
                 logger.error('Quit webdriver - Failed')
             data = self.get_data()

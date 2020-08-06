@@ -119,57 +119,52 @@ class Case36(TestCase):
         else:
             self.data = {"content_type": self.variationData["content_type"]}
 
-        if "firefox" in self.browser.lower():
-            logger.debug("Skipping " + self.browser)
-            # this test does not runs in Firefox
-            self.data["result"] = "aborted"
-        else:
-            # load defaulf page as a primary test
-            webDriver.get("https://nosniff_dynamic.test-canitrust.com/")
-            try:
-                WebDriverWait(webDriver, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
-            except:
-                # error with test
-                logger.debug("error loading test site")
+        # load defaulf page as a primary test
+        webDriver.get("https://nosniff_dynamic.test-canitrust.com/")
+        try:
+            WebDriverWait(webDriver, 10).until(
+                EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        except:
+            # error with test
+            logger.debug("error loading test site")
 
-            # setup time for the case when webdriver stucks at the download window
-            signal.signal(signal.SIGALRM, handler)
-            # Set the parameter to the amount of seconds you want to wait
-            signal.alarm(5)
+        # setup time for the case when webdriver stucks at the download window
+        signal.signal(signal.SIGALRM, handler)
+        # Set the parameter to the amount of seconds you want to wait
+        signal.alarm(5)
 
-            try:
-                webDriver.get(
-                    "https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(self.data["content_type"]))
-                # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
-                # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
-            except:
-                # the exception rises when the time set (see above) exceeded when performing the steps in try
-                # in the case the download window shows up, the webdriver hangs and needs to be killed
-                self.data["result"] = "download"
-                logger.debug(self.data["content_type"] + ": " + self.data["result"])
-                webDriver.close()
-                return 1
+        try:
+            webDriver.get(
+                "https://nosniff_dynamic.test-canitrust.com/nosniff.php?nosniff=false&content_type=" + urllib.parse.quote(self.data["content_type"]))
+            # server returns file with content-type and with X-Content-Type-Options: nosniff depending on the URL parameters
+            # nosniff = true; XCTO = nosniff is set; nosniff = false; XCTO is not set
+        except Exception as e:
+            # the exception rises when the time set (see above) exceeded when performing the steps in try
+            # in the case the download window or media player shows up, the webdriver hangs for 5 minutes
+            self.data["result"] = "download"
+            logger.debug(self.data["content_type"] + ": " + self.data["result"])
+            # Quit webDriver with new thread
+            return 3
 
-            signal.alarm(10)  # Resets the alarm to 10 new seconds
-            signal.alarm(0)  # Disables the alarm
+        signal.alarm(10)  # Resets the alarm to 10 new seconds
+        signal.alarm(0)  # Disables the alarm
 
-            # evaluation phase
-            try:
-                WebDriverWait(webDriver, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
-                oHeadline = webDriver.find_element_by_id('headline')
-                textHeadline = str(oHeadline.get_attribute('innerHTML'))
-                if (textHeadline == "XSS exploited" and self.data["content_type"] is not "text/html"):
-                    self.data["result"] = "exploited"
-                else:
-                    self.data["result"] = "not sniffed"
-
-            except:
+        # evaluation phase
+        try:
+            WebDriverWait(webDriver, 10).until(
+                EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            oHeadline = webDriver.find_element_by_id('headline')
+            textHeadline = str(oHeadline.get_attribute('innerHTML'))
+            if (textHeadline == "XSS exploited" and self.data["content_type"] is not "text/html"):
+                self.data["result"] = "exploited"
+            else:
                 self.data["result"] = "not sniffed"
 
-            webDriver.close()
-            return 1
+        except:
+            self.data["result"] = "not sniffed"
+
+        webDriver.close()
+        return 1
 
     def evaluate(self):
         logger.debug("--== Data evaluation ==--")
