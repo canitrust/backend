@@ -61,7 +61,7 @@ node('Dev') {
         }
 
         echo "Find all entries since latest timestamp"
-        sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{testCaseNum: 1,  browser: 1, version: 1, date: -1}' --out ./dataLine.json"
+        sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{testCaseNum: 1,  browser: 1, version: 1, variationId: 1, date: -1}' --out ./dataLine.json"
 
         echo "Convert entries to Frontend DB format" 
         sh "python3 scripts/translate.py dataLine.json"
@@ -87,7 +87,7 @@ node('Dev') {
         sh returnStdout: true, script: "mongo ${MONGO_STAGING_URI} --ssl --eval 'db.testcases.createIndex( { title: \"text\", description: \"text\" } )'"
 
         if (fileExists('./translated.json')) {
-          sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --jsonArray --mode 'upsert' --upsertFields 'testNumber','browser','browserVer'"
+          sh returnStdout: true, script: "mongoimport --uri ${MONGO_STAGING_URI} --ssl --collection testresults --file ./translated.json --jsonArray --mode 'upsert' --upsertFields 'testNumber','browser','browserVer','variationId'"
         }
       }
     }
