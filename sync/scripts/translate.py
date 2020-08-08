@@ -108,17 +108,19 @@ if __name__ == '__main__':
                 inputIgnoredNonLiveTestResult += 1
                 continue
             # Filter out outdated testresult
-            # testresults should be sorted by {testCaseNum: 1,  browser: 1, version: 1, date: -1}
+            # testresults should be sorted by {testCaseNum: 1,  browser: 1, version: 1, variationId: 1, date: -1}
             if (previousResult is not None and
                 aResult.backendData['testCaseNum'] == previousResult.backendData['testCaseNum'] and
                 aResult.backendData['browser'] == previousResult.backendData['browser'] and
                 aResult.backendData['version'] == previousResult.backendData['version'] and
-                aResult.backendData['isBeta'] == previousResult.backendData['isBeta'] and not
-                ("variationId" in aResult.backendData and
-                "variationId" in previousResult.backendData and
-                aResult.backendData["variationId"] != previousResult.backendData["variationId"])):
-                inputIgnoredOldTestResult += 1
-                continue
+                aResult.backendData['isBeta'] == previousResult.backendData['isBeta']):
+                if "variationId" in aResult.backendData and "variationId" in previousResult.backendData:
+                    if aResult.backendData["variationId"] == previousResult.backendData["variationId"]:
+                        inputIgnoredOldTestResult += 1
+                        continue
+                elif "variationId" not in aResult.backendData and "variationId" not in previousResult.backendData:
+                    inputIgnoredOldTestResult += 1
+                    continue
             if(aResult.isBeta()):
                 inputIsBeta += 1
                 betaTempoList.append(aResult)
@@ -140,6 +142,7 @@ if __name__ == '__main__':
         # Print statistics
         print(f"Input entities: {inputEntity} (ignored (Insider preview): {inputIgnoredInsiderPreview}, ignored (Non-live testresults): {inputIgnoredNonLiveTestResult}, ignored (Outdated testresult): {inputIgnoredOldTestResult}, isBeta: {inputIsBeta})")
         print(f"Output: {outputNonBeta + outputBeta}, isBeta filtered out {outputBetaFilteredOut}, non-beta: {outputNonBeta}, isBeta {outputBeta}")
+
 
     if outputArray:
         print("Output file [translated.json]:")
