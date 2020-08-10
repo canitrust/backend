@@ -27,7 +27,7 @@ def format_mongo_object(testcase):
         "testCaseNum": int(testcase['test_case']),
         "deprecated": False
     }
-    if "variation_id" in testcase and testcase['variation_id'] is not None: result["variation_id"] = testcase['variation_id']
+    if "variation_id" in testcase and testcase['variation_id'] is not None: result["variationId"] = testcase['variation_id']
     return result
 
 
@@ -209,7 +209,6 @@ def cmd_run_local_main():
     logger.info('testing environment: local')
     local_tests = get_test_cases()
     logger.info('AMOUNT_LOCAL_TESTS:{}'.format(len(local_tests)))
-    logger.info('LOCAL_TESTS LENGTH:{}'.format(len(local_tests))) #TODO: SHOULD REMOVE
     logger.info('LOCAL_TESTS:{}'.format(local_tests))
     if len(local_tests) > 0 and not settings.DRY_RUN:       
         start_infra()
