@@ -27,7 +27,10 @@ def format_mongo_object(testcase):
         "testCaseNum": int(testcase['test_case']),
         "deprecated": False
     }
-    if "variation_id" in testcase and testcase['variation_id'] is not None: result["variationId"] = testcase['variation_id']
+    if 'variation_id' in testcase and testcase['variation_id'] is not None:
+        result['variationId'] = testcase['variation_id']
+    else:
+        result['variationId'] = {'$exists': False}
     return result
 
 
@@ -189,7 +192,8 @@ def exec_bs_test_list(bs_tests):
                 # Add to the list of failed tests for next run if not exist
                 if not settings.DB.failed_tests.count_documents(object_dict): 
                     object_dict.update({'retry_count': 0})
-                    settings.DB.failed_tests.insert(object_dict) 
+                    if '$exists' in object_dict['variationId']: del object_dict['variationId']
+                    settings.DB.failed_tests.insert(object_dict)
                 # Increment retry_count if already 
                 else:
                     settings.DB.failed_tests.find_one_and_update(object_dict, {'$inc': {'retry_count': 1}})
