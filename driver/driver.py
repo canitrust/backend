@@ -192,7 +192,7 @@ def exec_bs_test_list(bs_tests):
                 # Add to the list of failed tests for next run if not exist
                 if not settings.DB.failed_tests.count_documents(object_dict): 
                     object_dict.update({'retry_count': 0})
-                    if '$exists' in object_dict['variationId']: del object_dict['variationId']
+                    if type(object_dict['variationId']) is dict and '$exists' in object_dict['variationId']: del object_dict['variationId']
                     settings.DB.failed_tests.insert(object_dict)
                 # Increment retry_count if already 
                 else:
