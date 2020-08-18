@@ -8,6 +8,11 @@ test-canitrust.com {
     log
 }
 
+alternative-canitrust.com {
+    file alternative-canitrust.com
+    log
+}
+
 . {
     forward . /etc/resolv.conf
     log

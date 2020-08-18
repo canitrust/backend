@@ -82,5 +82,9 @@
   "22": {
     "tagNumber": 22,
     "tagText": "X-Content-Type-Options-nosniff"
+  },
+  "23": {
+    "tagNumber": 23,
+    "tagText": "reverse-tabnabbing"
   }
 }
