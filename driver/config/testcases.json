@@ -750,7 +750,7 @@
     "tagNums": [
       23
     ],
-    "path": "reverse-tabnabbing",
+    "path": "reverse-tabnabbing-opener-remain",
     "question": "The user clicks on a link vulnerable to Reverse Tabnabbing. Is there an `opener` object created and at which user actions does it remain?",
     "possibleAnswers": [
       {
