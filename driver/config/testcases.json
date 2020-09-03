@@ -771,6 +771,29 @@
       }
     ]
   },
+  "39": {
+    "testNumber": 39,
+    "title": "Browser returns secret out of pre-cached response in a CORS-Request",
+    "description": "If a browser does not retrieve a Cache-Control-Header after an authenticated request against an API, which subsequently serves a secret content, does the browser serves the cached secret content if a foreign website queries the same API again without authenticating again? Does this work even Cross-Domain? This should not be the case as it would open a whole new attack surface for phishing attacks.",
+    "detailedDescription": "### Introduction\nInorder to introduce the topic, two main concepts must be explained first:\n\n1) So called **Cross-Domain-Requests** depict requests which are executed across domains. For example does a request, originating at Domain1.com, which targets an API at Domain2.com (e.g. Domain2.com/api/requestSecret.php), issue a CrossDomain-Request. The Same-Origin-Policy (SOP) will prevent that Domain1.com accesses the server response from Domain2.com/api/requestSecret.php by default. However, the SOP can be partially released with the **Access-Control-Allow-\***-Response-Header, which can allow **Origin, Header, Credentials or Methods** to be allowed cross-domain-wise. With this Header, a server can tell a browser to allow a specific, or any (*), domain to access the servers response. E.g.:\n\n```\n    Access-Control-Allow-Origin: Domain1.com\n    Access-Control-Allow-Credentials: true\n    Access-Control-Allow-Headers: X-Custom-Header\n    Access-Control-Allow-Methods: GET,PUT,OPTIONS\n```\n\n2) **Caching** is a technique to locally store already retrieved server responses to serve the content when the user requests the same ressource again. This reduces the network load and enhances the user experience with respect to page loading speeds. The server can specify a how the browser should handle the cached response by setting the **Cache-Control**-Header. There is a variety of values this header can be served with. The following list shows some common one:\n\n```\n    Cache-Control: must-revalidate  //check status of ressource before reusing\n    Cache-Control: no-cache         //no cache at all\n    Cache-Control: no-store         //cache does not store client-reuest or server-response\n    Cache-Control: no-transform     //no transformation or conversion of ressource\n    \n    Cache-Control: public           //every hop is allowed to cache\n    Cache-Control: private          //only for one user, no shared cache is allowed to store it\n    Cache-Control: proxy-revalidate //same as must-revalidate but for shared caches\n    \n    Cache-Control: max-age=<seconds>    //time to use, relative to request timestamp\n```\n\nThe Browser ist responsible for handling the different directives in the resilient way.\n\n\n### Problem\n\nImagine, the server omits the Cache-Control-Header. The browser can't decide if the server response contains sensitive data. Therefore it prefers caching the response in order to reduce network loads.\n\nFurther imagine, that an API-Call on the same domain needs a present cookie to return a secret. This call responds with an *Access-Control-Allow-Origin \** which allows everybody to read the response.\n\nWithin the same browser session, another foreign website is visited, which also calls the API from the first domain. The new website concerns about request speeds and includes a clientside *Cache-Contol: only-if-cached*. This tells the browser to only respond if the response is already cached.\n\n\n### How does the browser react?\nSince the API allowed the access from arbitrary domains, the browser searches in it's cache and reveals a cached response and is fruther allowed to serve it to any domain.\n\nSubsequently the question arises whether the browser:\n\n1. serves the cached response because every domain is allowed to access it.\n\n2. requests the server again because the call comes from a different domain and therefore the authenticating cookies may not be present anymore.\n",
+    "date_created": "09/03/2020",
+    "tagNums": [
+      5,
+      24
+    ],
+    "path": "hsts-via-plain-http",
+    "question": "Is the HSTS header processed if received via plain http?",
+    "possibleAnswers": [
+      {
+        "ans_id": 1,
+        "ans_desc": "No"
+      },
+      {
+        "ans_id": 0,
+        "ans_desc": "Yes"
+      }
+    ]
+  },
   "32": {
     "testNumber": 32,
     "title": "SameSite cookies",
