@@ -168,5 +168,10 @@
     "modulename": "case99",
     "filename": "case99.py",
     "isLive": true
+  },
+  "39": {
+    "modulename": "case39",
+    "filename": "case39.py",
+    "isLive": false
   }
 }
