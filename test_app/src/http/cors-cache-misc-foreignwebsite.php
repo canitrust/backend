@@ -24,6 +24,7 @@
 		console.log(data);
 		document.getElementById('result').innerText = data; //"<div id='scriptDiv'>"+data+"</div>";
 	});
+
 })();
 </script>
 </html>
