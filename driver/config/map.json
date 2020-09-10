@@ -172,6 +172,6 @@
   "39": {
     "modulename": "case39",
     "filename": "case39.py",
-    "isLive": false
+    "isLive": true
   }
 }
