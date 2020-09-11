@@ -791,6 +791,10 @@
       {
         "ans_id": 0,
         "ans_desc": "Yes"
+      },
+      {
+        "ans_id": 9,
+        "ans_desc": "Error during the execution"
       }
     ]
   },
