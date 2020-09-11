@@ -34,9 +34,7 @@ class Case39(TestCase):
         def checkAPIcontent(resultName):
             try:
                 WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.ID, 'result')))
-                print(webDriver.find_element_by_id("result").get_attribute("innerText"))
-                status = webDriver.find_element_by_id("result").get_attribute("innerText")
-
+                status = webDriver.find_element_by_id("result").text
                 if (status == "secret"):
                     self.data[resultName] = 1
                 elif (status == "nosecret"):
