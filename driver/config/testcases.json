@@ -796,7 +796,70 @@
         "ans_id": 9,
         "ans_desc": "Error during the execution"
       }
-    ]
+    ],
+    "variations": [
+      {
+        "description": "Authentication using cookie, frontend and API are in the same origin, request using XMLHttpRequest",
+        "data": {
+          "authentication": "cookie",
+          "apiOrigin": "same-origin",
+          "method": "XHR"
+        },
+        "id": 0,
+        "title": "Cookie - same origin - XHR"
+      },
+      {
+        "description": "Authentication using cookie, frontend and API are in the same origin, request using Javascript fetch()",
+        "data": {
+          "authentication": "cookie",
+          "apiOrigin": "same-origin",
+          "method": "fetch"
+        },
+        "id": 1,
+        "title": "Cookie - same origin - fetch"
+      },
+      {
+        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using XMLHttpRequest",
+        "data": {
+          "authentication": "jwt",
+          "apiOrigin": "same-origin",
+          "method": "XHR"
+        },
+        "id": 2,
+        "title": "Authorization header - same origin - XHR"
+      },
+      {
+        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using Javascript fetch()",
+        "data": {
+          "authentication": "jwt",
+          "apiOrigin": "same-origin",
+          "method": "fetch"
+        },
+        "id": 3,
+        "title": "Authorization header - same origin - fetch"
+      },
+      {
+        "description": "Authentication using the Authorization header, frontend and API are in different origins, request using XMLHttpRequest",
+        "data": {
+          "authentication": "jwt",
+          "apiOrigin": "cross-origin",
+          "method": "XHR"
+        },
+        "id": 4,
+        "title": "Authorization header - cross origin - XHR"
+      },
+      {
+        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using Javascript fetch()",
+        "data": {
+          "authentication": "jwt",
+          "apiOrigin": "cross-origin",
+          "method": "fetch"
+        },
+        "id": 5,
+        "title": "Authorization header - cross origin - fetch"
+      }
+    ],
+    "variationOverview": "Testcase variations: effects of authentication methods, API origin and the Javascript command used on the exploitability"
   },
   "32": {
     "testNumber": 32,

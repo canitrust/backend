@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="/jquery-3.5.1.min.js"></script>
+		<title>Supersichere Website</title>
+	</head>
+	<body>
+
+		<div id="result"></div>
+	</body>
+<script>
+	$(document).ready(function(){
+		$.ajax({
+			url: "https://cors-cache-misc.test-canitrust.com/case39/cors-cache-misc-websiteapi.php",
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('Authorization', 'jwt-token')
+			},
+			success: function(result){
+				$('#result').text(result.result);
+			}
+		});
+	});
+</script>
+</html>
