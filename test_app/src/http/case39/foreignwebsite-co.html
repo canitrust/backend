@@ -5,10 +5,7 @@
 		<script src="/jquery-3.5.1.min.js"></script>
 		<title>Arbitrary Website</title>
 	</head>
-	<body>
-
-		<div id="result"></div>
-	</body>
+	<body></body>
 <script>
 $(document).ready(function(){
 	fetch('https://cors-cache-misc-api.test-canitrust.com/case39/cors-cache-misc-websiteapi.php',
@@ -18,6 +15,9 @@ $(document).ready(function(){
 		return res.json();
 	})
 	.then(function(data){
+		g = document.createElement('div')
+		g.setAttribute('id', 'result')
+		$('body').append(g)
 		document.getElementById('result').innerText = data.result;
 	});
 });
