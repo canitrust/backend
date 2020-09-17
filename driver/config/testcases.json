@@ -859,7 +859,7 @@
         "title": "Authorization header - cross origin - fetch"
       }
     ],
-    "variationOverview": "Testcase variations: Affects of authentication methods, API origin and the Javascript command used to make requests on the exploitability"
+    "variationOverview": "Testcase variations: effects of authentication methods, API origin and the Javascript command used on the exploitability"
   },
   "32": {
     "testNumber": 32,
