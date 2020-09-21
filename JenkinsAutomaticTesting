@@ -44,7 +44,7 @@ node('Dev') {
                     """
                     writeFile file: './driver/config/.env', text: "${cfg}"
                 }
-                sh "./driver.sh ${driverFlags} --junit"
+                sh "./driver.sh ${driverFlags}"
                     
             }
         }
