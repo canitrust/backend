@@ -3,6 +3,7 @@ node('Dev') {
     def repo = 'backend'
     def browserstackCredentials = 'bs_free_user_key'
     def devMongoUrl = 'cit-dev-mongo-url'
+    def driverFlags = "${params.DRIVER_FLAGS}"
     try {
         stage('Prepare') {
             def gitBranch = 'master'
@@ -43,7 +44,7 @@ node('Dev') {
                     """
                     writeFile file: './driver/config/.env', text: "${cfg}"
                 }
-                sh "./driver.sh autoupdate --junit"
+                sh "./driver.sh ${driverFlags} --junit"
                     
             }
         }
