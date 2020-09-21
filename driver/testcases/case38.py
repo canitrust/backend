@@ -69,7 +69,7 @@ class Case38(TestCase):
     def evaluate(self):
         result = 1
         if (self.data['opener'] == 1):
-            result = 6f
+            result = 6
         if (self.data['opener_after_link'] == 1):
             result = 7
         if (self.data['opener_entered_url'] == 1):
