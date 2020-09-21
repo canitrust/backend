@@ -758,6 +758,10 @@
         "ans_desc": "No `opener` object created at all."
       },
       {
+        "ans_id": 6,
+        "ans_desc": "The `opener` object exists at the website opened with the vulnerable link."
+      },
+      {
         "ans_id": 7,
         "ans_desc": "The `opener` object remains after clicking another link in the target tab."
       },
