@@ -71,7 +71,7 @@ class Case38(TestCase):
         if (self.data['opener'] == 1):
             result = 3
         if (self.data['opener_after_link'] == 1):
-            result = 4
+            result = 7
         if (self.data['opener_entered_url'] == 1):
-            result = 5
+            result = 0
         self.result = result
