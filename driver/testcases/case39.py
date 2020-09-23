@@ -31,22 +31,30 @@ class Case39(TestCase):
             self.variationId = 0
 
         # Translating variation data into corresponding testapp
-        testapp = (
-            'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-xhr.html',
-            'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-fetch.html',
-            'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-xhr.html',
-            'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-fetch.html',
-            'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-xhr.html',
-            'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-fetch.html'
-        )
-        attackerapp = (
-            'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
-            'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
-            'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
-            'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
-            'http://alternative-canitrust.com/case39/foreignwebsite-co.html',
-            'http://alternative-canitrust.com/case39/foreignwebsite-co.html'
-        )
+        testapp = {
+            0: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-xhr.html',
+            1: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-fetch.html',
+            2: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-xhr.html',
+            3: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-fetch.html',
+            4: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-xhr.html',
+            5: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-fetch.html',
+            6: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-so-fetch.html',
+            7: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-co-fetch.html',
+            8: 'https://cors-cache-misc.test-canitrust.com/case39/website-basic-so.php'
+            10: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-login.php'
+        }
+        attackerapp = {
+            0: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
+            1: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
+            2: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
+            3: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
+            4: 'http://alternative-canitrust.com/case39/foreignwebsite-co.html',
+            5: 'http://alternative-canitrust.com/case39/foreignwebsite-co.html',
+            6: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
+            7: 'http://alternative-canitrust.com/case39/foreignwebsite-co.html',
+            8: 'http://alternative-canitrust.com/case39/foreignwebsite-basic.html',
+            10: 'http://alternative-canitrust.com/case39/foreignwebsite-active.html',
+        }
         websiteURL = testapp[self.variationId]
         foreignWebsiteURL = attackerapp[self.variationId]
 
