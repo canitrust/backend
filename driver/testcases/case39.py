@@ -40,7 +40,7 @@ class Case39(TestCase):
             5: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-fetch.html',
             6: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-so-fetch.html',
             7: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-co-fetch.html',
-            8: 'https://cors-cache-misc.test-canitrust.com/case39/website-basic-so.php'
+            8: 'https://cors-cache-misc.test-canitrust.com/case39/website-basic-so.php',
             10: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-login.php'
         }
         attackerapp = {
@@ -53,7 +53,7 @@ class Case39(TestCase):
             6: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',
             7: 'http://alternative-canitrust.com/case39/foreignwebsite-co.html',
             8: 'http://alternative-canitrust.com/case39/foreignwebsite-basic.html',
-            10: 'http://alternative-canitrust.com/case39/foreignwebsite-active.html',
+            10: 'http://alternative-canitrust.com/case39/foreignwebsite-active.html'
         }
         websiteURL = testapp[self.variationId]
         foreignWebsiteURL = attackerapp[self.variationId]
