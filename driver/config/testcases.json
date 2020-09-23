@@ -808,15 +808,6 @@
         "title": "Cookie - same origin"
       },
       {
-        "description": "Authentication using cookie, front-end and API of the tested app are in the same origin, the attacker actively triggered a cross-site request to the app in order to create the cache of his wish",
-        "data": {
-          "authentication": "cookie",
-          "apiOrigin": "same-origin"
-        },
-        "id": 10,
-        "title": "Cookie - same origin"
-      },
-      {
         "description": "Authentication using the Authorization header, front-end and API of the tested app are in the same origin",
         "data": {
           "authentication": "jwt",
@@ -851,15 +842,6 @@
         },
         "id": 7,
         "title": "Custom authentication header - cross origin"
-      },
-      {
-        "description": "Authentication using basic authentication",
-        "data": {
-          "authentication": "custom",
-          "apiOrigin": "same-origin"
-        },
-        "id": 8,
-        "title": "Basic authentication"
       }
     ],
     "variationOverview": "Testcase variations: effects of authentication methods and API origin on the exploitability"
