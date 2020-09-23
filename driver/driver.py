@@ -83,9 +83,12 @@ def get_test_cases():
 def get_test_cases_without_browsers():
     cases = []
     for case in settings.TESTCASES:
-        if case in settings.dataJson:
-            cases.append({"test_case": case})
-            if case in settings.testcasesJson and "variations" in settings.testcasesJson[case]:
+        if case in settings.dataJson and case in settings.testcasesJson:
+            if "variations" not in settings.testcasesJson[case]:
+            # case without variation
+                cases.append({"test_case": case})
+            else:
+            # case with variations
                 for variation in settings.testcasesJson[case]["variations"]:
                     cases.append({"test_case": case, "variation_id":  variation["id"], "variation_data": variation["data"]})
     return cases
@@ -93,13 +96,16 @@ def get_test_cases_without_browsers():
 def get_test_cases_with_browsers(checkIsLive=False, checkNewOrFailedTestcase=False):
     cases = []
     for case in settings.TESTCASES:
-        if case in settings.dataJson:
+        if case in settings.dataJson and case in settings.testcasesJson:
             if checkIsLive and not settings.dataJson[case]['isLive']: continue
-            for info_browser in settings.browserSupport:
-                testcase = {"info_browser": info_browser, "test_case": case}
-                if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(testcase): continue
-                cases.append(testcase)
-            if case in settings.testcasesJson and "variations" in settings.testcasesJson[case]:
+            if "variations" not in settings.testcasesJson[case]:
+            # case without variation
+                for info_browser in settings.browserSupport:
+                    testcase = {"info_browser": info_browser, "test_case": case}
+                    if checkNewOrFailedTestcase and not checkNewOrFailedTestcaseFunc(testcase): continue
+                    cases.append(testcase)
+            else:
+            # case with variations
                 for variation in settings.testcasesJson[case]["variations"]:
                     for info_browser in settings.browserSupport:
                         testcase = {"info_browser": info_browser, "test_case": case, "variation_id":  variation["id"], "variation_data": variation["data"]}
@@ -285,8 +291,10 @@ def cmd_autoupdate_main():
     bs_tests_ignored = []
     for key, val in settings.dataJson.items():
         for info_browser in settings.browserSupport:
-            testcase = {"info_browser": info_browser, "test_case": key}
-            autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
+            # Only add the "base" case if the testcase does not have variations
+            if key in settings.testcasesJson and "variations" not in settings.testcasesJson[key]:
+                testcase = {"info_browser": info_browser, "test_case": key}
+                autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
 
         if key in settings.testcasesJson and "variations" in settings.testcasesJson[key]:
             for variation in settings.testcasesJson[key]["variations"]:
