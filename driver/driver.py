@@ -292,7 +292,7 @@ def cmd_autoupdate_main():
     for key, val in settings.dataJson.items():
         for info_browser in settings.browserSupport:
             # Only add the "base" case if the testcase does not have variations
-            if "variations" not in settings.testcasesJson[key]:
+            if key in settings.testcasesJson and "variations" not in settings.testcasesJson[key]:
                 testcase = {"info_browser": info_browser, "test_case": key}
                 autoupdate_handler(bs_tests, bs_tests_ignored, testcase, val['isLive'])
 
