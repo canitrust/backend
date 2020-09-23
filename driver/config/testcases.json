@@ -775,22 +775,22 @@
     "testNumber": 39,
     "title": "Browser returns secret out of pre-cached response in a CORS-Request",
     "description": "If a browser does not retrieve a Cache-Control-Header after an authenticated request against an API, which subsequently serves a secret content, does the browser serves the cached secret content if a foreign website queries the same API again without authenticating again? Does this work even Cross-Domain? This should not be the case as it would open a whole new attack surface for phishing attacks.",
-    "detailedDescription": "### Introduction\nIn order to introduce the topic, two main concepts must be explained first:\n\n1) The usage of Cross-Origin requests (CORS), which is specified in HTML5, allows the circumvention of the Same-Origin policy. It is possible to send XHR requests to other domains from a given website and embed the subsequent response.\n\nThe CORS access is granted by the webserver which has been queried. The webserver sets the Access-Control-Allow-Origin header attribute stating that the browser is allowed to perform Cross-Origin requests on the webserver and obtain the requested response.\n\nIf the attribute is set with value `` ‘*’ ``, access to the web page of the web server may be performed from all domains. This entails that there are no restrictions to protect contents via CORS access.\n\nThe following examples show some capabilities of the CORS-Headers:\n\n```\n    Access-Control-Allow-Origin: Domain1.com\n    Access-Control-Allow-Credentials: true\n    Access-Control-Allow-Headers: X-Custom-Header\n    Access-Control-Allow-Methods: GET,PUT,OPTIONS\n```\n\n2) **Caching** is a technique to locally store already retrieved server responses to serve the content when the user requests the same ressource again. This reduces the network load and enhances the user experience with respect to page loading speeds. The server can specify how the browser should handle the cached response by setting the **Cache-Control**-Header. There is a variety of values this header can be served with. The following list shows some common one:\n\n```\n    Cache-Control: must-revalidate  //check status of ressource before reusing\n    Cache-Control: no-cache         //no cache at all\n    Cache-Control: no-store         //cache does not store client-reuest or server-response\n    Cache-Control: no-transform     //no transformation or conversion of ressource\n\n    Cache-Control: only-if-cached    //cache only, no new data is requested from the server\n\n    Cache-Control: public           //every hop is allowed to cache\n    Cache-Control: private          //only for one user, no shared cache is allowed to store it\n    Cache-Control: proxy-revalidate //same as must-revalidate but for shared caches\n\n    Cache-Control: max-age=<seconds>    //time to use, relative to request timestamp\n```\n\nThe Browser is responsible for handling the different directives in the resilient way.\n\n\n### Problem\n\nImagine there is an API, residing on domain-A, which responds with secret data. Further assume a user logs into the website, also residing on domain-A, and gets an authentication identifier (cookie / token) set. This website fetches data from the API. Since this is not a cross-origin request and the required authentication is provided, the user is allowd to read the APIs response.  Subsequently, the response is exposed to the frontend.\n\nImagine the API omits the Cache-Control-Header. Therefore the browser caches the response in order to reduce network loads for further requests.\n\nFurther imagine this API is configured with an ``'Access-Control-Allow-Origin: *'`` header and the Access-Control-Allow-Credentials' header is not set. Thus, and due to the required authentication, the browser forbids to read the response of this API, if it is called from another origin.\n\n```\n    fetch('https://domain-A/api/secret',\n        {\n            'cache':'force-cache',\n        })[…]\n\n    […]\n```\n\nWithin the same browser session, the user occasionally visits an attacker-controlled website residing at domain-B. The attacker controlled website includes a script, which issues a cross-origin request by fetching the API with the attribut ``'cache':'force-cache'``. This results in a HTTP request header which includes the clientside Cache-Contol: only-if-cached header. This results in a conflicting situation because the browser is not allowed to expose the API response but at the same time the response ist already present in the browsers cache. The browser must decide to either use the cached response or to request the API again.\n\n### How does the browser react?\n\nOption1: The browser serves the cached response and possibly leaks secret data.\n\nOption2: The browser initiates a new request to the API and does not show the response.\n\nOption3: The browser does not support support the JavaScript ``fetch()`` method.",
+    "detailedDescription": "### Introduction\nIn order to introduce the topic, two main concepts must be explained first:\n\n1) The usage of Cross-Origin requests (CORS), which is specified in HTML5, allows the circumvention of the Same-Origin policy. It is possible to send XHR requests to other domains from a given website and embed the subsequent response.\n\nThe CORS access is granted by the webserver which has been queried. The webserver sets the Access-Control-Allow-Origin header attribute stating that the browser is allowed to perform Cross-Origin requests on the webserver and obtain the requested response.\n\nIf the attribute is set with value `` ‘*’ ``, access to the web page of the web server may be performed from all domains. This entails that there are no restrictions to protect contents via CORS access.\n\nThe following examples show some capabilities of the CORS-Headers:\n\n```\n    Access-Control-Allow-Origin: Domain1.com\n    Access-Control-Allow-Credentials: true\n    Access-Control-Allow-Headers: X-Custom-Header\n    Access-Control-Allow-Methods: GET,PUT,OPTIONS\n```\n\n2) **Caching** is a technique to locally store already retrieved server responses to serve the content when the user requests the same ressource again. This reduces the network load and enhances the user experience with respect to page loading speeds. The server can specify how the browser should handle the cached response by setting the **Cache-Control**-Header. There is a variety of values this header can be served with. The following list shows some common one:\n\n```\n    Cache-Control: must-revalidate  //check status of ressource before reusing\n    Cache-Control: no-cache         //no cache at all\n    Cache-Control: no-store         //cache does not store client-reuest or server-response\n    Cache-Control: no-transform     //no transformation or conversion of ressource\n\n    Cache-Control: only-if-cached    //cache only, no new data is requested from the server\n\n    Cache-Control: public           //every hop is allowed to cache\n    Cache-Control: private          //only for one user, no shared cache is allowed to store it\n    Cache-Control: proxy-revalidate //same as must-revalidate but for shared caches\n\n    Cache-Control: max-age=<seconds>    //time to use, relative to request timestamp\n```\n\nThe Browser is responsible for handling the different directives in the resilient way.\n\n\n### Problem\nThe following diagram describes a possible remote attack scenario, where potentially sensitive information in the browser cache can be leaked to a third party under certain circumstances.\n\n![Browser cache leak](/assets/browser-cache-leak.png)\nImagine there is an API, residing on domain-A, which responds with secret data. Further assume a user logs into the website, also residing on domain-A, and gets an authentication identifier (cookie / token) set. This website fetches data from the API. Since this is not a cross-origin request and the required authentication is provided, the user is allowd to read the APIs response.  Subsequently, the response is exposed to the frontend.\n\nImagine the API omits the Cache-Control header. Therefore the browser caches the response in order to reduce network loads for further requests.\n\nFurther imagine this API is configured with an ``'Access-Control-Allow-Origin: *'`` header and the Access-Control-Allow-Credentials' header is not set. Thus, and due to the required authentication, the browser forbids to read the response of this API, if it is called from another origin.\n\n```\n    fetch('https://domain-A/api/secret',\n        {\n            'cache':'force-cache',\n        }).then([…])\n```\n\nWithin the same browser session, the user occasionally visits an attacker-controlled website residing at domain-B. The attacker controlled website includes a script, which issues a cross-origin request by fetching the API with the attribut ``'cache':'force-cache'``. This results in a HTTP request header which includes the clientside Cache-Contol: only-if-cached header. This results in a conflicting situation because the browser is not allowed to expose the API response but at the same time the response ist already present in the browsers cache. The browser must decide to either use the cached response or to request the API again.\n\n### How does the browser react?\n\nOption1: The browser serves the cached response and possibly leaks secret data.\n\nOption2: The browser initiates a new request to the API and does not show the response.\n\nOption3: The browser does not support support the JavaScript ``fetch()`` method.",
     "date_created": "09/03/2020",
     "tagNums": [
       5,
       24
     ],
-    "path": "auth-via-cached-response",
+    "path": "sop-and-the-browser-cache",
     "question": "Is the secret available for other domains?",
     "possibleAnswers": [
       {
         "ans_id": 1,
-        "ans_desc": "No"
+        "ans_desc": "No (the browser is safe from this attack scenario)"
       },
       {
         "ans_id": 0,
-        "ans_desc": "Yes"
+        "ans_desc": "Yes (a remote attack is possible)"
       },
       {
         "ans_id": 9,
@@ -799,67 +799,34 @@
     ],
     "variations": [
       {
-        "description": "Authentication using cookie, frontend and API are in the same origin, request using XMLHttpRequest",
+        "description": "Authentication using cookie, front-end and API of the tested app are in the same origin",
         "data": {
           "authentication": "cookie",
-          "apiOrigin": "same-origin",
-          "method": "XHR"
+          "apiOrigin": "same-origin"
         },
         "id": 0,
-        "title": "Cookie - same origin - XHR"
+        "title": "Cookie - same origin"
       },
       {
-        "description": "Authentication using cookie, frontend and API are in the same origin, request using Javascript fetch()",
-        "data": {
-          "authentication": "cookie",
-          "apiOrigin": "same-origin",
-          "method": "fetch"
-        },
-        "id": 1,
-        "title": "Cookie - same origin - fetch"
-      },
-      {
-        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using XMLHttpRequest",
+        "description": "Authentication using the Authorization header, front-end and API of the tested app are in the same origin",
         "data": {
           "authentication": "jwt",
-          "apiOrigin": "same-origin",
-          "method": "XHR"
+          "apiOrigin": "same-origin"
         },
         "id": 2,
-        "title": "Authorization header - same origin - XHR"
+        "title": "Authorization header - same origin"
       },
       {
-        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using Javascript fetch()",
+        "description": "Authentication using the Authorization header, front-end and API of the tested app are in different origins",
         "data": {
           "authentication": "jwt",
-          "apiOrigin": "same-origin",
-          "method": "fetch"
-        },
-        "id": 3,
-        "title": "Authorization header - same origin - fetch"
-      },
-      {
-        "description": "Authentication using the Authorization header, frontend and API are in different origins, request using XMLHttpRequest",
-        "data": {
-          "authentication": "jwt",
-          "apiOrigin": "cross-origin",
-          "method": "XHR"
+          "apiOrigin": "cross-origin"
         },
         "id": 4,
-        "title": "Authorization header - cross origin - XHR"
-      },
-      {
-        "description": "Authentication using the Authorization header, frontend and API are in the same origin, request using Javascript fetch()",
-        "data": {
-          "authentication": "jwt",
-          "apiOrigin": "cross-origin",
-          "method": "fetch"
-        },
-        "id": 5,
-        "title": "Authorization header - cross origin - fetch"
+        "title": "Authorization header - cross origin"
       }
     ],
-    "variationOverview": "Testcase variations: effects of authentication methods, API origin and the Javascript command used on the exploitability"
+    "variationOverview": "Testcase variations: effects of authentication methods and API origin on the exploitability"
   },
   "32": {
     "testNumber": 32,
