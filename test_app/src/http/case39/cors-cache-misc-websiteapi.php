@@ -5,7 +5,8 @@
 	$httpHeaders = getallheaders();
 	if(
 		isset($_COOKIE['secret']) ||
-		(isset($httpHeaders['Authorization']) && 'jwt-token' === $httpHeaders['Authorization'])
+		(isset($httpHeaders['Authorization']) && 'jwt-token' === $httpHeaders['Authorization']) || 
+		(isset($httpHeaders['X-Auth-Token']) && 'jwt-token' === $httpHeaders['X-Auth-Token'])
 	){
 		echo json_encode(['result' => 'secret']);
 	} else if (isset($_COOKIE['secret']) && isset($httpHeaders['Authorization'])) {
