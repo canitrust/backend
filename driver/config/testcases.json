@@ -842,6 +842,15 @@
         },
         "id": 7,
         "title": "Custom authentication header - cross origin"
+      },
+      {
+        "description": "Authentication using basic authentication",
+        "data": {
+          "authentication": "basic",
+          "apiOrigin": "same-origin"
+        },
+        "id": 8,
+        "title": "Basic authentication"
       }
     ],
     "variationOverview": "Testcase variations: effects of authentication methods and API origin on the exploitability"
