@@ -41,7 +41,7 @@ class Case39(TestCase):
             6: 'https://cors-cache-misc.test-canitrust.com/website-custom-so-fetch.html',
             7: 'https://cors-cache-misc.test-canitrust.com/website-custom-co-fetch.html',
             8: 'https://joe:5ecr3t@cors-cache-misc.test-canitrust.com',
-            10: 'https://cors-cache-misc.test-canitrust.com/website-cookie-login.php'
+            10: 'https://cors-cache-misc.test-canitrust.com/website-cookie-login.php?user=joe&pw=5ecr3t'
         }
         attackerapp = {
             0: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',

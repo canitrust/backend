@@ -808,6 +808,15 @@
         "title": "Cookie - same origin"
       },
       {
+        "description": "The same set-up as the first variant but the attacker actively try to create the cache by sending a cross-origin rerquest to the app. He is not allowed to read the direct response, but can he read it from the browser cache?",
+        "data": {
+          "authentication": "cookie",
+          "apiOrigin": "same-origin"
+        },
+        "id": 10,
+        "title": "Does a cross-origin request violating SOP get cached?"
+      },
+      {
         "description": "Authentication using the Authorization header, front-end and API of the tested app are in the same origin",
         "data": {
           "authentication": "jwt",
