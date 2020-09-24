@@ -32,16 +32,16 @@ class Case39(TestCase):
 
         # Translating variation data into corresponding testapp
         testapp = {
-            0: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-xhr.html',
-            1: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-so-fetch.html',
-            2: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-xhr.html',
-            3: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-so-fetch.html',
-            4: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-xhr.html',
-            5: 'https://cors-cache-misc.test-canitrust.com/case39/website-jwt-co-fetch.html',
-            6: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-so-fetch.html',
-            7: 'https://cors-cache-misc.test-canitrust.com/case39/website-custom-co-fetch.html',
-            8: 'https://cors-cache-misc.test-canitrust.com/case39/website-basic-so.php',
-            10: 'https://cors-cache-misc.test-canitrust.com/case39/website-cookie-login.php'
+            0: 'https://cors-cache-misc.test-canitrust.com/website-cookie-so-xhr.html',
+            1: 'https://cors-cache-misc.test-canitrust.com/website-cookie-so-fetch.html',
+            2: 'https://cors-cache-misc.test-canitrust.com/website-jwt-so-xhr.html',
+            3: 'https://cors-cache-misc.test-canitrust.com/website-jwt-so-fetch.html',
+            4: 'https://cors-cache-misc.test-canitrust.com/website-jwt-co-xhr.html',
+            5: 'https://cors-cache-misc.test-canitrust.com/website-jwt-co-fetch.html',
+            6: 'https://cors-cache-misc.test-canitrust.com/website-custom-so-fetch.html',
+            7: 'https://cors-cache-misc.test-canitrust.com/website-custom-co-fetch.html',
+            8: 'https://joe:5ecr3t@cors-cache-misc.test-canitrust.com',
+            10: 'https://cors-cache-misc.test-canitrust.com/website-cookie-login.php'
         }
         attackerapp = {
             0: 'http://alternative-canitrust.com/case39/foreignwebsite-so.html',

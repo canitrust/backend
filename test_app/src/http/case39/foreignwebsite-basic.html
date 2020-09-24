@@ -8,11 +8,16 @@
 	<body></body>
 <script>
 $(document).ready(function(){
-	fetch('https://cors-cache-misc.test-canitrust.com/cors-cache-misc-websiteapi.php',
+    // JS fetch does not accept credentials to be set in the fetched URL
+	fetch('https://cors-cache-misc.test-canitrust.com/',
 		{'cache': 'force-cache'}
 	)
 	.then(function(res){
-		return res.json();
+        if(res.ok) {
+            return res.json()
+        }
+        // res.ok == false meaning a 401 was returned
+        return {result: 'nosecret'}
 	})
 	.then(function(data){
 		g = document.createElement('div')

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<script src="/jquery-3.5.1.min.js"></script>
+		<script src="https://test-canitrust.com/jquery-3.5.1.min.js"></script>
 		<title>Supersichere Website</title>
 	</head>
 	<body></body>
@@ -10,7 +10,7 @@
 	$(document).ready(function(){
 		document.cookie = "secret=secret;SameSite=strict";
 		$.ajax({
-			url: "https://cors-cache-misc.test-canitrust.com/case39/cors-cache-misc-websiteapi.php",
+			url: "https://cors-cache-misc.test-canitrust.com/cors-cache-misc-websiteapi.php",
 			success: function(result){
 				g = document.createElement('div')
 				g.setAttribute('id', 'result')
