@@ -13,17 +13,20 @@ $(document).ready(function(){
 		{'cache': 'force-cache'}
 	)
 	.then(function(res){
-        if(res.ok) {
-            return res.json()
-        }
-        // res.ok == false meaning a 401 was returned
-        return {result: 'nosecret'}
+        if(res.ok)
+            return res.text()
+        // res.ok == false, meaning a 401 was returned
+        if(res.status == 401)
+            return 'nosecret'
+        // Unexpected response, halt process
+        throw new Exception();
 	})
 	.then(function(data){
+        data = $($.parseHTML(data)).text()
 		g = document.createElement('div')
 		g.setAttribute('id', 'result')
 		$('body').append(g)
-		document.getElementById('result').innerText = data.result;
+		document.getElementById('result').innerText = data;
 	});
 });
 </script>
