@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------------
 #  Copyright (c) mgm security partners GmbH. All rights reserved.
 #  Licensed under the AGPLv3 License. See LICENSE.md in the project root for license information.
-#-------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 
 from testcases.testCase import TestCase
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,8 +9,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from helper import Logger
-import time
 logger = Logger(__name__).logger
+
 
 class Case39(TestCase):
 
@@ -20,7 +20,6 @@ class Case39(TestCase):
         self.variationId = variationId
         self.variationData = variationData
 
-        
     def executeTest(self, webDriver):
         """ Definition of a testcase
             Test result MUST be set to self.data
@@ -58,7 +57,6 @@ class Case39(TestCase):
         websiteURL = testapp[self.variationId]
         foreignWebsiteURL = attackerapp[self.variationId]
 
-
         # This helper function gets the API response in the context of the front-end page that called the API
         def checkAPIcontent(resultName):
             try:
@@ -68,19 +66,18 @@ class Case39(TestCase):
             except TimeoutException:
                 self.data['error'] = True
 
-
         self.data = {}
-        #request website which contains the API-Call with creating the cookie
+        # request website which contains the API-Call with creating the cookie
         webDriver.get(websiteURL)
         print('Original website requested')
-        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME,'body')))
-        #check if the api call returns the secret
+        WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        # check if the api call returns the secret
         checkAPIcontent('authenticated_request')
-        #visit the foreign website
+        # visit the foreign website
         webDriver.get(foreignWebsiteURL)
         print('Called foreignWebsite')
         WebDriverWait(webDriver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        #now check the result of the subsequent api call from the foreing website
+        # now check the result of the subsequent api call from the foreing website
         checkAPIcontent('unauthenticated_request')
         webDriver.close()
         return 1
