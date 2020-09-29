@@ -794,7 +794,7 @@
       },
       {
         "ans_id": 9,
-        "ans_desc": "Error during the execution"
+        "ans_desc": "Error during the execution (possibly due to the \"fetch\" command not being supported by the browser)"
       }
     ],
     "variations": [
