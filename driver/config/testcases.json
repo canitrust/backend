@@ -817,7 +817,7 @@
 				"title": "Basic authentication"
 			},
       {
-        "description": "Authentication to the API using a JWT. Like Basic-Auth, this method uses the Authorization-Header. However, it is not addad automatically.",
+        "description": "Authentication to the API using a JWT. Like Basic-Auth, this method uses the Authorization-Header. However, it is not added automatically.",
         "data": {
           "authentication": "jwt",
           "apiOrigin": "cross-origin"
