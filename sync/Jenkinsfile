@@ -2,6 +2,7 @@ node('Dev') {
 
   def STAGING_DATABASE_NAME = 'cit-stg'
   def PRODUCTION_DATABASE_NAME = 'cit-prod'
+  def deploymentEnv = "${params.DEPLOYMENT_ENV}"
   
   stage('Keep Backend repository up to date') {
     dir('backend') {
@@ -106,13 +107,15 @@ node('Dev') {
       }
     }
 
-    stage('Sync to Prod') {
-      dir('backend/sync') {
-        echo "Syncing all data to production"
-        echo "Dump the staging DB"
-        sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ."
-        echo "Imports data to the production DB"
-        sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --db ${PRODUCTION_DATABASE_NAME} --ssl --drop --dir ${STAGING_DATABASE_NAME}"
+    if (deploymentEnv == "production") {
+      stage('Sync to Prod') {
+        dir('backend/sync') {
+          echo "Syncing all data to production"
+          echo "Dump the staging DB"
+          sh returnStdout: true, script: "mongodump --uri ${MONGO_STAGING_URI} --ssl -o ."
+          echo "Imports data to the production DB"
+          sh returnStdout: true, script: "mongorestore --uri ${MONGO_PRODUCTION_URI} --db ${PRODUCTION_DATABASE_NAME} --ssl --drop --dir ${STAGING_DATABASE_NAME}"
+        }
       }
     }
   }
