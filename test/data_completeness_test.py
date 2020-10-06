@@ -17,14 +17,14 @@ class DriverTest(unittest.TestCase):
 
         with open(config_path + 'tags.json', "r") as read_it:
             tags = json.load(read_it)
-        required_keys = ["testNumber", "title", "description", "detailedDescription", "date_created", "path", "question", "tagNums", "possibleAnswers"]
+        required_keys = ["testNumber", "title", "description", "date_created", "path", "question", "tagNums", "possibleAnswers"]
         for case in cases:
             with self.subTest(case=case):
                 for key in required_keys:
                     # all required keys have to exist
                     self.assertIn(key, testcases[case])
                     self.assertEqual(testcases[case]["testNumber"], int(case))
-                    if key in ["title", "description", "detailedDescription", "date_created", "path", "question"]:
+                    if key in ["title", "description", "date_created", "path", "question"]:
                         # fields have to be a string and not empty
                         self.assertIsInstance(testcases[case][key], str)
                         self.assertGreater(len(testcases[case][key]), 0)
@@ -44,6 +44,13 @@ class DriverTest(unittest.TestCase):
                             self.assertIn(ans["ans_id"], range(0,11))
                             self.assertIsInstance(ans["ans_desc"], str)
                             self.assertGreater(len(ans["ans_desc"]), 0)    
-    
+                detailedDescFilePath = '%s/description/%s.md'%(config_path, case)
+                if os.path.isfile(detailedDescFilePath):
+                    with open(detailedDescFilePath, 'r') as detailedDescriptionFile:
+                        decs = detailedDescriptionFile.read()
+                        self.assertIsInstance(decs, str)
+                        self.assertNotEqual(decs, '')
+                else:
+                    self.assertIsInstance(testcases[case]['detailedDescription'], str, "There is no detailed description for this testcass")
 if __name__ == '__main__':
     unittest.main()

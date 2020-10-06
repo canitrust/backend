@@ -3,6 +3,7 @@ import os
 import sys
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__) + '/../../driver/config/')
+DES_PATH = '%s/description'%BASE_PATH
 MAP_FILE = '%s/map.json'%BASE_PATH
 TAGS_FILE = '%s/tags.json'%BASE_PATH
 TESTCASES_FILE = '%s/testcases.json'%BASE_PATH
@@ -17,6 +18,13 @@ with open(MAP_FILE) as jsonMapFile, open(TAGS_FILE) as jsonTagsFile, open(TESTCA
   for testNumber in jsonMap:
     if jsonMap[testNumber]['isLive']:
       if testNumber in jsonTestcases:
+        try:
+          with open('%s/%s.md'%(DES_PATH, testNumber)) as detailedDescriptionFile:
+            jsonTestcases[testNumber]['detailedDescription'] = detailedDescriptionFile.read()
+        except FileNotFoundError as e:
+          if 'detailedDescription' not in jsonTestcases[testNumber]:
+            print('Error: No detailed description for testcase number %s' % testNumber)
+            sys.exit(1)
         print('Extract testcase number %s' % testNumber)
         testcases.append(jsonTestcases[testNumber])
       else:
