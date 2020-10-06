@@ -21,9 +21,10 @@ with open(MAP_FILE) as jsonMapFile, open(TAGS_FILE) as jsonTagsFile, open(TESTCA
         try:
           with open('%s/%s.md'%(DES_PATH, testNumber)) as detailedDescriptionFile:
             jsonTestcases[testNumber]['detailedDescription'] = detailedDescriptionFile.read()
-        except Exception as e:
-          print('Error: No detailed description markdown file for testcase number %s' % testNumber)
-          sys.exit(1)
+        except FileNotFoundError as e:
+          if 'detailedDescription' not in jsonTestcases[testNumber]:
+            print('Error: No detailed description for testcase number %s' % testNumber)
+            sys.exit(1)
         print('Extract testcase number %s' % testNumber)
         testcases.append(jsonTestcases[testNumber])
       else:

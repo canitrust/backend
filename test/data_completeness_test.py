@@ -45,11 +45,12 @@ class DriverTest(unittest.TestCase):
                             self.assertIsInstance(ans["ans_desc"], str)
                             self.assertGreater(len(ans["ans_desc"]), 0)    
                 detailedDescFilePath = '%s/description/%s.md'%(config_path, case)
-                if not os.path.isfile(detailedDescFilePath):
-                    self.assertRaises(FileNotFoundError)
-                with open(detailedDescFilePath, 'r') as detailedDescriptionFile:
-                    decs = detailedDescriptionFile.read()
-                    self.assertIsInstance(decs, str)
-                    self.assertNotEqual(decs, '')
+                if os.path.isfile(detailedDescFilePath):
+                    with open(detailedDescFilePath, 'r') as detailedDescriptionFile:
+                        decs = detailedDescriptionFile.read()
+                        self.assertIsInstance(decs, str)
+                        self.assertNotEqual(decs, '')
+                else:
+                    self.assertIsInstance(testcases[case]['detailedDescription'], str, "There is no detailed description for this testcass")
 if __name__ == '__main__':
     unittest.main()
