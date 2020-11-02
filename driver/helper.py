@@ -115,12 +115,10 @@ def get_browser_support(bs_user, bs_key):
         list_bs_browsers = rs.json()
         list_cit_browsers = []
         for browser in list_bs_browsers:
-            if (browser['os'] == 'Windows' and browser['os_version'] == '10') or (browser['os'] == 'OS X' and browser['browser'] == 'safari'):
-                # Only need os, os version, browser, browser_version
-                c = dict(browser)
-                for (key, value) in c.items() :
-                    if key not in ('os', 'os_version', 'browser', 'browser_version'):
-                        del browser[key]
+            if ((browser['os'] == 'Windows' and browser['os_version'] == '10') or
+            (browser['os'] == 'OS X' and browser['browser'] == 'safari') or
+            (browser['os'] == 'ios' and browser['os_version'] == '14' and browser['device'] == 'iPhone 11') or
+            (browser['os'] == 'android' and browser['os_version'] == '10.0' and browser['device'] == 'Samsung Galaxy S20 Ultra')):
                 list_cit_browsers.append(browser)
         logger.info('Browsers supported by BS: {}'.format(len(list_bs_browsers)))
         logger.info('Browsers supported by CIT: {}'.format(len(list_cit_browsers)))

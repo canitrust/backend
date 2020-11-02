@@ -172,10 +172,8 @@ def exec_bs_test(bs_test):
     test_case_instance = getTestcaseInstance(bs_test)
     #if test_case not live never save to database
     if settings.SAVE_DB and settings.dataJson[test_case]['isLive']:
-        return test_case_instance.run(info_browser['os'], info_browser['os_version'], info_browser['browser'],
-                            info_browser['browser_version'], constant.API_KEY, constant.USERBS, settings.DB.db)
-    return test_case_instance.runnotsave(info_browser['os'], info_browser['os_version'], info_browser['browser'],
-                          info_browser['browser_version'], constant.API_KEY, constant.USERBS) 
+        return test_case_instance.run(bs_test["info_browser"], constant.API_KEY, constant.USERBS, settings.DB.db)
+    return test_case_instance.runnotsave(bs_test["info_browser"], constant.API_KEY, constant.USERBS)
 
 
 @check_failure_data

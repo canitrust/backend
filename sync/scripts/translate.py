@@ -26,8 +26,12 @@ class Result:
             "browserVer": browser_ver,
             "isBeta": self.backendData['isBeta'],
             "result": self.backendData['result'],
-            "date_lasttest": self.backendData['date']
+            "date_lasttest": self.backendData['date'],
+            "platform": self.backendData['platform'],
+            "os_version": self.backendData['os_version']
         }
+        if 'real_mobile' in self.backendData:
+            translatedData.update({'real_mobile': self.backendData['real_mobile']})
         if 'variationId' in self.backendData:
             translatedData.update({'variationId': self.backendData['variationId']})
         return translatedData

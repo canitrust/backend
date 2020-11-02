@@ -11,6 +11,7 @@ from config import constant
 import time
 from helper import Logger
 import os
+import re
 import threading
 
 #import selenium
@@ -52,15 +53,19 @@ class TestCase:
                     "date": self.date,
                     "testCaseNum": self.testCaseNum,
                     "result" : self.result,
-                    "platform": self.platform,
-                    "browser": self.browser,
-                    "version": self.version,
-                    "os_version":self.os_version,
+                    "platform": self.info_browser['os'],
+                    "os_version":self.info_browser['os_version'],
+                    "browser": self.info_browser['browser'],
+                    "device": self.info_browser['device'],
+                    "version": self.info_browser['browser_version'],
                     "elapsedTime": self.elapsedTime,
                     "data" : self.data,
                     "isBeta": self.isBeta,
                     "deprecated": self.deprecated
                 }
+        # Only mobile test results have real_mobile field
+        if self.info_browser['os'] in ['ios', 'android']:
+            result["real_mobile"] = self.info_browser['real_mobile']
         if self.variationId is not None:
             result["variationId"] = self.variationId
         return result
@@ -95,7 +100,7 @@ class TestCase:
         return json.dumps(my_dict)
 
     # Run the testcase against a specific browser version
-    def run(self, platform, osversion, browser, version, key, user, db):
+    def run(self, info_browser, key, user, db):
         """ Run the testcase against a specific browser version
             (String) platform: operation system, eg. 'OS X'
             (String) osversion: OS version, eg. 'Mojave'
@@ -105,15 +110,12 @@ class TestCase:
             (String) user: Browserstack username
             (Object) db: MongoDb instance
         """
-        logger.debug('Running testcase - with configs:{} {} {} {}'.format(platform, osversion, browser, version))
-        self.platform = platform
-        self.os_version = osversion
-        self.browser = browser
-        self.version = version
+        self.info_browser = info_browser
         self.key = key
         self.user = user
+        logger.debug('Running testcase - with configs:{} {} {} {} {} {}'.format(info_browser['os'], info_browser['os_version'], info_browser['browser'], info_browser['device'], info_browser['browser_version'], info_browser['real_mobile']))
         try:
-            webDriver = TestCase.testSpawnBS(platform, osversion, browser, version, key, user)
+            webDriver = self.testSpawnBS()
 
             # start time - will be used to calculate elapsed time
             start_time = time.time()
@@ -149,7 +151,7 @@ class TestCase:
             return data
 
     # Run the testcase against a specific browser version
-    def runnotsave(self, platform, osversion, browser, version, key, user):
+    def runnotsave(self, info_browser, key, user):
         """ Run the testcase against a specific browser version
             (String) platform: operation system, eg. 'OS X'
             (String) osversion: OS version, eg. 'Mojave'
@@ -158,15 +160,12 @@ class TestCase:
             (String) key: Browserstack API key
             (String) user: Browserstack username
         """
-        logger.debug('Running testcase - with configs:{} {} {} {}'.format(platform, osversion, browser, version))
-        self.platform = platform
-        self.os_version = osversion
-        self.browser = browser
-        self.version = version
+        self.info_browser = info_browser
         self.key = key
         self.user = user
+        logger.debug('Running testcase - with configs:{} {} {} {}'.format(self.platform, self.os_version, self.browser, self.version))
         try:
-            webDriver = TestCase.testSpawnBS(platform, osversion, browser, version, key, user)
+            webDriver = self.testSpawnBS()
 
             # start time - will be used to calculate elapsed time
             start_time = time.time()
@@ -206,10 +205,12 @@ class TestCase:
         """
 
         # set all the necessary field for displaying result
-        self.browser = "Firefox/Gecko"
-        self.version = "latest"
-        self.platform = "Ubuntu(Linux)"
-        self.os_version = "18.04"
+        self.info_browser = {
+            "os": "Ubuntu(Linux)",
+            "os_version": "13",
+            "browser": "Firefox/Gecko",
+            "browser_version": "latest"
+        }
         try:
             # spawn a local gecko driver
             webDriver = TestCase.spawnWebDriver()
@@ -248,13 +249,13 @@ class TestCase:
 
     def respawn(self):
         if self.browser == "Firefox/Gecko":
-            return TestCase.spawnWebDriver()
+            return self.spawnWebDriver()
         else:
-            return TestCase.testSpawnBS(self.platform, self.os_version, self.browser, self.version, self.key, self.user)
+            return self.testSpawnBS()
 
 
     #spawn web driver
-    def spawnWebDriver():
+    def spawnWebDriver(self):
         capabilities = DesiredCapabilities.FIREFOX.copy()
         capabilities['marionette'] = True
         #capabilities['loggingPrefs'] = { 'browser':'ALL' }
@@ -272,12 +273,8 @@ class TestCase:
 
 
 
-    def testSpawnBS(platform,osversion,browser,version,api_key,userBs):
+    def testSpawnBS(self):
         desired_cap = {
-            'browser': browser,
-            'browser_version': version,
-            'os': platform,
-            'os_version': osversion,
             'resolution': '1024x768',
             'browserstack.local' : 'true',
             #'browserstack.debug': 'true',
@@ -286,17 +283,32 @@ class TestCase:
             'acceptSslCerts': 'false',
             'acceptInsecureCerts': 'true'
         }
-        if browser == 'firefox':
+        desired_cap.update(self.info_browser)
+        print(str(desired_cap))
+        if self.info_browser['browser'] == 'firefox':
             profile = webdriver.FirefoxProfile()
-            profile.set_preference("security.csp.enable", True);
+            profile.set_preference("security.csp.enable", True)
             profile.update_preferences()
             driver = webdriver.Remote(
-                command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
+                command_executor='http://'+ self.user +':'+ self.key + '@hub.browserstack.com:80/wd/hub',
                 desired_capabilities=desired_cap, browser_profile=profile)
         else:
             driver = webdriver.Remote(
-                command_executor='http://'+userBs +':'+ api_key + '@hub.browserstack.com:80/wd/hub',
+                command_executor='http://'+ self.user +':'+ self.key + '@hub.browserstack.com:80/wd/hub',
                 desired_capabilities=desired_cap)
+        # Get browser version on mobile devices
+        if self.info_browser['real_mobile']:
+            agent = driver.execute_script("return navigator.userAgent;")
+            if self.info_browser['browser'] == "iphone":
+                version = re.search(r'Version/(\d+\.\d+)', agent)
+                if (version):
+                    self.info_browser['browser'] = "safari"
+                    self.info_browser['browser_version'] = version.group(1)
+            elif self.info_browser['browser'] == "android":
+                version = re.search(r'Chrome/(\d+\.\d+)', agent)
+                if (version):
+                    self.info_browser['browser'] = "chrome"
+                    self.info_browser['browser_version'] = version.group(1)
         return driver
 
     def evaluate(self):
