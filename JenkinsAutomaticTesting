@@ -6,7 +6,7 @@ node('Dev') {
     def driverFlags = "${params.DRIVER_FLAGS}"
     try {
         stage('Prepare') {
-            def gitBranch = 'master'
+            def gitBranch = 'mobile-testing'
             def gitLabUrl = 'https://github.com/canitrust/backend.git'
             def credentials = 'e7acb748-22b5-47e2-b5c8-f740048baac1'
             dir('backend') {
