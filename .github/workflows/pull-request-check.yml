@@ -21,9 +21,17 @@ jobs:
     name: Run Live Tests
     runs-on: ubuntu-18.04
     steps:
-      - name: checkout
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
-      - name: run all live tests locally
-        run: ./driver.sh runlocal --all_live --catch_fail
+      - uses: actions/checkout@v1
+      - name: Check for changes
+        id: diff
+        run: |
+          # Pull Request
+          git fetch origin $GITHUB_BASE_REF --depth=1
+          export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+          echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+          echo "$DIFF"
+          # Escape newlines (replace \n with %0A)
+          echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      - run: |
+          # Run localtest
+          echo "${{ steps.diff.outputs.diff }}" | ./pull-request-check.sh
