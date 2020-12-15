@@ -10,6 +10,8 @@ import importlib
 from helper import BS, Logger, Mongo, pretty_output, start_infra, junit_report
 from config import constant, settings
 from functools import wraps
+from pymongo import MongoClient
+import datetime
 
 logger = Logger(__name__).logger
 
@@ -206,6 +208,26 @@ def exec_bs_test_list(bs_tests):
             results.append(result)
         logger.info('BS tests running OK: {}'.format(bs_tests_ok))
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
+
+        # Deprecate old beta version testresults
+        myCollection = settings.DB.db[constant.DB_COLL]
+        for result in results:
+            if result["result"] != "Failed" and result["data"] != "Failed" and result["isBeta"]:
+                myquery = {
+                    "testCaseNum": result["testCaseNum"],
+                    "platform": result["platform"],
+                    "browser": result["browser"],
+                    "version": { "$lt": result["version"] },
+                    "os_version": result["os_version"],
+                    "isBeta": True,
+                    "deprecated": False
+                }
+                myCollection.update_many(myquery, {
+                    "$set": {
+                        "deprecated": True
+                    }
+                })
+
         if settings.ENABLE_JUNIT:
             junit_report(results)
         logger.info('(*) TEST SUMMARY \n{}'.format(pretty_output(results))) 

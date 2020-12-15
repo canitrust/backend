@@ -47,6 +47,9 @@ class TestCase:
         self.isBeta = False
         self.deprecated = False
     def get_data(self):
+        #check Beta version
+        if(any(s in self.version for s in ('beta', 'insider preview'))):
+            self.isBeta = True
         #get dict to insert from class
         result = {
                     "date": self.date,
@@ -55,7 +58,7 @@ class TestCase:
                     "platform": self.platform,
                     "browser": self.browser,
                     "version": self.version,
-                    "os_version":self.os_version,
+                    "os_version": self.os_version,
                     "elapsedTime": self.elapsedTime,
                     "data" : self.data,
                     "isBeta": self.isBeta,
@@ -68,11 +71,25 @@ class TestCase:
     # save info to DB (param1: mongo client)
     def saveToDB(self,mongoClient):
         myCollection = mongoClient[constant.DB_COLL]
-        #check Beta version and bs_version
-        if(any(s in self.version for s in ('beta', 'insider preview'))):
-            self.isBeta = True
-
         data = self.get_data()
+
+        # Deprecate old testresults
+        myquery = {
+            "testCaseNum": self.testCaseNum,
+            "platform": self.platform,
+            "browser": self.browser,
+            "version": self.version,
+            "os_version": self.os_version,
+            "isBeta": self.isBeta,
+            "deprecated": self.deprecated,
+            "date": { "$lt": self.date }
+        }
+        myCollection.update_many(myquery, {
+            "$set": {
+                "deprecated": True
+            }
+        })
+
         # Debug message:
         logger.debug('Result to be saved:{}'.format(data))
         #save data
