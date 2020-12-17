@@ -2,7 +2,7 @@
 
 testcases=()
 testcase_numb_regex="driver/testcases/case([0-9]+).py"
-o1_testcase_regex=("(testCase.py|Dockerfile|docker-compose*|driver.sh|pull-request-check.sh|deriver.py|helper.py|driver_cli.py|workflows)")
+o1_testcase_regex=("(testCase.py|Dockerfile|docker-compose*|driver.sh|pull-request-check.sh|driver.py|helper.py|driver_cli.py|workflows)")
 
 while read line
 do
