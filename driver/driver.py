@@ -210,23 +210,24 @@ def exec_bs_test_list(bs_tests):
         logger.info('BS tests running Fail: {}'.format(bs_tests_fail))
 
         # Deprecate old beta version testresults
-        myCollection = settings.DB.db[constant.DB_COLL]
-        for result in results:
-            if result["result"] != "Failed" and result["data"] != "Failed" and result["isBeta"]:
-                myquery = {
-                    "testCaseNum": result["testCaseNum"],
-                    "platform": result["platform"],
-                    "browser": result["browser"],
-                    "version": { "$lt": result["version"] },
-                    "os_version": result["os_version"],
-                    "isBeta": True,
-                    "deprecated": False
-                }
-                myCollection.update_many(myquery, {
-                    "$set": {
-                        "deprecated": True
+        if settings.SAVE_DB:
+            myCollection = settings.DB.db[constant.DB_COLL]
+            for result in results:
+                if result["result"] != "Failed" and result["data"] != "Failed" and result["isBeta"]:
+                    myquery = {
+                        "testCaseNum": result["testCaseNum"],
+                        "platform": result["platform"],
+                        "browser": result["browser"],
+                        "version": { "$lt": result["version"] },
+                        "os_version": result["os_version"],
+                        "isBeta": True,
+                        "deprecated": False
                     }
-                })
+                    myCollection.update_many(myquery, {
+                        "$set": {
+                            "deprecated": True
+                        }
+                    })
 
         if settings.ENABLE_JUNIT:
             junit_report(results)
