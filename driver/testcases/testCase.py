@@ -84,6 +84,8 @@ class TestCase:
             "deprecated": self.deprecated,
             "date": { "$lt": self.date }
         }
+        if self.variationId is not None:
+            myquery["variationId"] = self.variationId
         myCollection.update_many(myquery, {
             "$set": {
                 "deprecated": True
