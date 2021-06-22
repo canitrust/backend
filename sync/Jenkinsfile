@@ -37,8 +37,8 @@ node('Dev') {
     def dateQuery = ''
     def MONGO_BACKEND_URI = "${MONGO_URL}/Backend"
 
-    stage('Extract latest test results from Backend') {
-      dir('backend/sync') {
+    dir('backend/sync') {
+      stage('Extract latest test results from Backend') {
         echo "Connect to Staging DB and get latest update timestamp"
         sh returnStdout: true, script: "mongoexport --uri ${MONGO_STAGING_URI} --collection testresults --sort '{date_lasttest:-1}' --fields date_lasttest --limit 1 --out ./latest_testresult.json"
         
@@ -60,11 +60,19 @@ node('Dev') {
             echo "Staging DB does not have any testresult"
           }
         }
-
         echo "Find all entries since latest timestamp"
         sh returnStdout: true, script: "mongoexport --uri ${MONGO_BACKEND_URI} --collection test_Lab ${dateQuery} --sort '{testCaseNum: 1,  browser: 1, version: 1, variationId: 1, date: -1}' --out ./dataLine.json"
+      }
 
-        echo "Convert entries to Frontend DB format" 
+      // If dataLine.json has no data then terminate the pipeline job
+      def dataLine = readFile(file: 'dataLine.json')
+      if( dataLine.size() == 0 ) {
+        echo "No new test results from Backend";
+        currentBuild.result = 'SUCCESS'
+        return
+      }
+
+      stage('Convert entries to Frontend DB format') {
         sh "python3 scripts/translate.py dataLine.json"
       }
     }
